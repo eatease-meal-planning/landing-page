@@ -1,0 +1,44 @@
+{
+  "event_message": "relation \"supabase_migrations.schema_migrations\" does not exist",
+  "id": "a4f7a83d-e6d0-429e-8719-78f23accd127",
+  "metadata": [
+    {
+      "file": null,
+      "host": "db-ukbghgashamgmhxjgyyr",
+      "metadata": [],
+      "parsed": [
+        {
+          "application_name": "supabase/dashboard",
+          "backend_type": "client backend",
+          "command_tag": "SELECT",
+          "connection_from": "2a05:d018:1e14:201:41a0:90fe:99d7:ebc5:37668",
+          "context": null,
+          "database_name": "postgres",
+          "detail": null,
+          "error_severity": "ERROR",
+          "hint": null,
+          "internal_query": null,
+          "internal_query_pos": null,
+          "leader_pid": null,
+          "location": null,
+          "process_id": 300887,
+          "query": "SET statement_timeout='58s'; SET idle_session_timeout='58s';\n    select\n      *\n    from supabase_migrations.schema_migrations sm\n    order by sm.version desc\n  \n\n-- source: dashboard\n-- user: session:d6c0a6b1-85a5-49a3-b601-30f3c1157d9f\n-- date: 2026-06-13T16:03:02.764Z",
+          "query_id": 0,
+          "query_pos": 90,
+          "session_id": "6a2d7f36.49757",
+          "session_line_num": 4,
+          "session_start_time": "2026-06-13 16:03:02 UTC",
+          "sql_state_code": "42P01",
+          "timestamp": "2026-06-13 16:03:02.806 UTC",
+          "transaction_id": 0,
+          "user_name": "postgres",
+          "virtual_transaction_id": "27/1024"
+        }
+      ],
+      "parsed_from": null,
+      "project": null,
+      "source_type": null
+    }
+  ],
+  "timestamp": 1781366582806000
+}

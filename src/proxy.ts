@@ -1,26 +1,28 @@
-import { updateSession } from "@/lib/proxy"
-import { NextResponse, type NextRequest } from "next/server"
-import { locales, defaultLocale } from "@/lib/i18n/config"
+import { updateSession } from "@/lib/proxy";
+import { NextResponse, type NextRequest } from "next/server";
+import { locales, defaultLocale, isValidLocale, detectLocale } from "@/lib/i18n/config";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 1. Refresh da sessão Supabase
-  const supabaseResponse = await updateSession(request)
+  const supabaseResponse = await updateSession(request);
 
-  // 2. i18n — redireciona para o locale por defeito se não tiver locale na URL
-  const pathname = request.nextUrl.pathname
+  // 2. i18n — redireciona para o locale detetado se não tiver locale na URL
+  const pathname = request.nextUrl.pathname;
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  )
+  );
 
   if (!pathnameHasLocale) {
+    const acceptLanguage = request.headers.get("accept-language");
+    const locale = detectLocale(acceptLanguage);
     return NextResponse.redirect(
-      new URL(`/${defaultLocale}${pathname}`, request.url)
-    )
+      new URL(`/${locale}${pathname}`, request.url)
+    );
   }
 
-  return supabaseResponse
+  return supabaseResponse;
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon.ico|images|icons).*)"],
-}
+  matcher: ["/((?!_next|api|favicon.ico|images|icons|assets).*)"],
+};
