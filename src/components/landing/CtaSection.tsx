@@ -5,6 +5,7 @@ import type { Translations } from "@/lib/i18n/dictionaries";
 interface CtaProps {
   t: Translations["cta"];
   tForm: Translations["form"];
+  locale: string;
 }
 
 const PERK_ICONS = [
@@ -14,7 +15,7 @@ const PERK_ICONS = [
   <Users key="u" className="size-5 shrink-0 mt-0.5 text-teal-300" />,
 ];
 
-export function CtaSection({ t, tForm }: CtaProps) {
+export function CtaSection({ t, tForm, locale }: CtaProps) {
   const perks = [t.perk1, t.perk2, t.perk3, t.perk4];
 
   return (
@@ -58,7 +59,7 @@ export function CtaSection({ t, tForm }: CtaProps) {
 
         {/* Waitlist form — lives here now (scroll target for nav CTA) */}
         <div id="waitlist" className="mx-auto max-w-sm scroll-mt-24 text-left">
-          <ContactForm t={tForm} />
+          <ContactForm t={tForm} locale={locale} />
         </div>
       </div>
     </section>

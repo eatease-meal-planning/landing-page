@@ -4,17 +4,45 @@ import { contacts, rateLimits } from "@/db/schema";
 import { Resend } from "resend";
 import { z } from "zod";
 import { eq, sql } from "drizzle-orm";
+import { isValidLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { renderEmail } from "@/lib/email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const RATE_LIMIT_MAX    = 5;
-const RATE_LIMIT_WINDOW = 10 * 60 * 1000; // 10 minutos em ms
-const EMAIL_COOLDOWN    = 60 * 60 * 1000; // 1 hora em ms
+const RATE_LIMIT_WINDOW = 10 * 60 * 1000;
+const EMAIL_COOLDOWN    = 60 * 60 * 1000;
 
 const schema = z.object({
-  name:  z.string().min(2).max(50),
-  email: z.string().email(),
+  name:              z.string().min(2).max(50),
+  email:             z.string().email(),
+  locale:            z.string().optional(),
+  cfTurnstileToken:  z.string().min(1),
 });
+
+async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
+  try {
+    const secret = (process.env.TURNSTILE_SECRET_KEY ?? "").trim();
+    console.log("[Turnstile] secret length:", secret.length, "| starts:", secret.slice(0, 4), "| ends:", secret.slice(-4));
+    const body = new URLSearchParams({
+      secret,
+      response: token,
+      remoteip: ip,
+    });
+    const res  = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method:  "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body:    body.toString(),
+    });
+    const data = await res.json() as { success: boolean; "error-codes"?: string[] };
+    if (!data.success) console.error("[Turnstile] verification failed:", data["error-codes"]);
+    return data.success === true;
+  } catch (err) {
+    console.error("[Turnstile] fetch error:", err);
+    return false;
+  }
+}
 
 function getClientIp(req: NextRequest): string {
   const forwarded = req.headers.get("x-forwarded-for");
@@ -53,7 +81,7 @@ export async function POST(req: NextRequest) {
   const limited = await checkIpRateLimit(ip);
   if (limited) {
     return NextResponse.json(
-      { error: "Demasiadas tentativas. Aguarda alguns minutos e tenta novamente." },
+      { error: "Too many attempts. Please wait a few minutes and try again." },
       { status: 429 }
     );
   }
@@ -61,26 +89,35 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Dados inválidos." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid data." }, { status: 400 });
   }
 
-  const { name, email } = parsed.data;
+  const { name, email, cfTurnstileToken } = parsed.data;
+
+  const captchaOk = await verifyTurnstile(cfTurnstileToken, ip);
+  if (!captchaOk) {
+    return NextResponse.json({ error: "Security check failed." }, { status: 400 });
+  }
+
+  const rawLocale = parsed.data.locale ?? "en";
+  const locale = isValidLocale(rawLocale) ? rawLocale : ("en" as const);
+  const dict = await getDictionary(locale);
+  const emailT = dict.emails.confirmation;
 
   const existing = await db.query.contacts.findFirst({
     where: eq(contacts.email, email),
   });
 
   if (existing?.confirmed) {
-    return NextResponse.json({ error: "Email já registado." }, { status: 409 });
+    return NextResponse.json({ error: "Email already registered." }, { status: 409 });
   }
 
-  // Cooldown: não reenviar para o mesmo email durante 1 hora
   if (existing && !existing.confirmed) {
     const cooldownUntil = new Date(Date.now() - EMAIL_COOLDOWN);
     const lastSentAt = new Date(existing.tokenExpiresAt.getTime() - 48 * 60 * 60 * 1000);
     if (lastSentAt > cooldownUntil) {
       return NextResponse.json(
-        { error: "Email de confirmação já enviado. Verifica a tua caixa de entrada (incluindo spam)." },
+        { error: "Confirmation email already sent. Check your inbox (including spam)." },
         { status: 429 }
       );
     }
@@ -88,7 +125,7 @@ export async function POST(req: NextRequest) {
 
   const [contact] = await db
     .insert(contacts)
-    .values({ name, email })
+    .values({ name, email, locale })
     .onConflictDoUpdate({
       target: contacts.email,
       set: {
@@ -96,19 +133,32 @@ export async function POST(req: NextRequest) {
         token:          sql`gen_random_uuid()`,
         tokenExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
         confirmed:      false,
+        locale,
       },
     })
     .returning();
 
-  const confirmUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/contacts/confirm?token=${contact.token}`;
+  const siteUrl    = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const confirmUrl = `${siteUrl}/api/contacts/confirm?token=${contact.token}`;
+  const greeting   = emailT.greeting.replace("{name}", name);
+
+  const html = renderEmail("confirmation-email.html", {
+    subject:      emailT.subject,
+    greeting:     greeting,
+    intro:        emailT.intro,
+    cta_label:    emailT.cta,
+    confirm_url:  confirmUrl,
+    expires_note: emailT.expiresNote,
+    sign_off:     emailT.signOff,
+    team:         dict.emails.teamName,
+    site_url:     siteUrl,
+  }, ["greeting"]);
 
   await resend.emails.send({
-    from:    "EatEase <noreply@eatease.eu>",
+    from:    `Eatease <${process.env.RESEND_FROM_EMAIL}>`,
     to:      email,
-    subject: "Confirma o teu registo no EatEase",
-    html:    `<p>Olá ${name},</p>
-              <p>Clica no link abaixo para confirmar o teu registo (válido 48h):</p>
-              <a href="${confirmUrl}">${confirmUrl}</a>`,
+    subject: emailT.subject,
+    html,
   });
 
   return NextResponse.json({ ok: true }, { status: 201 });

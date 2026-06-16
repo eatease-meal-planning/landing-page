@@ -14,9 +14,9 @@ export default async function ObrigadoPage({
         <div className="mb-10 flex justify-center">
           <Image
             src="/assets/eatease-logo-horizontal.svg"
-            alt="EatEase"
-            width={140}
-            height={32}
+            alt="Eatease"
+            width={280}
+            height={64}
             priority
           />
         </div>

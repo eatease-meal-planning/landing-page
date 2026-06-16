@@ -5,7 +5,7 @@ interface FooterProps {
   t: Translations["footer"];
 }
 
-export function SiteFooter({ t }: FooterProps) {
+export function Footer({ t }: FooterProps) {
   return (
     <footer className="bg-gray-900 px-8 pb-8 pt-18 text-white/70">
       <div className="mx-auto max-w-310">

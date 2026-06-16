@@ -14,9 +14,9 @@ export default async function TokenExpiradoPage({
         <div className="mb-10 flex justify-center">
           <Image
             src="/assets/eatease-logo-horizontal.svg"
-            alt="EatEase"
-            width={140}
-            height={32}
+            alt="Eatease"
+            width={280}
+            height={64}
             priority
           />
         </div>
@@ -49,7 +49,7 @@ export default async function TokenExpiradoPage({
 
           <Link
             href={`/${lang}`}
-            className="mt-2 flex h-11 items-center justify-center rounded-pill bg-primary px-8 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-[150ms] hover:bg-teal-600 hover:-translate-y-px"
+            className="mt-2 flex h-11 items-center justify-center rounded-pill bg-primary px-8 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-150 hover:bg-teal-600 hover:-translate-y-px"
           >
             Registar novamente
           </Link>

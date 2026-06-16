@@ -1,17 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import type { Translations } from "@/lib/i18n/dictionaries";
 
 type FormT = Translations["form"];
 type State = "idle" | "loading" | "success" | "error";
 
-export function ContactForm({ t }: { t: FormT }) {
+export function ContactForm({ t, locale }: { t: FormT; locale: string }) {
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!turnstileToken) {
+      setErrorMsg(t.errorCaptcha);
+      setState("error");
+      return;
+    }
+
     setState("loading");
 
     const form = e.currentTarget;
@@ -22,7 +32,7 @@ export function ContactForm({ t }: { t: FormT }) {
       const res = await fetch("/api/contacts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name, email, locale, cfTurnstileToken: turnstileToken }),
       });
 
       if (res.ok) {
@@ -41,6 +51,9 @@ export function ContactForm({ t }: { t: FormT }) {
     } catch {
       setErrorMsg(t.errorNetwork);
       setState("error");
+    } finally {
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     }
   }
 
@@ -92,6 +105,17 @@ export function ContactForm({ t }: { t: FormT }) {
           disabled={state === "loading"}
           className="h-11 rounded-md border border-white/15 bg-white/5 px-3.5 text-sm text-white placeholder:text-white/40 outline-none transition-[border-color,box-shadow] duration-[150ms] focus:border-primary focus:ring-3 focus:ring-primary/30 disabled:opacity-50"
         />
+      </div>
+
+      <div className="flex justify-center">
+      <Turnstile
+        ref={turnstileRef}
+        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+        onSuccess={setTurnstileToken}
+        onExpire={() => setTurnstileToken(null)}
+        onError={() => setTurnstileToken(null)}
+        options={{ theme: "dark" }}
+      />
       </div>
 
       {state === "error" && (

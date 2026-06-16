@@ -18,7 +18,13 @@ export default async function ErrorPage({
     <div className="flex min-h-screen flex-col items-center justify-center bg-secondary px-4 py-16">
       <div className="w-full max-w-md">
         <div className="mb-10 flex justify-center">
-          <Image src="/assets/eatease-logo-horizontal.svg" alt="EatEase" width={140} height={32} priority />
+          <Image
+            src="/assets/eatease-logo-horizontal.svg"
+            alt="Eatease"
+            width={280}
+            height={64}
+            priority
+          />
         </div>
 
         <div className="flex flex-col items-center gap-6 rounded-xl bg-card px-8 py-12 text-center shadow-card">
@@ -35,7 +41,7 @@ export default async function ErrorPage({
 
           <Link
             href={`/${locale}`}
-            className="mt-2 flex h-11 items-center justify-center rounded-pill bg-primary px-8 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-[150ms] hover:bg-teal-600 hover:-translate-y-px"
+            className="mt-2 flex h-11 items-center justify-center rounded-pill bg-primary px-8 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-150 hover:bg-teal-600 hover:-translate-y-px"
           >
             {t.cta}
           </Link>

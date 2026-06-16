@@ -119,6 +119,7 @@ export const de = {
     errorNetwork:    "Netzwerkfehler. Überprüfe deine Verbindung und versuche es erneut.",
     errorDuplicate:  "Bestätigungs-E-Mail bereits gesendet. Überprüfe deinen Posteingang (einschließlich Spam).",
     errorRateLimit:  "Zu viele Versuche. Bitte warte einige Minuten und versuche es erneut.",
+    errorCaptcha:    "Bitte schließe die Sicherheitsprüfung ab.",
   },
   pages: {
     confirmed: {
@@ -138,10 +139,20 @@ export const de = {
     },
   },
   emails: {
+    teamName: "Das EatEase-Team",
     welcome: {
       subject:  "Willkommen bei EatEase!",
       greeting: "Hallo {name},",
       body:     "Deine Registrierung ist bestätigt. Du wirst zu den Ersten gehören, die von unserem Start erfahren.",
+      signOff:  "Mit freundlichen Grüßen,",
+    },
+    confirmation: {
+      greeting:    "Hallo {name},",
+      subject:     "Bestätige deinen Platz auf der EatEase-Warteliste",
+      intro:       "Danke für deine Anmeldung! Klicke auf den Button unten, um deine E-Mail-Adresse zu bestätigen und deinen Platz auf der Warteliste zu sichern.",
+      cta:         "Registrierung bestätigen",
+      expiresNote: "Dieser Link läuft in 48 Stunden ab.",
+      signOff:     "Mit freundlichen Grüßen,",
     },
   },
 };

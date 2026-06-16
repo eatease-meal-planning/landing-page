@@ -7,7 +7,7 @@ import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { CtaSection } from "@/components/landing/CtaSection";
-import { SiteFooter } from "@/components/landing/SiteFooter";
+import { Footer } from "@/components/landing/Footer";
 
 export default async function Home({
   params,
@@ -25,8 +25,8 @@ export default async function Home({
       <HowItWorksSection t={dict.howItWorks} />
       <FeaturesSection t={dict.features} />
       {/* <TestimonialsSection t={dict.testimonials} /> */}
-      <CtaSection t={dict.cta} tForm={dict.form} />
-      <SiteFooter t={dict.footer} />
+      <CtaSection t={dict.cta} tForm={dict.form} locale={locale} />
+      <Footer t={dict.footer} />
     </div>
   );
 }

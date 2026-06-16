@@ -5,6 +5,7 @@ export const contacts = pgTable('contacts', {
   id:             uuid('id').primaryKey().defaultRandom(),
   name:           text('name').notNull(),
   email:          text('email').notNull().unique(),
+  locale:         text('locale').notNull().default('en'),
   confirmed:      boolean('confirmed').notNull().default(false),
   confirmedAt:    timestamp('confirmed_at', { withTimezone: true }),
   token:          uuid('token').notNull().defaultRandom().unique(),

@@ -119,6 +119,7 @@ export const nl = {
     errorNetwork:    "Netwerkfout. Controleer je verbinding en probeer het opnieuw.",
     errorDuplicate:  "Bevestigingsmail al verzonden. Controleer je inbox (inclusief spam).",
     errorRateLimit:  "Te veel pogingen. Wacht een paar minuten en probeer het opnieuw.",
+    errorCaptcha:    "Voltooi de beveiligingscontrole.",
   },
   pages: {
     confirmed: {
@@ -138,10 +139,20 @@ export const nl = {
     },
   },
   emails: {
+    teamName: "Het EatEase-team",
     welcome: {
       subject:  "Welkom bij EatEase!",
       greeting: "Hallo {name},",
       body:     "Jouw registratie is bevestigd. Je bent een van de eersten die het weet wanneer we lanceren.",
+      signOff:  "Met vriendelijke groet,",
+    },
+    confirmation: {
+      greeting:    "Hallo {name},",
+      subject:     "Bevestig je plek op de EatEase-wachtlijst",
+      intro:       "Bedankt voor je aanmelding! Klik op de knop hieronder om je e-mailadres te bevestigen en je plek op de wachtlijst te reserveren.",
+      cta:         "Mijn registratie bevestigen",
+      expiresNote: "Deze link verloopt over 48 uur.",
+      signOff:     "Met vriendelijke groet,",
     },
   },
 };
