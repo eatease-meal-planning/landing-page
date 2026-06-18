@@ -41,8 +41,9 @@ export function ConfirmedClient({ title, body, backHome, locale }: Props) {
           <Image
             src="/assets/eatease-logo-horizontal.svg"
             alt="EatEase"
-            width={280}
-            height={64}
+            width={2046}
+            height={605}
+            className="h-16 w-auto"
             priority
           />
         </div>

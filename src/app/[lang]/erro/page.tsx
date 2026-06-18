@@ -1,5 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { isValidLocale } from "@/lib/i18n/config";
+import type { Locale } from "@/lib/i18n/config";
 
 export default async function ErroPage({
   params,
@@ -7,6 +10,9 @@ export default async function ErroPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
+  const locale: Locale = isValidLocale(lang) ? lang : "en";
+  const { pages } = await getDictionary(locale);
+  const t = pages.error;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-secondary px-4 py-16">
@@ -15,8 +21,9 @@ export default async function ErroPage({
           <Image
             src="/assets/eatease-logo-horizontal.svg"
             alt="Eatease"
-            width={280}
-            height={64}
+            width={2046}
+            height={605}
+            className="h-16 w-auto"
             priority
           />
         </div>
@@ -40,18 +47,18 @@ export default async function ErroPage({
 
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Algo correu mal
+              {t.title}
             </h1>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              O link de confirmação é inválido ou já foi utilizado. Se o problema persistir, regista-te novamente.
+              {t.body}
             </p>
           </div>
 
           <Link
-            href={`/${lang}`}
+            href={`/${locale}`}
             className="mt-2 flex h-11 items-center justify-center rounded-pill bg-primary px-8 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-150 hover:bg-teal-600 hover:-translate-y-px"
           >
-            Voltar ao início
+            {t.cta}
           </Link>
         </div>
       </div>

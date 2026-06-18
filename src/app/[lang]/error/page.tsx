@@ -21,8 +21,9 @@ export default async function ErrorPage({
           <Image
             src="/assets/eatease-logo-horizontal.svg"
             alt="Eatease"
-            width={280}
-            height={64}
+            width={2046}
+            height={605}
+            className="h-16 w-auto"
             priority
           />
         </div>

@@ -14,8 +14,8 @@ export function Footer({ t }: FooterProps) {
           <Image
             src="/assets/eatease-logo-horizontal.svg"
             alt="Eatease — Time saved, meals made!"
-            width={400}
-            height={176}
+            width={2046}
+            height={605}
             className="block h-44 w-auto brightness-0 invert opacity-90 mx-auto"
           />
         </div>
