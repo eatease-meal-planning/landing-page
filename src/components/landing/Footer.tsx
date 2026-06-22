@@ -1,11 +1,13 @@
 import Image from "next/image";
+import type { Locale } from "@/lib/i18n/config";
 import type { Translations } from "@/lib/i18n/dictionaries";
 
 interface FooterProps {
   t: Translations["footer"];
+  locale: Locale;
 }
 
-export function Footer({ t }: FooterProps) {
+export function Footer({ t, locale }: FooterProps) {
   return (
     <footer className="bg-gray-900 px-8 pb-8 pt-18 text-white/70">
       <div className="mx-auto max-w-310">
@@ -25,17 +27,17 @@ export function Footer({ t }: FooterProps) {
           <div>
             <h4 className="mb-4 text-[13px] font-semibold text-white">{t.col1}</h4>
             <ul className="flex flex-col gap-2.5">
-              <li><a href="#features" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.mealPlanning}</a></li>
-              <li><a href="#features" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.snapFridge}</a></li>
-              <li><a href="#features" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.macroTracking}</a></li>
-              <li><a href="#features" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.shoppingList}</a></li>
+              <li><a href={`/${locale}#features`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.mealPlanning}</a></li>
+              <li><a href={`/${locale}#features`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.snapFridge}</a></li>
+              <li><a href={`/${locale}#features`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.macroTracking}</a></li>
+              <li><a href={`/${locale}#features`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.shoppingList}</a></li>
             </ul>
           </div>
           <div>
             <h4 className="mb-4 text-[13px] font-semibold text-white">{t.col2}</h4>
             <ul className="flex flex-col gap-2.5">
-              <li><a href="#" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.about}</a></li>
-              <li><a href="#cta" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.pricing}</a></li>
+              <li><a href={`/${locale}/about-us`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.about}</a></li>
+              <li><a href={`/${locale}#cta`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.pricing}</a></li>
             </ul>
           </div>
           <div>

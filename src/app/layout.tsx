@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   title: "EatEase — Time saved, meals made.",
   description:
     "EatEase plans your family's whole week of meals around the food you actually like, the time you actually have, and the macros you actually need.",
+  manifest: "/site.manifest",
 };
 
 export default function RootLayout({

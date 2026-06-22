@@ -48,13 +48,13 @@ export function Nav({ locale, t }: NavProps) {
         </a>
 
         <div className="flex items-center gap-5">
-          <a href="#how" className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
+          <a href={`/${locale}#how`} className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
             {t.howItWorks}
           </a>
-          <a href="#features" className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
+          <a href={`/${locale}#features`} className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
             {t.features}
           </a>
-          <a href="#cta" className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
+          <a href={`/${locale}#cta`} className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
             {t.pricing}
           </a>
 
@@ -96,7 +96,7 @@ export function Nav({ locale, t }: NavProps) {
           </div>
 
           <a
-            href="#waitlist"
+            href={`/${locale}#waitlist`}
             className="inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-600 hover:-translate-y-px hover:shadow-md"
           >
             {t.joinWaitlist}

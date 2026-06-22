@@ -26,7 +26,7 @@ export default async function Home({
       <FeaturesSection t={dict.features} />
       {/* <TestimonialsSection t={dict.testimonials} /> */}
       <CtaSection t={dict.cta} tForm={dict.form} locale={locale} />
-      <Footer t={dict.footer} />
+      <Footer t={dict.footer} locale={locale} />
     </div>
   );
 }
