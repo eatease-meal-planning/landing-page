@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Tijd bespaard, maaltijden gemaakt.",
+  "col1": "Product",
+  "mealPlanning": "Maaltijdplanning",
+  "snapFridge": "Koelkast fotograferen",
+  "macroTracking": "Macro-tracking",
+  "shoppingList": "Boodschappenlijst",
+  "col2": "Bedrijf",
+  "about": "Over ons",
+  "pricing": "Prijzen",
+  "col3": "Ondersteuning",
+  "helpCenter": "Helpcentrum",
+  "privacy": "Privacy",
+  "terms": "Voorwaarden",
+  "contact": "Contact",
+  "col4": "Downloaden",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Alle rechten voorbehouden.",
+  "madeWith": "Gemaakt met zorg voor hongerige gezinnen.",
+  "createdBy": "Gemaakt door"
+};

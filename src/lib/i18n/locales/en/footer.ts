@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Time saved, meals made.",
+  "col1": "Product",
+  "mealPlanning": "Meal planning",
+  "snapFridge": "Snap Fridge",
+  "macroTracking": "Macro tracking",
+  "shoppingList": "Shopping list",
+  "col2": "Company",
+  "about": "About",
+  "pricing": "Pricing",
+  "col3": "Support",
+  "helpCenter": "Help center",
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "contact": "Contact",
+  "col4": "Download",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "All rights reserved.",
+  "madeWith": "Made with care for hungry families.",
+  "createdBy": "Built by"
+};

@@ -1,6 +1,6 @@
 import { updateSession } from "@/lib/proxy";
 import { NextResponse, type NextRequest } from "next/server";
-import { locales, defaultLocale, isValidLocale, detectLocale } from "@/lib/i18n/config";
+import { locales, detectLocale } from "@/lib/i18n/config";
 
 export async function proxy(request: NextRequest) {
   // 1. Refresh da sessão Supabase

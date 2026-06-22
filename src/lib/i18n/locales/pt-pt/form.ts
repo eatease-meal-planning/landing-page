@@ -1,0 +1,15 @@
+export const form = {
+  nameLabel:       "Nome",
+  namePlaceholder: "O seu nome",
+  emailLabel:      "Email",
+  submit:          "Juntar-me à lista de espera",
+  submitting:      "A enviar…",
+  successTitle:    "Está na lista!",
+  successBody:     "Verifique a sua caixa de entrada e clique no link de confirmação. O link é válido durante 48 horas.",
+  disclaimer:      "Sem spam. Apenas novidades sobre a Eatease. Cancele a qualquer momento.",
+  errorGeneric:    "Algo correu mal. Tente novamente.",
+  errorNetwork:    "Erro de rede. Verifique a sua ligação e tente novamente.",
+  errorDuplicate:  "Email de confirmação já enviado. Verifique a sua caixa de entrada (incluindo spam).",
+  errorRateLimit:  "Demasiadas tentativas. Aguarde alguns minutos e tente novamente.",
+  errorCaptcha:    "Por favor, completa a verificação de segurança.",
+};

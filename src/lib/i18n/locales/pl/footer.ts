@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Czas zaoszczędzony, posiłki gotowe.",
+  "col1": "Produkt",
+  "mealPlanning": "Planowanie posiłków",
+  "snapFridge": "Zdjęcie lodówki",
+  "macroTracking": "Śledzenie makro",
+  "shoppingList": "Lista zakupów",
+  "col2": "Firma",
+  "about": "O nas",
+  "pricing": "Cennik",
+  "col3": "Wsparcie",
+  "helpCenter": "Centrum pomocy",
+  "privacy": "Prywatność",
+  "terms": "Warunki",
+  "contact": "Kontakt",
+  "col4": "Pobierz",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Wszelkie prawa zastrzeżone.",
+  "madeWith": "Zrobione z troską dla głodnych rodzin.",
+  "createdBy": "Stworzone przez"
+};

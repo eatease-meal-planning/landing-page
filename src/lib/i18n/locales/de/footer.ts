@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Zeit gespart, Mahlzeiten zubereitet.",
+  "col1": "Produkt",
+  "mealPlanning": "Mahlzeitenplanung",
+  "snapFridge": "Kühlschrank-Scan",
+  "macroTracking": "Makro-Tracking",
+  "shoppingList": "Einkaufsliste",
+  "col2": "Unternehmen",
+  "about": "Über uns",
+  "pricing": "Preise",
+  "col3": "Support",
+  "helpCenter": "Hilfe-Center",
+  "privacy": "Datenschutz",
+  "terms": "AGB",
+  "contact": "Kontakt",
+  "col4": "Download",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Alle Rechte vorbehalten.",
+  "madeWith": "Mit Sorgfalt für hungrige Familien gemacht.",
+  "createdBy": "Erstellt von"
+};

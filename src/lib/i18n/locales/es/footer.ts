@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Tiempo ahorrado, comidas preparadas.",
+  "col1": "Producto",
+  "mealPlanning": "Planificación de comidas",
+  "snapFridge": "Fotografía la nevera",
+  "macroTracking": "Seguimiento de macros",
+  "shoppingList": "Lista de la compra",
+  "col2": "Empresa",
+  "about": "Acerca de",
+  "pricing": "Precios",
+  "col3": "Soporte",
+  "helpCenter": "Centro de ayuda",
+  "privacy": "Privacidad",
+  "terms": "Términos",
+  "contact": "Contacto",
+  "col4": "Descargar",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Todos los derechos reservados.",
+  "madeWith": "Hecho con cuidado para familias hambrientas.",
+  "createdBy": "Creado por"
+};

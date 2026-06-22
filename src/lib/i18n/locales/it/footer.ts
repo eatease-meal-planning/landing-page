@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Tempo risparmiato, pasti preparati.",
+  "col1": "Prodotto",
+  "mealPlanning": "Pianificazione dei pasti",
+  "snapFridge": "Fotografa il frigo",
+  "macroTracking": "Monitoraggio macro",
+  "shoppingList": "Lista della spesa",
+  "col2": "Azienda",
+  "about": "Chi siamo",
+  "pricing": "Prezzi",
+  "col3": "Supporto",
+  "helpCenter": "Centro assistenza",
+  "privacy": "Privacy",
+  "terms": "Termini",
+  "contact": "Contatto",
+  "col4": "Scarica",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Tutti i diritti riservati.",
+  "madeWith": "Fatto con cura per le famiglie affamate.",
+  "createdBy": "Creato da"
+};

@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Du temps gagné, des repas préparés.",
+  "col1": "Produit",
+  "mealPlanning": "Planification des repas",
+  "snapFridge": "Scanner le frigo",
+  "macroTracking": "Suivi des macros",
+  "shoppingList": "Liste de courses",
+  "col2": "Entreprise",
+  "about": "À propos",
+  "pricing": "Tarifs",
+  "col3": "Assistance",
+  "helpCenter": "Centre d'aide",
+  "privacy": "Confidentialité",
+  "terms": "Conditions",
+  "contact": "Contact",
+  "col4": "Télécharger",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Tous droits réservés.",
+  "madeWith": "Fait avec soin pour les familles affamées.",
+  "createdBy": "Créé par"
+};

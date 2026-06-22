@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Tid sparad, måltider lagade.",
+  "col1": "Produkt",
+  "mealPlanning": "Måltidsplanering",
+  "snapFridge": "Kylfoto",
+  "macroTracking": "Makrospårning",
+  "shoppingList": "Inköpslista",
+  "col2": "Företag",
+  "about": "Om oss",
+  "pricing": "Priser",
+  "col3": "Support",
+  "helpCenter": "Hjälpcenter",
+  "privacy": "Integritetspolicy",
+  "terms": "Villkor",
+  "contact": "Kontakt",
+  "col4": "Ladda ner",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Alla rättigheter förbehållna.",
+  "madeWith": "Gjort med omsorg för hungriga familjer.",
+  "createdBy": "Skapad av"
+};

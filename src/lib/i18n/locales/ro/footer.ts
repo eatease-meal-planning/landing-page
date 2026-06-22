@@ -1,0 +1,22 @@
+export const footer = {
+  "tagline": "Timp economisit, mese pregătite.",
+  "col1": "Produs",
+  "mealPlanning": "Planificarea meselor",
+  "snapFridge": "Fotografiatul frigiderului",
+  "macroTracking": "Urmărirea macro",
+  "shoppingList": "Lista de cumpărături",
+  "col2": "Companie",
+  "about": "Despre noi",
+  "pricing": "Prețuri",
+  "col3": "Asistență",
+  "helpCenter": "Centrul de ajutor",
+  "privacy": "Confidențialitate",
+  "terms": "Termeni",
+  "contact": "Contact",
+  "col4": "Descarcă",
+  "iosStore": "iOS · App Store",
+  "androidStore": "Android · Google Play",
+  "copyright": "Toate drepturile rezervate.",
+  "madeWith": "Făcut cu grijă pentru familiile flămânde.",
+  "createdBy": "Creat de"
+};
