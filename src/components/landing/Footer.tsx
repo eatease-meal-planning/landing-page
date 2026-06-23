@@ -37,16 +37,15 @@ export function Footer({ t, locale }: FooterProps) {
             <h4 className="mb-4 text-[13px] font-semibold text-white">{t.col2}</h4>
             <ul className="flex flex-col gap-2.5">
               <li><a href={`/${locale}/about-us`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.about}</a></li>
-              <li><a href={`/${locale}#cta`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.pricing}</a></li>
             </ul>
           </div>
           <div>
             <h4 className="mb-4 text-[13px] font-semibold text-white">{t.col3}</h4>
             <ul className="flex flex-col gap-2.5">
               <li><a href="#" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.helpCenter}</a></li>
-              <li><a href="#" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.privacy}</a></li>
-              <li><a href="#" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.terms}</a></li>
-              <li><a href="#" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.contact}</a></li>
+              <li><a href={`/${locale}/privacy-policy`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.privacy}</a></li>
+              <li><a href={`/${locale}/terms-of-use`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.terms}</a></li>
+              <li><a href="#cta" className="text-[14px] text-white/60 transition-colors hover:text-white">{t.contact}</a></li>
             </ul>
           </div>
           <div>

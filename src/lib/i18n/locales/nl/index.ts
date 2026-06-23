@@ -9,6 +9,9 @@ import { footer } from "./footer";
 import { form } from "./form";
 import { pages } from "./pages";
 import { emails } from "./emails";
+import { legal } from "./legal";
+import { privacyPolicy } from "../en/privacyPolicy";
+import { termsOfUse } from "../en/termsOfUse";
 
 export const nl = {
   nav,
@@ -22,4 +25,7 @@ export const nl = {
   form,
   pages,
   emails,
+  legal,
+  privacyPolicy,
+  termsOfUse,
 };

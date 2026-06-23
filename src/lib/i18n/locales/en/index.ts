@@ -9,6 +9,9 @@ import { footer } from "./footer";
 import { form } from "./form";
 import { pages } from "./pages";
 import { emails } from "./emails";
+import { legal } from "./legal";
+import { privacyPolicy } from "./privacyPolicy";
+import { termsOfUse } from "./termsOfUse";
 
 export const en = {
   nav,
@@ -22,4 +25,7 @@ export const en = {
   form,
   pages,
   emails,
+  legal,
+  privacyPolicy,
+  termsOfUse,
 };
