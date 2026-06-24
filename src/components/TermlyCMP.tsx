@@ -15,6 +15,7 @@ declare global {
   interface Window {
     Termly?: {
       initialize: () => void;
+      displayPreferences: () => void;
     };
   }
 }

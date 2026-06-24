@@ -503,7 +503,71 @@ O Next.js App Router tem convenções próprias para ícones baseadas em ficheir
 
 ---
 
-## 13. Convenções Gerais
+## 13. Políticas de Privacidade, Termos e Consentimento (Termly)
+
+Para conformidade legal (RGPD/CCPA), a implementação de políticas e banners de cookies requer atenção especial no Next.js (App Router).
+
+### Consent Banner (Termly)
+
+Ao utilizar o Termly (Consent Management Platform), cria-se um *Client Component* (ex: `TermlyCMP.tsx`) responsável por injetar dinamicamente o script da Termly na página.
+
+**Regra Crítica (Next.js Build):** Se o componente invocar o hook `useSearchParams()` para intercetar mudanças na rota, **tem de ser obrigatoriamente envolvido numa fronteira `<Suspense>`** quando for instanciado no `layout.tsx` global. Caso contrário, o Next.js abortará a compilação por "CSR bailout" e quebrará a pré-renderização estática (SSG) de rotas inerentemente estáticas como a página de 404 (durante o `npm run build`).
+
+```tsx
+// src/app/layout.tsx
+import { Suspense } from "react";
+import TermlyCMP from '@/components/TermlyCMP';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        <Suspense fallback={null}>
+          <TermlyCMP websiteUUID={process.env.TERMLY_UUID!} />
+        </Suspense>
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+> **Dica TypeScript:** O script introduz o objeto global `window.Termly`. Adicionar a seguinte declaração em `TermlyCMP.tsx` para evitar que o TS se queixe do tipo implícito `any`:
+> ```typescript
+> declare global { interface Window { Termly?: { initialize: () => void; }; } }
+> ```
+
+### Preference Center Link (Footer)
+
+Os utilizadores devem conseguir reabrir e alterar as preferências de consentimento a qualquer momento (requisito legal obrigatório). O local habitual para colocar este acesso é no Footer, ao lado da Política de Privacidade.
+Para garantir que a janela nativa da Termly abre de forma fiável em ambiente de produção (evitando conflitos com o sistema de routing/hidratação do Next.js e o erro do `href="#"`), o recomendado é invocar a API global através de um **Client Component**:
+
+```tsx
+// src/components/CookiePreferencesButton.tsx
+"use client";
+
+export function CookiePreferencesButton({ text }: { text: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => window.Termly?.displayPreferences?.()}
+      className="termly-display-preferences text-[14px]"
+    >
+      {text}
+    </button>
+  );
+}
+```
+
+E no `Footer.tsx` (Server Component):
+```tsx
+<li><CookiePreferencesButton text={t.cookiePreferences} /></li>
+```
+> ⚠️ Em projetos internacionalizados (i18n), adicionar sempre chaves específicas (ex: `t.cookiePreferences`) nos ficheiros `footer.ts` de cada idioma (ex: "Preferências de Consentimento", "Consent Preferences") e nunca colocar links com texto *"hardcoded"*.
+
+---
+
+## 14. Convenções Gerais
 
 | Regra | Detalhe |
 |---|---|
@@ -518,7 +582,7 @@ O Next.js App Router tem convenções próprias para ícones baseadas em ficheir
 
 ---
 
-## 14. Checklist de Arranque Rápido
+## 15. Checklist de Arranque Rápido
 
 - [ ] Projeto criado com `src/`, App Router, TypeScript, Tailwind e alias `@/*`
 - [ ] `tsconfig.json` com `moduleResolution: "bundler"` e `strict: true`
