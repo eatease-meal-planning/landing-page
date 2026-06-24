@@ -3,4 +3,6 @@ export const nav = {
   features:    "Funcionalidades",
   aboutUs:     "Sobre nós",
   joinWaitlist: "Juntar-me à lista",
+  openMenu:    "Abrir menu",
+  closeMenu:   "Fechar menu",
 };

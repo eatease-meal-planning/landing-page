@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   description:
     "EatEase plans your family's whole week of meals around the food you actually like, the time you actually have, and the macros you actually need.",
   manifest: "/site.webmanifest",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

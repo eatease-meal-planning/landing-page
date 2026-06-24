@@ -13,23 +13,25 @@ const MACRO_RING_DEFS = [
 
 export function FeaturesSection({ t }: FeaturesProps) {
   return (
-    <section id="features" className="py-24">
+    <section id="features" className="py-16 md:py-24">
       <div className="mx-auto max-w-310 px-8">
-        <p className="mb-3.5 text-[12px] font-semibold uppercase tracking-[1.2px] text-accent-foreground">
-          {t.eyebrow}
-        </p>
-        <h2
-          className="font-display font-semibold text-gray-900"
-          style={{ fontSize: "clamp(32px,4vw,52px)", lineHeight: 1.05, letterSpacing: "-1px" }}
-        >
-          {t.title}
-        </h2>
+        <div className="text-center lg:text-left">
+          <p className="mb-3.5 text-[12px] font-semibold uppercase tracking-[1.2px] text-accent-foreground">
+            {t.eyebrow}
+          </p>
+          <h2
+            className="font-display font-semibold text-gray-900"
+            style={{ fontSize: "clamp(32px,4vw,52px)", lineHeight: 1.05, letterSpacing: "-1px" }}
+          >
+            {t.title}
+          </h2>
+        </div>
 
         {/* Bento grid */}
-        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-6 md:[grid-template-rows:380px_320px]">
+        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-6 md:[grid-template-rows:minmax(380px,auto)_minmax(320px,auto)]">
           {/* Card 1 — Macros (col 1-3, row 1) */}
           <div
-            className="relative overflow-hidden rounded-[22px] border border-border p-9 md:col-span-3"
+            className="relative overflow-hidden rounded-[22px] border border-border p-6 md:col-span-3 md:p-9"
             style={{ background: "linear-gradient(135deg, #f0fdfa, white)" }}
           >
             <h3 className="mb-2.5 font-display text-2xl font-semibold tracking-[-0.25px] text-gray-900">
@@ -38,7 +40,7 @@ export function FeaturesSection({ t }: FeaturesProps) {
             <p className="text-[14px] text-muted-foreground">{t.card1.sub}</p>
             {/* Macro dashboard */}
             <div className="mt-6 rounded-xl bg-gray-50 p-4 shadow-card">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col items-center gap-4 sm:flex-row">
                 {/* Calorie ring */}
                 <div className="shrink-0">
                   <div
@@ -71,14 +73,14 @@ export function FeaturesSection({ t }: FeaturesProps) {
           </div>
 
           {/* Card 2 — Snap Fridge (col 4-6, row 1) */}
-          <div className="flex flex-col overflow-hidden rounded-[22px] border border-border bg-white p-9 md:col-span-3">
+          <div className="flex flex-col overflow-hidden rounded-[22px] border border-border bg-white p-6 md:col-span-3 md:p-9">
             <h3 className="mb-2.5 font-display text-2xl font-semibold tracking-[-0.25px] text-gray-900">
               {t.card2.title}
             </h3>
             <p className="mb-6 text-[14px] text-muted-foreground">{t.card2.sub}</p>
             {/* Snap fridge demo — full width */}
             <div
-              className="relative min-h-40 flex-1 overflow-hidden rounded-xl"
+              className="relative min-h-56 flex-1 overflow-hidden rounded-xl md:min-h-40"
               style={{
                 background: "url('https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&h=600&fit=crop') center/cover",
               }}
@@ -99,7 +101,7 @@ export function FeaturesSection({ t }: FeaturesProps) {
           </div>
 
           {/* Card 3 — Family (col 1-2, row 2) — dark */}
-          <div className="relative overflow-hidden rounded-[22px] border-0 bg-gray-900 p-9 text-white md:col-span-2">
+          <div className="relative overflow-hidden rounded-[22px] border-0 bg-gray-900 p-6 text-white md:col-span-2 md:p-9">
             <h3 className="mb-2.5 font-display text-2xl font-semibold tracking-[-0.25px] text-white">
               {t.card3.title}
             </h3>
@@ -129,7 +131,7 @@ export function FeaturesSection({ t }: FeaturesProps) {
           </div>
 
           {/* Card 4 — Shopping list (col 3-4, row 2) — teal */}
-          <div className="relative overflow-hidden rounded-[22px] border-0 bg-primary p-9 text-white md:col-span-2">
+          <div className="relative overflow-hidden rounded-[22px] border-0 bg-primary p-6 text-white md:col-span-2 md:p-9">
             <h3 className="mb-2.5 font-display text-2xl font-semibold tracking-[-0.25px] text-white">
               {t.card4.title}
             </h3>
@@ -168,17 +170,17 @@ export function FeaturesSection({ t }: FeaturesProps) {
           </div>
 
           {/* Card 5 — Swap (col 5-6, row 2) */}
-          <div className="relative overflow-hidden rounded-[22px] border border-border bg-white p-9 md:col-span-2">
+          <div className="relative overflow-hidden rounded-[22px] border border-border bg-white p-6 md:col-span-2 md:p-9">
             <h3 className="mb-2.5 font-display text-2xl font-semibold tracking-[-0.25px] text-gray-900">
               {t.card5.title}
             </h3>
             <p className="text-[14px] text-muted-foreground">{t.card5.sub}</p>
-            <div className="mt-5 flex items-center gap-3">
+            <div className="mt-5 flex flex-col items-center gap-2.5 lg:flex-row lg:items-center lg:gap-3">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-3 py-2 text-[12px] font-semibold">
                 <span className="text-red-500">✕</span>
                 Spaghetti carbonara
               </div>
-              <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+              <ArrowRight className="size-4 shrink-0 rotate-90 text-muted-foreground lg:rotate-0" />
               <div className="inline-flex items-center gap-1.5 rounded-full bg-[#22c55e] px-3 py-2 text-[12px] font-semibold text-white">
                 ✓ Grilled salmon bowl
               </div>

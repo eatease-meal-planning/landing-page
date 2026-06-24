@@ -7,14 +7,14 @@ interface HeroProps {
 
 export function HeroSection({ t }: HeroProps) {
   return (
-    <header className="relative overflow-hidden pb-0 pt-20">
-      {/* Subtle teal radial glow */}
+    <header className="relative overflow-hidden pb-16 pt-20 lg:pb-0">
+      {/* Subtle teal radial glow — anchored to the hero's full height (bottom: 0) and
+          stretched to the right edge so its box boundary never shows as a hard vertical
+          seam on tall (mobile) layouts. */}
       <div
         className="pointer-events-none absolute z-0"
         style={{
-          inset: "-10% 50% auto -20%",
-          height: "800px",
-          width: "90%",
+          inset: "-10% 0 0 -20%",
           background: "radial-gradient(circle at 30% 50%, rgba(20,184,166,0.10), transparent 55%)",
         }}
       />
@@ -23,7 +23,7 @@ export function HeroSection({ t }: HeroProps) {
         <div className="grid grid-cols-1 items-center gap-14 lg:[grid-template-columns:1.05fr_1fr]">
 
           {/* ── Left column ────────────────────────────────────── */}
-          <div>
+          <div className="text-center lg:text-left">
             {/* Eyebrow badge */}
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-100 bg-accent px-3 py-1.5 text-[12px] font-semibold text-accent-foreground">
               <Sparkles className="size-3" />
@@ -38,12 +38,12 @@ export function HeroSection({ t }: HeroProps) {
               <em className="not-italic font-medium text-accent-foreground">{t.headlineLine2}</em>
             </h1>
 
-            <p className="mb-9 max-w-135 text-xl leading-[1.55] text-muted-foreground">
+            <p className="mb-9 max-w-135 text-xl leading-[1.55] text-muted-foreground mx-auto lg:mx-0">
               {t.description}
             </p>
 
-            {/* App store buttons + "how it works" link */}
-            <div className="flex flex-wrap items-center gap-3">
+            {/* App store buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
               {/* Apple App Store */}
               <a
                 href="#"
@@ -76,19 +76,19 @@ export function HeroSection({ t }: HeroProps) {
                   <span className="block text-[17px] font-semibold">Google Play</span>
                 </span>
               </a>
-
-              {/* How it works link */}
-              <a
-                href="#how"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground"
-              >
-                {t.seeHow}
-                <ArrowRight className="size-4" />
-              </a>
             </div>
 
+            {/* How it works link — always on its own line, below the store buttons */}
+            <a
+              href="#how"
+              className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground"
+            >
+              {t.seeHow}
+              <ArrowRight className="size-4" />
+            </a>
+
             {/* Stats row */}
-            <div className="mt-12 flex flex-wrap gap-9 border-t border-border pt-8">
+            <div className="mt-12 flex flex-wrap justify-center gap-9 border-t border-border pt-8 lg:justify-start">
               {[
                 { n: t.stat1Value, l: t.stat1Label },
                 { n: t.stat2Value, l: t.stat2Label },
@@ -105,10 +105,10 @@ export function HeroSection({ t }: HeroProps) {
           </div>
 
           {/* ── Right column — phone mockup ────────────────────── */}
-          <div className="relative hidden lg:block" style={{ perspective: "1200px" }}>
+          <div className="relative" style={{ perspective: "1200px" }}>
             {/* Float card 1 — top left */}
             <div
-              className="absolute left-10 top-25 z-10 flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5"
+              className="absolute left-10 top-25 z-10 hidden items-center gap-3 rounded-2xl bg-white px-4 py-3.5 lg:flex"
               style={{ boxShadow: "0 20px 40px -10px rgba(17,24,39,0.15), 0 8px 16px -8px rgba(17,24,39,0.1)" }}
             >
               <div className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-[#22c55e] text-white">
@@ -120,16 +120,18 @@ export function HeroSection({ t }: HeroProps) {
               </div>
             </div>
 
+            {/* Phone scale wrapper — shrinks the fixed 360×740 mockup to fit small screens.
+                Negative margins collapse the empty space left by the scale transform. */}
+            <div className="origin-top scale-[0.7] -mb-[222px] sm:scale-[0.85] sm:-mb-[111px] md:scale-95 md:-mb-[37px] lg:scale-100 lg:mb-0">
             {/* Phone shell */}
             <div
-              className="relative mx-auto"
+              className="relative mx-auto lg:[transform:rotateY(-6deg)_rotateX(2deg)]"
               style={{
                 width: 360, height: 740,
                 background: "#111827",
                 borderRadius: 44,
                 padding: 8,
                 boxShadow: "0 40px 80px -20px rgba(20,184,166,0.18), 0 30px 60px -30px rgba(17,24,39,0.45)",
-                transform: "rotateY(-6deg) rotateX(2deg)",
               }}
             >
               {/* Dynamic island / notch */}
@@ -228,7 +230,7 @@ export function HeroSection({ t }: HeroProps) {
                     style={{ gridTemplateColumns: "78px 1fr", boxShadow: "0 4px 8px rgba(17,24,39,0.10)" }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img} alt={title} className="size-full object-cover" />
+                    <img src={img} alt={title} loading="lazy" decoding="async" className="size-full object-cover" />
                     <div className="px-2.5 py-2">
                       <div className="flex items-center gap-1.5">
                         <span
@@ -246,10 +248,11 @@ export function HeroSection({ t }: HeroProps) {
                 ))}
               </div>
             </div>
+            </div>
 
             {/* Float card 2 — bottom right */}
             <div
-              className="absolute bottom-25 right-10 z-10 flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5"
+              className="absolute bottom-25 right-10 z-10 hidden items-center gap-3 rounded-2xl bg-white px-4 py-3.5 lg:flex"
               style={{ boxShadow: "0 20px 40px -10px rgba(17,24,39,0.15), 0 8px 16px -8px rgba(17,24,39,0.1)" }}
             >
               <div className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-accent">

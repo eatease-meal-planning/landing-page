@@ -21,7 +21,7 @@ export function CtaSection({ t, tForm, locale }: CtaProps) {
   return (
     <section
       id="cta"
-      className="py-30 text-center text-white"
+      className="py-20 text-center text-white md:py-30"
       style={{
         background: "radial-gradient(circle at 50% 100%, rgba(20,184,166,0.18), transparent 50%), #111827",
       }}

@@ -19,12 +19,12 @@ export function Footer({ t, locale }: FooterProps) {
             alt="Eatease — Time saved, meals made!"
             width={2046}
             height={605}
-            className="block h-44 w-auto brightness-0 invert opacity-90 mx-auto"
+            className="block h-24 w-auto brightness-0 invert opacity-90 mx-auto md:h-36 lg:h-44"
           />
         </div>
 
         {/* Link columns */}
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-10">
           <div>
             <h4 className="mb-4 text-[13px] font-semibold text-white">{t.col1}</h4>
             <ul className="flex flex-col gap-2.5">

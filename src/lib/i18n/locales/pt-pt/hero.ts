@@ -26,8 +26,8 @@ export const hero = {
   floatCard1Sub:   "21 refeições",
   floatCard2Title: "Lista de compras pronta",
   floatCard2Sub:   "Ordenada por corredor da loja",
-  appStorePre:     "Descarregar na",
-  appStoreAriaLabel: "Descarregar na App Store",
-  googlePlayPre:   "Disponível no",
-  googlePlayAriaLabel: "Disponível no Google Play",
+  appStorePre:     "Brevemente na",
+  appStoreAriaLabel: "Brevemente na App Store",
+  googlePlayPre:   "Brevemente no",
+  googlePlayAriaLabel: "Brevemente no Google Play",
 };
