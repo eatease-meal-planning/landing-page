@@ -50,3 +50,7 @@ next-env.d.ts
 GEMINI.md
 /.claude
 CLAUDE.md
+
+# others
+mobile-implementation.md
+nextjs-project-checklist.md
