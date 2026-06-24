@@ -19,5 +19,6 @@ export const footer = {
   "copyright": "Alle rechten voorbehouden.",
   "madeWith": "Gemaakt met zorg voor hongerige gezinnen.",
   "createdBy": "Gemaakt door",
-  "cookiePreferences": "Toestemmingsvoorkeuren"
+  "cookiePreferences": "Toestemmingsvoorkeuren",
+  "cookiePolicy": "Cookies"
 };

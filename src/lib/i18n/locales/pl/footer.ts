@@ -19,5 +19,6 @@ export const footer = {
   "copyright": "Wszelkie prawa zastrzeżone.",
   "madeWith": "Zrobione z troską dla głodnych rodzin.",
   "createdBy": "Stworzone przez",
-  "cookiePreferences": "Preferencje Zgody"
+  "cookiePreferences": "Preferencje Zgody",
+  "cookiePolicy": "Pliki cookie"
 };

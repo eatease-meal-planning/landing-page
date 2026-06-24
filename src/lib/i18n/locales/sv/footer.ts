@@ -19,5 +19,6 @@ export const footer = {
   "copyright": "Alla rättigheter förbehållna.",
   "madeWith": "Gjort med omsorg för hungriga familjer.",
   "createdBy": "Skapad av",
-  "cookiePreferences": "Samtyckesinställningar"
+  "cookiePreferences": "Samtyckesinställningar",
+  "cookiePolicy": "Cookies"
 };

@@ -12,6 +12,7 @@ import { emails } from "./emails";
 import { legal } from "./legal";
 import { privacyPolicy } from "./privacyPolicy";
 import { termsOfUse } from "./termsOfUse";
+import { cookiePolicy } from "./cookiePolicy";
 
 export const en = {
   nav,
@@ -28,4 +29,5 @@ export const en = {
   legal,
   privacyPolicy,
   termsOfUse,
+  cookiePolicy,
 };

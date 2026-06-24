@@ -19,5 +19,6 @@ export const footer = {
   "copyright": "Toate drepturile rezervate.",
   "madeWith": "Făcut cu grijă pentru familiile flămânde.",
   "createdBy": "Creat de",
-  "cookiePreferences": "Preferințe Consimțământ"
+  "cookiePreferences": "Preferințe Consimțământ",
+  "cookiePolicy": "Cookie-uri"
 };

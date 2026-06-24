@@ -8,6 +8,7 @@ export type PolicyBlock =
   | { type: "inShort"; text: string }
   | { type: "subheading"; text: string }
   | { type: "list"; items: string[] }
+  | { type: "linkList"; items: { label: string; href: string }[] }
   | { type: "table"; headers: string[]; rows: string[][] };
 
 export interface PolicySection {

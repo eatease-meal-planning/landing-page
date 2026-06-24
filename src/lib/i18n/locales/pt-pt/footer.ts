@@ -19,5 +19,6 @@ export const footer = {
   copyright:     "Todos os direitos reservados.",
   madeWith:      "Feito para o seu dia-a-dia agitado.",
   createdBy:     "Criado por",
-  "cookiePreferences": "Preferências de Consentimento"
+  "cookiePreferences": "Preferências de Consentimento",
+  "cookiePolicy": "Cookies"
 };

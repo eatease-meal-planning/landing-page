@@ -19,5 +19,6 @@ export const footer = {
   "copyright": "Tous droits réservés.",
   "madeWith": "Fait avec soin pour les familles affamées.",
   "createdBy": "Créé par",
-  "cookiePreferences": "Préférences de Consentement"
+  "cookiePreferences": "Préférences de Consentement",
+  "cookiePolicy": "Cookies"
 };
