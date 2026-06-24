@@ -87,7 +87,7 @@ export function ContactForm({ t, locale }: { t: FormT; locale: string }) {
           autoComplete="given-name"
           placeholder={t.namePlaceholder}
           disabled={state === "loading"}
-          className="h-11 rounded-md border border-white/15 bg-white/5 px-3.5 text-sm text-white placeholder:text-white/40 outline-none transition-[border-color,box-shadow] duration-[150ms] focus:border-primary focus:ring-3 focus:ring-primary/30 disabled:opacity-50"
+          className="h-11 rounded-md border border-white/15 bg-white/5 px-3.5 text-sm text-white placeholder:text-white/40 outline-none transition-[border-color,box-shadow] duration-150ms focus:border-primary focus:ring-3 focus:ring-primary/30 disabled:opacity-50"
         />
       </div>
 
@@ -103,7 +103,7 @@ export function ContactForm({ t, locale }: { t: FormT; locale: string }) {
           autoComplete="email"
           placeholder="email@exemplo.com"
           disabled={state === "loading"}
-          className="h-11 rounded-md border border-white/15 bg-white/5 px-3.5 text-sm text-white placeholder:text-white/40 outline-none transition-[border-color,box-shadow] duration-[150ms] focus:border-primary focus:ring-3 focus:ring-primary/30 disabled:opacity-50"
+          className="h-11 rounded-md border border-white/15 bg-white/5 px-3.5 text-sm text-white placeholder:text-white/40 outline-none transition-[border-color,box-shadow] duration-150ms focus:border-primary focus:ring-3 focus:ring-primary/30 disabled:opacity-50"
         />
       </div>
 
@@ -127,7 +127,7 @@ export function ContactForm({ t, locale }: { t: FormT; locale: string }) {
       <button
         type="submit"
         disabled={state === "loading"}
-        className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-pill bg-primary px-6 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-[150ms] hover:bg-teal-600 hover:-translate-y-px active:translate-y-0 disabled:pointer-events-none disabled:opacity-60"
+        className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-pill bg-primary px-6 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-150ms hover:bg-teal-600 hover:-translate-y-px active:translate-y-0 disabled:pointer-events-none disabled:opacity-60"
       >
         {state === "loading" ? (
           <>

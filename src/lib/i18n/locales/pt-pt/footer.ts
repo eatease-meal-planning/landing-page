@@ -11,12 +11,13 @@ export const footer = {
   col3:          "Suporte",
   helpCenter:    "Centro de ajuda",
   privacy:       "Privacidade",
-  terms:         "Termos",
+  terms:         "Termos de Uso",
   contact:       "Contacto",
   col4:          "Download",
-  iosStore:      "iOS · App Store",
-  androidStore:  "Android · Google Play",
+  iosStore:      "iOS ",
+  androidStore:  "Android",
   copyright:     "Todos os direitos reservados.",
   madeWith:      "Feito para o seu dia-a-dia agitado.",
   createdBy:     "Criado por",
+  "cookiePreferences": "Preferências de Consentimento"
 };

@@ -18,5 +18,6 @@ export const footer = {
   "androidStore": "Android · Google Play",
   "copyright": "Toate drepturile rezervate.",
   "madeWith": "Făcut cu grijă pentru familiile flămânde.",
-  "createdBy": "Creat de"
+  "createdBy": "Creat de",
+  "cookiePreferences": "Preferințe Consimțământ"
 };

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import TermlyCMP from '@/components/TermlyCMP'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +18,8 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
 });
+
+const WEBSITE_UUID = process.env.TERMLY_UUID!
 
 export const metadata: Metadata = {
   title: "EatEase — Time saved, meals made.",
@@ -35,7 +38,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <TermlyCMP websiteUUID={WEBSITE_UUID} />
+        {children}
+      </body>
     </html>
   );
 }

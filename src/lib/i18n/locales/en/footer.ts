@@ -18,5 +18,6 @@ export const footer = {
   "androidStore": "Android · Google Play",
   "copyright": "All rights reserved.",
   "madeWith": "Made with care for hungry families.",
-  "createdBy": "Built by"
+  "createdBy": "Built by",
+  "cookiePreferences": "Consent Preferences"
 };

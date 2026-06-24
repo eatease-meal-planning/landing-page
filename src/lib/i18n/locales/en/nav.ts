@@ -1,6 +1,6 @@
 export const nav = {
   "howItWorks": "How it works",
   "features": "Features",
-  "pricing": "Pricing",
+  "aboutUs": "Pricing",
   "joinWaitlist": "Join waitlist"
 };

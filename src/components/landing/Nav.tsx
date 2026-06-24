@@ -54,8 +54,8 @@ export function Nav({ locale, t }: NavProps) {
           <a href={`/${locale}#features`} className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
             {t.features}
           </a>
-          <a href={`/${locale}#cta`} className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
-            {t.pricing}
+          <a href={`/${locale}/about-us`} className="hidden text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground md:block">
+            {t.aboutUs}
           </a>
 
           {/* Language switcher */}
