@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import TermlyCMP from '@/components/TermlyCMP'
 
 const geistSans = Geist({
@@ -39,7 +40,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <TermlyCMP websiteUUID={WEBSITE_UUID} />
+        <Suspense fallback={null}>
+          <TermlyCMP websiteUUID={WEBSITE_UUID} />
+        </Suspense>
         {children}
       </body>
     </html>

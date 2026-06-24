@@ -1,44 +1,54 @@
-{
-  "event_message": "relation \"supabase_migrations.schema_migrations\" does not exist",
-  "id": "a4f7a83d-e6d0-429e-8719-78f23accd127",
-  "metadata": [
-    {
-      "file": null,
-      "host": "db-ukbghgashamgmhxjgyyr",
-      "metadata": [],
-      "parsed": [
-        {
-          "application_name": "supabase/dashboard",
-          "backend_type": "client backend",
-          "command_tag": "SELECT",
-          "connection_from": "2a05:d018:1e14:201:41a0:90fe:99d7:ebc5:37668",
-          "context": null,
-          "database_name": "postgres",
-          "detail": null,
-          "error_severity": "ERROR",
-          "hint": null,
-          "internal_query": null,
-          "internal_query_pos": null,
-          "leader_pid": null,
-          "location": null,
-          "process_id": 300887,
-          "query": "SET statement_timeout='58s'; SET idle_session_timeout='58s';\n    select\n      *\n    from supabase_migrations.schema_migrations sm\n    order by sm.version desc\n  \n\n-- source: dashboard\n-- user: session:d6c0a6b1-85a5-49a3-b601-30f3c1157d9f\n-- date: 2026-06-13T16:03:02.764Z",
-          "query_id": 0,
-          "query_pos": 90,
-          "session_id": "6a2d7f36.49757",
-          "session_line_num": 4,
-          "session_start_time": "2026-06-13 16:03:02 UTC",
-          "sql_state_code": "42P01",
-          "timestamp": "2026-06-13 16:03:02.806 UTC",
-          "transaction_id": 0,
-          "user_name": "postgres",
-          "virtual_transaction_id": "27/1024"
-        }
-      ],
-      "parsed_from": null,
-      "project": null,
-      "source_type": null
-    }
-  ],
-  "timestamp": 1781366582806000
-}
+vercel deployment log:
+"11:02:00.535 Running build in Washington, D.C., USA (East) – iad1
+11:02:00.536 Build machine configuration: 2 cores, 8 GB
+11:02:00.550 Cloning github.com/eatease-meal-planning/landing-page (Branch: main, Commit: 6a326d6)
+11:02:00.551 Skipping build cache, deployment was triggered without cache.
+11:02:00.867 Cloning completed: 317.000ms
+11:02:01.263 Running "vercel build"
+11:02:01.286 Vercel CLI 54.14.0
+11:02:01.636 Installing dependencies...
+11:02:07.259 npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+11:02:07.282 npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+11:02:07.780 npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+11:02:19.329 
+11:02:19.330 added 746 packages in 18s
+11:02:19.331 
+11:02:19.332 247 packages are looking for funding
+11:02:19.332   run `npm fund` for details
+11:02:19.677 Detected Next.js version: 16.2.6
+11:02:19.689 Running "npm run build"
+11:02:19.909 
+11:02:19.910 > landing-page@0.1.0 build
+11:02:19.910 > next build
+11:02:19.910 
+11:02:20.814   Applying modifyConfig from Vercel
+11:02:20.834 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+11:02:20.835 This information is used to shape Next.js' roadmap and prioritize features.
+11:02:20.835 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+11:02:20.836 https://nextjs.org/telemetry
+11:02:20.836 
+11:02:20.940 ▲ Next.js 16.2.6 (Turbopack)
+11:02:20.941 
+11:02:21.071   Creating an optimized production build ...
+11:02:32.322 ✓ Compiled successfully in 10.8s
+11:02:32.325   Running TypeScript ...
+11:02:37.768   Finished TypeScript in 5.4s ...
+11:02:37.775   Collecting page data using 1 worker ...
+11:02:38.290   Generating static pages using 1 worker (0/5) ...
+11:02:38.325   Generating static pages using 1 worker (1/5) 
+11:02:38.327   Generating static pages using 1 worker (2/5) 
+11:02:38.389 ⨯ useSearchParams() should be wrapped in a suspense boundary at page "/404". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+11:02:38.391     at S (/vercel/path0/.next/server/chunks/ssr/node_modules_next_0w2y7fz._.js:2:2692)
+11:02:38.391     at r (/vercel/path0/.next/server/chunks/ssr/node_modules_next_0w2y7fz._.js:4:6760)
+11:02:38.391     at /vercel/path0/.next/server/chunks/ssr/[root-of-the-server]__0u~ef36._.js:1:4596
+11:02:38.391     at an (/vercel/path0/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:84267)
+11:02:38.391     at ai (/vercel/path0/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:86086)
+11:02:38.391     at ai (/vercel/path0/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:104615)
+11:02:38.392     at al (/vercel/path0/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:107860)
+11:02:38.392     at ao (/vercel/path0/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:105275)
+11:02:38.392     at am (/vercel/path0/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:112789)
+11:02:38.392     at au (/vercel/path0/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:109892)
+11:02:38.393 Error occurred prerendering page "/_not-found". Read more: https://nextjs.org/docs/messages/prerender-error
+11:02:38.393 Export encountered an error on /_not-found/page: /_not-found, exiting the build.
+11:02:38.408 ⨯ Next.js build worker exited with code: 1 and signal: null
+11:02:38.470 Error: Command "npm run build" exited with 1"
