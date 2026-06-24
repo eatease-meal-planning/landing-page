@@ -209,19 +209,19 @@ export function HeroSection({ t }: HeroProps) {
                     img: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=200&h=200&fit=crop",
                     gradient: "linear-gradient(135deg,#f59e0b,#ea580c)",
                     label: t.appMealBreakfast, meta: "5 min · 1 serv", score: "82%",
-                    title: "Overnight oats with banana & almonds",
+                    title: t.appMeal1Title,
                   },
                   {
                     img: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=200&h=200&fit=crop",
                     gradient: "linear-gradient(135deg,#3b82f6,#6366f1)",
                     label: t.appMealLunch, meta: "30 min · 4 serv", score: "78%",
-                    title: "Mediterranean grilled chicken & quinoa",
+                    title: t.appMeal2Title,
                   },
                   {
                     img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=200&h=200&fit=crop",
                     gradient: "linear-gradient(135deg,#a855f7,#ec4899)",
                     label: t.appMealDinner, meta: "25 min · 2 serv", score: "91%",
-                    title: "Pan-seared salmon, roasted vegetables",
+                    title: t.appMeal3Title,
                   },
                 ].map(({ img, gradient, label, meta, score, title }) => (
                   <div

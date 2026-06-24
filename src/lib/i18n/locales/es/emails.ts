@@ -1,17 +1,17 @@
 export const emails = {
-  "teamName": "El equipo de EatEase",
-  "welcome": {
-    "subject": "¡Bienvenido a EatEase!",
-    "greeting": "Hola {name},",
-    "body": "Tu registro está confirmado. Serás de los primeros en saber cuándo lanzamos.",
-    "signOff": "Un cordial saludo,"
+  teamName: "El equipo Eatease",
+  welcome: {
+    subject:  "¡Bienvenido a Eatease!",
+    greeting: "Hola {name},",
+    body:     "¡Gracias por registrarte! Estamos ultimando los detalles para el lanzamiento de nuestra App, así serás uno de los primeros en poder usar nuestro servicio.",
+    signOff:  "Hasta pronto,",
   },
-  "confirmation": {
-    "greeting": "Hola {name},",
-    "subject": "Confirma tu lugar en la lista de espera de EatEase",
-    "intro": "¡Gracias por registrarte! Haz clic en el botón de abajo para confirmar tu dirección de correo y asegurar tu lugar en la lista de espera.",
-    "cta": "Confirmar mi registro",
-    "expiresNote": "Este enlace expira en 48 horas.",
-    "signOff": "Un cordial saludo,"
-  }
+  confirmation: {
+    subject:     "Confirma tu registro",
+    greeting:    "Hola {name},",
+    intro:       "Haz clic en el botón de abajo para concluir tu registro. ¡Estás a un paso de empezar a ahorrar tu valioso tiempo!",
+    cta:         "Confirmar mi registro",
+    expiresNote: "Este enlace caduca en 48 horas.",
+    signOff:     "Hasta pronto,",
+  },
 };

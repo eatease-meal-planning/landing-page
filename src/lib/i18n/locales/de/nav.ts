@@ -1,8 +1,8 @@
 export const nav = {
-  "howItWorks": "So funktioniert's",
-  "features": "Funktionen",
-  "aboutUs": "Preise",
-  "joinWaitlist": "Warteliste beitreten",
-  "openMenu": "Menü öffnen",
-  "closeMenu": "Menü schließen"
+  howItWorks:  "Wie es funktioniert",
+  features:    "Funktionen",
+  aboutUs:     "Über uns",
+  joinWaitlist: "Auf die Liste",
+  openMenu:    "Menü öffnen",
+  closeMenu:   "Menü schließen",
 };

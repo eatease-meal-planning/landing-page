@@ -1,19 +1,7 @@
 export const testimonials = {
-  "eyebrow": "Waarom mensen blijven",
-  "title": "\"Ik heb al maanden niet meer gegoogeld 'wat maak ik vanavond'.\"",
-  "q1": {
-    "text": "\"Mijn partner is aan het bulken en ik zit in de cut. Zelfde diner, verschillende porties, we halen allebei onze macro's. Wekelijkse mentale belasting — weg.\"",
-    "name": "Sarah K.",
-    "location": "Lissabon, PT"
-  },
-  "q2": {
-    "text": "\"Koelkast fotograferen is dé killer-functie. Zondagavond, een halve zak spinazie, twee eieren, restje rijst — drie echte receptideeën in tien seconden.\"",
-    "name": "Diego M.",
-    "location": "Madrid, ES"
-  },
-  "q3": {
-    "text": "\"De boodschappenlijst alleen al is het waard. Vroeger besteedde ik op zondag een uur aan het schrijven ervan. Nu kruis ik alleen maar af terwijl ik door de winkel loop.\"",
-    "name": "Lena P.",
-    "location": "Amsterdam, NL"
-  }
+  eyebrow: "Waarom mensen blijven",
+  title:   '"Ik heb in maanden niet hoeven zoeken naar \'wat eten we vanavond\'."',
+  q1: { text: '"Mijn partner wil aankomen en ik wil afvallen. Hetzelfde diner, verschillende porties, en we halen allebei onze macro\'s. De wekelijkse mentale belasting is volledig weggenomen."', name: "Sarah K.", location: "Lissabon, PT" },
+  q2: { text: '"De koelkast fotograferen is een geweldige functie. Zondagavond, een halve zak spinazie, twee eieren, wat overgebleven rijst — drie ideeën voor echte recepten in tien seconden."', name: "Diego M.", location: "Madrid, ES" },
+  q3: { text: '"Alleen al de boodschappenlijst is het waard. Ik was op zondag vaak een uur bezig met het schrijven ervan. Nu vink ik de dingen gewoon af terwijl ik door de winkel loop."', name: "Lena P.", location: "Amsterdam, NL" },
 };

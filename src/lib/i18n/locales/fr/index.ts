@@ -15,19 +15,5 @@ import { termsOfUse } from "../en/termsOfUse";
 import { cookiePolicy } from "../en/cookiePolicy";
 
 export const fr = {
-  nav,
-  hero,
-  howItWorks,
-  features,
-  testimonials,
-  cta,
-  aboutUs,
-  footer,
-  form,
-  pages,
-  emails,
-  legal,
-  privacyPolicy,
-  termsOfUse,
-  cookiePolicy,
+  nav, hero, howItWorks, features, testimonials, cta, aboutUs, footer, form, pages, emails, legal, privacyPolicy, termsOfUse, cookiePolicy,
 };

@@ -138,9 +138,9 @@ export function FeaturesSection({ t }: FeaturesProps) {
             <p className="mb-4 text-[14px] text-white/85">{t.card4.sub}</p>
             <div className="rounded-xl p-3.5" style={{ background: "rgba(255,255,255,0.12)" }}>
               {[
-                { name: "Chicken breast", qty: "600g", done: true },
-                { name: "Cherry tomatoes", qty: "250g", done: false },
-                { name: "Quinoa", qty: "300g", done: false },
+                { name: t.card4Item1, qty: "600g", done: true },
+                { name: t.card4Item2, qty: "250g", done: false },
+                { name: t.card4Item3, qty: "300g", done: false },
               ].map(({ name, qty, done }) => (
                 <div
                   key={name}
@@ -178,11 +178,11 @@ export function FeaturesSection({ t }: FeaturesProps) {
             <div className="mt-5 flex flex-col items-center gap-2.5 lg:flex-row lg:items-center lg:gap-3">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-3 py-2 text-[12px] font-semibold">
                 <span className="text-red-500">✕</span>
-                Spaghetti carbonara
+                {t.card5Meal1}
               </div>
               <ArrowRight className="size-4 shrink-0 rotate-90 text-muted-foreground lg:rotate-0" />
               <div className="inline-flex items-center gap-1.5 rounded-full bg-[#22c55e] px-3 py-2 text-[12px] font-semibold text-white">
-                ✓ Grilled salmon bowl
+                ✓ {t.card5Meal2}
               </div>
             </div>
           </div>

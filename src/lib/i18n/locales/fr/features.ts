@@ -1,36 +1,14 @@
 export const features = {
-  "eyebrow": "Ce qui est inclus",
-  "title": "Conçu pour de vrais repas, de vraies personnes, de vraies soirées de semaine.",
-  "card1": {
-    "title": "Des macros qui correspondent à vos objectifs.",
-    "sub": "Un scoring basé sur l'AMDR ajuste chaque recette à votre objectif — perte de poids, maintien ou prise de muscle.",
-    "calories": "Calories",
-    "protein": "Protéines",
-    "carbs": "Glucides",
-    "fat": "Lipides"
-  },
-  "card2": {
-    "title": "Photographiez votre frigo, cuisinez ce que vous avez.",
-    "sub": "Photographiez ce qu'il y a dedans. EatEase identifie les ingrédients et suggère des recettes pour ce soir.",
-    "ingredient1": "Épinards",
-    "ingredient2": "Tomates",
-    "ingredient3": "Saumon",
-    "ingredient4": "Citron"
-  },
-  "card3": {
-    "title": "Planifiez toute la semaine, à votre façon.",
-    "sub": "Un plan hebdomadaire personnalisé pour toute la famille — ou juste vous — avec la bonne portion pour chacun.",
-    "memberYou": "Vous",
-    "memberSpouse": "Conjoint(e)",
-    "memberDaughter": "Fille",
-    "memberSon": "Fils"
-  },
-  "card4": {
-    "title": "Une liste de courses, chaque rayon.",
-    "sub": "Les ingrédients de 21 repas s'agrègent en une seule liste triée par magasin."
-  },
-  "card5": {
-    "title": "Cette recette ne vous convient pas ? Échangez-la.",
-    "sub": "Appuyez sur un repas pour voir des alternatives notées. Nous rééquilibrons le reste de la semaine."
-  }
+  eyebrow: "Fonctionnalités",
+  title:   "Une seule application, plusieurs fonctions, toutes pour faciliter votre quotidien !",
+  card1: { title: "Des macros qui correspondent à vos objectifs.", sub: "Notre service utilise des algorithmes avancés pour calculer les calories et les macros dont vous avez besoin, en fonction de vos données et de votre objectif - que ce soit pour perdre du poids, vous maintenir ou gagner du muscle.", calories: "Calories", protein: "Protéines", carbs: "Glucides", fat: "Lipides" },
+  card2: { title: "Évitez le gaspillage.", sub: "Photographiez les ingrédients que vous avez déjà dans le réfrigérateur. Notre service les identifie et suggère des recettes que vous pouvez faire sur-le-champ.", ingredient1: "Laitue", ingredient2: "Poivron jaune", ingredient3: "Laitue rouge", ingredient4: "Aubergine" },
+  card3: { title: "Planifiez toute la semaine, à votre façon.", sub: "Un plan hebdomadaire personnalisé pour toute la famille — ou juste pour vous — avec la bonne portion pour chaque personne.", memberYou: "Vous", memberSpouse: "Conjoint(e)", memberDaughter: "Fille", memberSon: "Fils" },
+  card4: { title: "Une seule liste de courses.", sub: "Ingrédients regroupés dans une liste unique." },
+  card5: { title: "Cette recette ne vous dit rien ? Changez-la.", sub: "Appuyez sur n'importe quel repas pour voir des alternatives." },
+  card4Item1: "Blanc de poulet",
+  card4Item2: "Tomates cerises",
+  card4Item3: "Quinoa",
+  card5Meal1: "Spaghettis à la carbonara",
+  card5Meal2: "Bowl de saumon grillé",
 };

@@ -1,17 +1,17 @@
 export const emails = {
-  "teamName": "EatEase-teamet",
-  "welcome": {
-    "subject": "Välkommen till EatEase!",
-    "greeting": "Hej {name},",
-    "body": "Din registrering är bekräftad. Du kommer att vara bland de första att få veta när vi lanserar.",
-    "signOff": "Med vänliga hälsningar,"
+  teamName: "Eatease-teamet",
+  welcome: {
+    subject:  "Välkommen till Eatease!",
+    greeting: "Hej {name},",
+    body:     "Tack för din registrering! Vi håller på att finslipa de sista detaljerna inför lanseringen av vår app, så du kommer att bli en av de första som får använda vår tjänst.",
+    signOff:  "Vi ses snart,",
   },
-  "confirmation": {
-    "greeting": "Hej {name},",
-    "subject": "Bekräfta din plats på EatEase-väntelistan",
-    "intro": "Tack för din registrering! Klicka på knappen nedan för att bekräfta din e-postadress och säkra din plats på väntelistan.",
-    "cta": "Bekräfta min registrering",
-    "expiresNote": "Den här länken går ut om 48 timmar.",
-    "signOff": "Med vänliga hälsningar,"
-  }
+  confirmation: {
+    subject:     "Bekräfta din registrering",
+    greeting:    "Hej {name},",
+    intro:       "Klicka på knappen nedan för att slutföra din registrering. Du är bara ett steg ifrån att börja spara din värdefulla tid!",
+    cta:         "Bekräfta min registrering",
+    expiresNote: "Denna länk löper ut om 48 timmar.",
+    signOff:     "Vi ses snart,",
+  },
 };

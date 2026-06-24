@@ -1,17 +1,17 @@
 export const emails = {
-  "teamName": "Het EatEase-team",
-  "welcome": {
-    "subject": "Welkom bij EatEase!",
-    "greeting": "Hallo {name},",
-    "body": "Jouw registratie is bevestigd. Je bent een van de eersten die het weet wanneer we lanceren.",
-    "signOff": "Met vriendelijke groet,"
+  teamName: "Het Eatease team",
+  welcome: {
+    subject:  "Welkom bij Eatease!",
+    greeting: "Hallo {name},",
+    body:     "Bedankt voor je aanmelding! We leggen de laatste hand aan de lancering van onze app, dus je bent een van de eersten die onze service kan gebruiken.",
+    signOff:  "Tot snel,",
   },
-  "confirmation": {
-    "greeting": "Hallo {name},",
-    "subject": "Bevestig je plek op de EatEase-wachtlijst",
-    "intro": "Bedankt voor je aanmelding! Klik op de knop hieronder om je e-mailadres te bevestigen en je plek op de wachtlijst te reserveren.",
-    "cta": "Mijn registratie bevestigen",
-    "expiresNote": "Deze link verloopt over 48 uur.",
-    "signOff": "Met vriendelijke groet,"
-  }
+  confirmation: {
+    subject:     "Bevestig je aanmelding",
+    greeting:    "Hallo {name},",
+    intro:       "Klik op de onderstaande knop om je registratie te voltooien. Je bent nog maar één stap verwijderd van het besparen van je kostbare tijd!",
+    cta:         "Mijn aanmelding bevestigen",
+    expiresNote: "Deze link verloopt over 48 uur.",
+    signOff:     "Tot snel,",
+  },
 };

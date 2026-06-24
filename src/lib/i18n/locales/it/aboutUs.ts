@@ -1,23 +1,15 @@
 export const aboutUs = {
-  "eyebrow": "Chi siamo",
-  "title": "Tutto è iniziato con una domanda estenuante.",
-  "question": "“Cosa prepariamo per cena?”",
-  "lead": "È la piccola domanda che logora una casa in silenzio. Ripetuta ogni sera, spesso dopo una lunga giornata, quasi sempre davanti a un frigo stanco e senza un piano. Moltiplicala per una settimana, una famiglia, un anno — e il “cosa si mangia stasera?” diventa ore di carico mentale che nessuno ha chiesto.",
-  "story1": "Abbiamo creato EatEase perché lo vivevamo sulla nostra pelle. Pianificare i pasti attorno a ciò che piace a tutti, al tempo che hai davvero e agli obiettivi che insegui non dovrebbe richiedere un foglio di calcolo e un’intera domenica pomeriggio.",
-  "story2": "Così abbiamo realizzato un’app che fa il lavoro pesante: pianifica la tua settimana in base a preferenze e orari reali, adatta ogni ricetta alla tua famiglia e trasforma tutto in un’unica lista della spesa — in pochi secondi, non in ore.",
-  "missionEyebrow": "La nostra missione",
-  "missionTitle": "Restituire tempo alle famiglie.",
-  "missionBody": "Esistiamo per aiutare migliaia di famiglie a dedicare meno tempo a pianificare i pasti della settimana e più tempo a gustarli. Meno stress alle 19, meno sprechi, meno dubbi — solo buoni pasti, in modo semplice.",
-  "value1": {
-    "title": "Prima il tempo",
-    "body": "Ogni funzione si guadagna il suo posto facendoti risparmiare minuti — o ore — ogni settimana."
-  },
-  "value2": {
-    "title": "Vita vera, non diete",
-    "body": "Piani pensati attorno al cibo che ami e al tempo che hai, per tutti a tavola."
-  },
-  "value3": {
-    "title": "Meno sprechi",
-    "body": "Cucina con ciò che hai già e compra solo ciò che userai davvero."
-  }
+  eyebrow:        "Chi siamo",
+  title:          "Tutto è iniziato con una semplice domanda.",
+  question:       "“Cosa facciamo oggi per cena?”",
+  lead:           "Sì, è un enorme logorio mentale, e si arriva a un punto in cui nessuno ha più idee, o semplicemente non c'è voglia di pensarci dopo una lunga giornata di lavoro.",
+  story1:         "Abbiamo creato Eatease perché lo vivevamo sulla nostra pelle. Pianificare i pasti intorno a ciò che piace a ciascuno, al tempo che si ha realmente a disposizione e agli obiettivi che si cercano non dovrebbe richiedere così tanto tempo.",
+  story2:         "Per questo abbiamo realizzato un'app che fa il lavoro pesante e risponde così alla realtà di molte famiglie: pianifica la tua settimana in base a preferenze e orari reali, adatta le porzioni di ogni ricetta alla tua casa e trasforma tutto in un'unica lista della spesa — in pochi secondi, in modo molto pratico e veloce.",
+  missionEyebrow: "La nostra missione",
+  missionTitle:   "Restituire tempo alle famiglie.",
+  missionBody:    "Esistiamo per aiutare migliaia di famiglie a trascorrere meno tempo a pianificare i pasti settimanali e più tempo a goderseli. Meno stress alle 19:00, meno sprechi, meno dubbi — solo buoni pasti, in modo semplice.",
+  value1: { title: "Il tempo prima di tutto", body: "Ogni funzionalità giustifica il suo posto facendoti risparmiare minuti — o ore — ogni settimana." },
+  value2: { title: "Vita reale, non diete", body: "Piani pensati intorno al cibo che ami e al tempo che hai, per tutti a tavola." },
+  value3: { title: "Meno sprechi", body: "Cucina con quello che hai già e compra solo ciò che userai veramente." },
+  closingCta: "Tempo risparmiato, pasti pronti!",
 };

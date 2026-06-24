@@ -1,5 +1,5 @@
 export const footer = {
-  tagline:       "Tempo poupado, refeições feitas.",
+  tagline:       "Tempo poupado, refeições prontas.",
   col1:          "Produto",
   mealPlanning:  "Planeamento de refeições",
   snapFridge:    "Snap Fridge",

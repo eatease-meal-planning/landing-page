@@ -1,23 +1,15 @@
 export const aboutUs = {
-  "eyebrow": "Despre noi",
-  "title": "Totul a început cu o întrebare obositoare.",
-  "question": "„Ce gătim diseară?”",
-  "lead": "Este mica întrebare care epuizează în tăcere o casă. Pusă în fiecare seară, deseori după o zi lungă, aproape mereu în fața unui frigider obosit și fără niciun plan. Înmulțește-o cu o săptămână, o familie, un an — și „ce mâncăm diseară?” se transformă în ore de încărcătură mentală pe care nimeni nu și le-a dorit.",
-  "story1": "Am creat EatEase pentru că îl trăiam noi înșine. Planificarea meselor în jurul a ceea ce le place tuturor, al timpului pe care îl ai cu adevărat și al obiectivelor pe care le urmărești n-ar trebui să ceară un tabel și o după-amiază întreagă de duminică.",
-  "story2": "Așa că am construit o aplicație care face munca grea: îți planifică săptămâna în funcție de preferințe și programe reale, adaptează fiecare rețetă la familia ta și transformă totul într-o singură listă de cumpărături — în secunde, nu în ore.",
-  "missionEyebrow": "Misiunea noastră",
-  "missionTitle": "Să redăm familiilor timpul lor.",
-  "missionBody": "Existăm pentru a ajuta mii de familii să petreacă mai puțin timp planificând mesele săptămânii și mai mult timp bucurându-se de ele. Mai puțin stres la ora 18, mai puțină risipă, mai puține nelămuriri — doar mese bune, simplu.",
-  "value1": {
-    "title": "Timpul, mai întâi",
-    "body": "Fiecare funcție își merită locul economisindu-ți minute — sau ore — în fiecare săptămână."
-  },
-  "value2": {
-    "title": "Viață reală, nu diete",
-    "body": "Planuri gândite în jurul mâncării care îți place și al timpului pe care îl ai, pentru toți cei de la masă."
-  },
-  "value3": {
-    "title": "Mai puțină risipă",
-    "body": "Gătește cu ce ai deja și cumpără doar ce vei folosi cu adevărat."
-  }
+  eyebrow:        "Despre noi",
+  title:          "Totul a început cu o simplă întrebare.",
+  question:       "„Noi ce mâncăm la cină astăzi?”",
+  lead:           "Da, este o povară mentală uriașă și ajungi într-un punct în care nimeni nu mai are idei, sau pur și simplu nu ai chef să te gândești la asta după o zi lungă de muncă.",
+  story1:         "Am creat Eatease pentru că am trăit acest lucru pe pielea noastră. Planificarea meselor în funcție de ceea ce îi place fiecăruia, de timpul de care dispune cu adevărat și de obiectivele urmărite nu ar trebui să necesite atât de mult timp",
+  story2:         "De aceea am creat o aplicație care face munca grea, oferind un răspuns realității multor familii: îți planifică săptămâna pe baza preferințelor și programului real, ajustează porțiile fiecărei rețete pentru casa ta și transformă totul într-o singură listă de cumpărături — în câteva secunde, totul într-un mod foarte practic și rapid.",
+  missionEyebrow: "Misiunea noastră",
+  missionTitle:   "Să redăm timpul familiilor.",
+  missionBody:    "Existăm pentru a ajuta mii de familii să petreacă mai puțin timp planificând mesele săptămânale și mai mult timp bucurându-se de ele. Mai puțin stres la ora 19:00, mai puțină risipă, mai puține îndoieli — doar mese bune, simplu.",
+  value1: { title: "Timpul pe primul loc",      body: "Fiecare funcționalitate își justifică locul pentru că îți economisește minute — sau ore — în fiecare săptămână." },
+  value2: { title: "Viață reală, nu diete", body: "Planuri gândite în jurul mâncării care îți place și a timpului pe care îl ai, pentru toți cei de la masă." },
+  value3: { title: "Mai puțină risipă",     body: "Gătește cu ce ai deja și cumpără doar ceea ce vei folosi cu adevărat." },
+  closingCta: "Timp salvat, mese gata!",
 };

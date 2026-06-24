@@ -1,23 +1,15 @@
 export const aboutUs = {
-  "eyebrow": "O nas",
-  "title": "Wszystko zaczęło się od jednego męczącego pytania.",
-  "question": "„Co dziś na kolację?”",
-  "lead": "To małe pytanie, które po cichu wyczerpuje cały dom. Zadawane każdego wieczoru, często po długim dniu, zwykle przed zmęczoną lodówką i bez planu. Pomnóż je przez tydzień, rodzinę, rok — a „co dziś na kolację?” zamienia się w godziny obciążenia, o które nikt nie prosił.",
-  "story1": "Stworzyliśmy EatEase, bo sami ciągle tego doświadczaliśmy. Planowanie posiłków wokół tego, co wszyscy lubią, czasu, który naprawdę masz, i celów, do których dążysz, nie powinno wymagać arkusza kalkulacyjnego i całego niedzielnego popołudnia.",
-  "story2": "Dlatego zbudowaliśmy aplikację, która wykonuje najcięższą pracę: planuje twój tydzień na podstawie prawdziwych preferencji i prawdziwego grafiku, dopasowuje każdy przepis do twojego domu i zamienia wszystko w jedną listę zakupów — w sekundy, nie w godziny.",
-  "missionEyebrow": "Nasza misja",
-  "missionTitle": "Oddać rodzinom ich czas.",
-  "missionBody": "Istniejemy, by pomóc tysiącom rodzin spędzać mniej czasu na planowaniu tygodniowych posiłków, a więcej na delektowaniu się nimi. Mniej stresu o 18:00, mniej marnowania, mniej zastanawiania się — po prostu dobre posiłki w prosty sposób.",
-  "value1": {
-    "title": "Najpierw czas",
-    "body": "Każda funkcja zasługuje na swoje miejsce, oszczędzając ci minuty — albo godziny — w każdym tygodniu."
-  },
-  "value2": {
-    "title": "Prawdziwe życie, nie diety",
-    "body": "Plany tworzone wokół jedzenia, które lubisz, i czasu, który masz — dla wszystkich przy stole."
-  },
-  "value3": {
-    "title": "Mniej marnowania",
-    "body": "Gotuj z tego, co już masz, i kupuj tylko to, czego naprawdę użyjesz."
-  }
+  eyebrow:        "O nas",
+  title:          "Wszystko zaczęło się od prostego pytania.",
+  question:       "„Co robimy dziś na obiad?”",
+  lead:           "Tak, to ogromne obciążenie psychiczne, i przychodzi moment, kiedy nikt nie ma już pomysłów, albo po prostu nie ma ochoty o tym myśleć po długim dniu pracy.",
+  story1:         "Stworzyliśmy Eatease, ponieważ sami tego doświadczaliśmy. Planowanie posiłków wokół tego, co każdy lubi, czasu, którym naprawdę dysponujesz, i celów, których szukasz, nie powinno zajmować tyle czasu.",
+  story2:         "Dlatego stworzyliśmy aplikację, która wykonuje najcięższą pracę i odpowiada na realia wielu rodzin: planuje tydzień w oparciu o prawdziwe preferencje i harmonogramy, dostosowuje porcje każdego przepisu do Twojego domu i zamienia wszystko w jedną listę zakupów — w kilka sekund, w bardzo praktyczny i szybki sposób.",
+  missionEyebrow: "Nasza misja",
+  missionTitle:   "Zwracanie czasu rodzinom.",
+  missionBody:    "Istniejemy, aby pomóc tysiącom rodzin spędzać mniej czasu na planowaniu tygodniowych posiłków, a więcej na cieszeniu się nimi. Mniej stresu o 19:00, mniej marnowania, mniej wątpliwości — tylko dobre posiłki, w prosty sposób.",
+  value1: { title: "Czas na pierwszym miejscu",      body: "Każda funkcja uzasadnia swoje istnienie tym, że oszczędza Ci minuty — lub godziny — co tydzień." },
+  value2: { title: "Prawdziwe życie, nie diety", body: "Plany oparte na jedzeniu, które lubisz, i czasie, którym dysponujesz, dla każdego przy stole." },
+  value3: { title: "Mniej marnowania",     body: "Gotuj z tego, co już masz, i kupuj tylko to, co naprawdę zużyjesz." },
+  closingCta: "Czas zaoszczędzony, posiłki gotowe!",
 };

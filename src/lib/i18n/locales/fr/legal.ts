@@ -1,8 +1,8 @@
 export const legal = {
-  "privacyTitle": "Politique de Confidentialité",
-  "englishNotice": "Cette politique de confidentialité n'est actuellement disponible qu'en anglais. La version anglaise fait foi sur le plan juridique ; des versions traduites par des professionnels pourront suivre.",
-  "termsTitle": "Conditions d'Utilisation",
-  "termsEnglishNotice": "Ces conditions d'utilisation ne sont actuellement disponibles qu'en anglais. La version anglaise fait foi sur le plan juridique ; des versions traduites par des professionnels pourront suivre.",
-  "cookieTitle": "Politique relative aux cookies",
-  "cookieEnglishNotice": "Cette Politique relative aux cookies n'est actuellement disponible qu'en anglais. La version anglaise fait foi sur le plan juridique ; des versions traduites par des professionnels pourront suivre."
+  privacyTitle: "Politique de confidentialité",
+  englishNotice: "Cette politique de confidentialité est actuellement disponible uniquement en anglais. La version anglaise est la version juridiquement contraignante. Des versions traduites par des professionnels dans les différentes langues prises en charge par notre application seront disponibles ultérieurement.",
+  termsTitle: "Conditions d'utilisation",
+  termsEnglishNotice: "Ces conditions d'utilisation sont actuellement disponibles uniquement en anglais. La version anglaise est la version juridiquement contraignante. Des versions traduites par des professionnels dans les différentes langues prises en charge par notre application seront disponibles ultérieurement.",
+  cookieTitle: "Politique relative aux cookies",
+  cookieEnglishNotice: "Cette politique relative aux cookies est actuellement disponible uniquement en anglais. La version anglaise est la version juridiquement contraignante. Des versions traduites par des professionnels dans les différentes langues prises en charge par notre application seront disponibles ultérieurement."
 };

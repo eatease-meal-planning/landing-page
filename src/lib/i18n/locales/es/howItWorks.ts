@@ -1,20 +1,20 @@
 export const howItWorks = {
-  "eyebrow": "Cómo funciona",
-  "title": "Tres pasos para alimentar a toda la familia.",
-  "subtitle": "La mayoría de los planificadores te piden que hagas el trabajo. EatEase lo hace por ti — y se ajusta cuando tu semana cambia.",
-  "step1": {
-    "num": "PASO 01",
-    "title": "Cuéntanos sobre tu cocina.",
-    "body": "Quién come, qué evitan, cuánto tiempo tienes y qué cocinas te gusta preparar realmente. Dos minutos, una vez."
+  eyebrow:  "Cómo funciona",
+  title:    "Tres pasos para organizar toda la semana.",
+  subtitle: "Simple y eficaz, con un único objetivo: ¡ahorrarte tiempo!",
+  step1: {
+    num:   "PASO 01",
+    title: "Háblanos de tu cocina.",
+    body:  "Quién come, qué tipo de cocina te gusta más, cuánto tiempo tienes disponible para cocinar y si tienes alguna restricción alimentaria. Dos minutos, una sola vez.",
   },
-  "step2": {
-    "num": "PASO 02",
-    "title": "Obtén una semana de comidas.",
-    "body": "Las recetas se puntúan según tus objetivos de macros y las preferencias de la familia. Cambia lo que no te apetezca — recalculamos el resto."
+  step2: {
+    num:   "PASO 02",
+    title: "Crear plan semanal.",
+    body:  "Las recetas se evalúan en función de tus preferencias. Si no te gusta alguna comida sugerida, solo tienes que sustituirla antes de guardar el plan.",
   },
-  "step3": {
-    "num": "PASO 03",
-    "title": "Compra, cocina, come.",
-    "body": "Tu lista de la compra agrupa todas las recetas y escala a las porciones familiares. Cocina directamente desde la app con instrucciones paso a paso."
-  }
+  step3: {
+    num:   "PASO 03",
+    title: "Compra, cocina, come.",
+    body:  "Tu lista de la compra agrupa todas las recetas y se ajusta a las cantidades necesarias. Cocina directamente en la app con las instrucciones paso a paso.",
+  },
 };

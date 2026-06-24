@@ -1,23 +1,15 @@
 export const aboutUs = {
-  "eyebrow": "Om oss",
-  "title": "Allt började med en tröttsam fråga.",
-  "question": "”Vad ska vi äta i kväll?”",
-  "lead": "Det är den lilla frågan som tyst tär på ett hem. Ställd varje kväll, ofta efter en lång dag, nästan alltid framför ett trött kylskåp och utan plan. Multiplicera den med en vecka, en familj, ett år — och ”vad ska vi äta i kväll?” blir till timmar av mental belastning som ingen bad om.",
-  "story1": "Vi byggde EatEase för att vi själva levde med det. Att planera måltider utifrån vad alla gillar, den tid du faktiskt har och de mål du strävar mot borde inte kräva ett kalkylark och en hel söndagseftermiddag.",
-  "story2": "Så vi gjorde en app som tar det tunga arbetet: den planerar din vecka utifrån verkliga preferenser och verkliga scheman, anpassar varje recept till ditt hushåll och gör allt till en enda inköpslista — på sekunder, inte timmar.",
-  "missionEyebrow": "Vårt uppdrag",
-  "missionTitle": "Ge familjer deras tid tillbaka.",
-  "missionBody": "Vi finns för att hjälpa tusentals familjer att lägga mindre tid på att planera veckans måltider och mer tid på att njuta av dem. Mindre stress klockan sex, mindre svinn, mindre funderande — bara goda måltider, på ett enkelt sätt.",
-  "value1": {
-    "title": "Tiden först",
-    "body": "Varje funktion förtjänar sin plats genom att spara dig minuter — eller timmar — varje vecka."
-  },
-  "value2": {
-    "title": "Verkliga livet, inte dieter",
-    "body": "Planer byggda kring maten du gillar och tiden du har, för alla vid bordet."
-  },
-  "value3": {
-    "title": "Mindre svinn",
-    "body": "Laga med det du redan har och handla bara det du faktiskt kommer använda."
-  }
+  eyebrow:        "Om oss",
+  title:          "Allt började med en enkel fråga.",
+  question:       "\"Vad ska vi äta till middag idag?\"",
+  lead:           "Ja, det är en enorm mental påfrestning, och det kommer en tid då ingen har några idéer, eller så finns det helt enkelt ingen energi att tänka på detta efter en lång arbetsdag.",
+  story1:         "Vi skapade Eatease för att vi själva levde i det. Att planera måltider utifrån vad alla gillar, den tid man faktiskt har och de mål man har, borde inte ta så mycket tid.",
+  story2:         "Därför byggde vi en app som gör grovjobbet och möter verkligheten för många familjer: den planerar din vecka baserat på verkliga preferenser och scheman, anpassar portionerna för varje recept till ditt hushåll och förvandlar allt till en enda inköpslista — på sekunder, på ett mycket praktiskt och snabbt sätt.",
+  missionEyebrow: "Vårt uppdrag",
+  missionTitle:   "Att ge tid tillbaka till familjer.",
+  missionBody:    "Vi finns för att hjälpa tusentals familjer att lägga mindre tid på att planera veckans måltider och mer tid på att njuta av dem. Mindre stress klockan 19:00, mindre svinn, färre tvivel — bara goda måltider, helt enkelt.",
+  value1: { title: "Tiden först",      body: "Varje funktion har sin plats eftersom den sparar minuter — eller timmar — varje vecka." },
+  value2: { title: "Verkliga livet, inte dieter", body: "Planer designade kring den mat du gillar och den tid du har, för alla runt bordet." },
+  value3: { title: "Mindre matsvinn",     body: "Laga mat med det du redan har och köp bara det du faktiskt kommer att använda." },
+  closingCta: "Tid sparad, maten klar!",
 };

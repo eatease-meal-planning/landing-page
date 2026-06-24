@@ -87,12 +87,12 @@ export function AboutSection({ t, locale, joinWaitlist }: AboutSectionProps) {
 
       {/* ── Closing CTA ───────────────────────────────────────── */}
       <section className="bg-primary py-20">
-        <div className="mx-auto max-w-[820px] px-8 text-center">
+        <div className="mx-auto max-w-205 px-8 text-center">
           <p
             className="font-display font-semibold text-white"
             style={{ fontSize: "clamp(26px,3.4vw,40px)", lineHeight: 1.1, letterSpacing: "-0.5px" }}
           >
-            Time saved, meals made!
+            {t.closingCta}
           </p>
           <a
             href={`/${locale}#waitlist`}
