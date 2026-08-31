@@ -59,29 +59,34 @@ export async function POST(req: NextRequest) {
   const from    = `Eatease <${process.env.RESEND_FROM_EMAIL}>`;
   const operator = process.env.DELETION_REQUEST_TO_EMAIL;
 
-  // The operator notification is what actually gets the deletion done, so it
-  // must go out even if the acknowledgement to the requester fails.
-  if (operator) {
-    await resend.emails.send({
-      from,
-      to:      operator,
-      replyTo: email,
-      subject: `[Account deletion] ${email}`,
-      html: [
-        `<p><strong>Account deletion requested</strong></p>`,
-        `<p>Email: <code>${escapeHtml(email)}</code><br/>`,
-        `Locale: ${locale}<br/>`,
-        `Requested at: ${new Date().toISOString()}<br/>`,
-        `IP: ${escapeHtml(ip)}</p>`,
-        reason ? `<p>Reason:<br/>${escapeHtml(reason).replace(/\n/g, "<br/>")}</p>` : "",
-        `<p>Verify the requester controls this address before deleting. Delete the`,
-        ` Supabase auth user (cascades every owned row + storage) and the matching`,
-        ` <code>contacts</code> row on the landing page.</p>`,
-      ].join(""),
-    });
-  } else {
-    console.error("[account-deletion] DELETION_REQUEST_TO_EMAIL is not set — request not forwarded:", email);
+  // Forwarding to the operator IS the deletion mechanism. Without it there is
+  // nothing to acknowledge, so fail loudly rather than return 202 and drop an
+  // erasure request on the floor — a silent success here is the worst outcome:
+  // the page looks healthy to Google and to the user while nothing happens.
+  if (!operator) {
+    console.error("[account-deletion] DELETION_REQUEST_TO_EMAIL is not set — refusing to accept requests");
+    return NextResponse.json({ error: "Service unavailable." }, { status: 503 });
   }
+
+  // Must go out even if the acknowledgement to the requester fails.
+  await resend.emails.send({
+    from,
+    to:      operator,
+    replyTo: email,
+    subject: `[Account deletion] ${email}`,
+    html: [
+      `<p><strong>Account deletion requested</strong></p>`,
+      `<p>Email: <code>${escapeHtml(email)}</code><br/>`,
+      `Locale: ${locale}<br/>`,
+      `Requested at: ${new Date().toISOString()}<br/>`,
+      `IP: ${escapeHtml(ip)}</p>`,
+      reason ? `<p>Reason:<br/>${escapeHtml(reason).replace(/\n/g, "<br/>")}</p>` : "",
+      `<p>Verify the requester controls this address before deleting. Delete the`,
+      ` Supabase auth user (cascades every owned row + storage) and the matching`,
+      ` <code>contacts</code> row on the landing page. The trial_ledger row is`,
+      ` retained by design — remove it only on an article 21 objection.</p>`,
+    ].join(""),
+  });
 
   const html = renderEmail("deletion-request.html", {
     subject:  emailT.subject,

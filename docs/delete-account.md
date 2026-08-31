@@ -101,29 +101,29 @@ POST /api/account-deletion              → Zod + rate limit `del:${ip}` + Turns
                                           → 202. Nada é escrito na DB, nada é destruído aqui.
 ```
 
-**Fase 2 — desenho alvo corrigido (2026-08-31).**
+**Fase 2 — desenho alvo, simplificado (2026-08-31, decisão do dono do produto).**
 
-O problema central: quem só existe em `contacts` e nunca criou conta na app **não recebe OTP nenhum** (`shouldCreateUser: false`), e distinguir os dois casos na resposta seria um oráculo de enumeração. Solução: **um pedido, duas provas independentes, emitidas em paralelo**. O handler dispara ambas e responde sempre o mesmo; o utilizador segue o que lhe chegar.
+Um único mecanismo: OTP contra o projeto da app.
 
 ```
 POST /api/account-deletion/request   (Turnstile + rate limit `del:${ip}`)
-  ├─ signInWithOtp({shouldCreateUser:false})   → só chega a quem TEM conta na app
-  └─ se existir linha em contacts:
-       token próprio da landing-page + email com link de eliminação
-  → resposta CONSTANTE: "se houver algo neste endereço, enviámos instruções"
+  → signInWithOtp({ shouldCreateUser: false })   [server-side]
+  → resposta CONSTANTE, dispare ou não  (anti-enumeração)
 
-Caminho A — conta da app          Caminho B — só contacts
-  verifyOtp → access_token          clica no link → token válido?
-  ↓                                 ↓
-  DELETE contacts (Bearer)          DELETE contacts
-  ↓                                 (fim — não há conta a apagar)
-  POST delete-account (Bearer)
-  (irreversível — sempre o último)
+  [browser] verifyOtp → data.session.access_token
+  → DELETE linha em contacts   (Bearer; primeiro — reversível e idempotente)
+  → POST delete-account        (Bearer; último — irreversível)
 ```
 
-**Porque não há atalho.** Apagar a conta da app exige um JWT daquele utilizador do projeto da app. A landing-page não o consegue fabricar, e a alternativa — dar-lhe a `service_role` do projeto da app, ou criar uma edge function `delete-account-by-email` com segredo partilhado — troca uma prova de posse do email por uma chave que apaga qualquer conta. Não compensa: o OTP é a prova, e é gratuita.
+**Porque um só mecanismo e não dois.** Um desenho anterior emitia também um token próprio da landing-page, para cobrir quem existe apenas em `contacts` e nunca cria conta na app — esse não recebe OTP (`shouldCreateUser: false`) e ficaria sem self-service. Descartado: essa população está vazia hoje e, no modelo novo, quem se regista na landing-page é um tester que vai criar conta na app. Para o resto — quem se regista e nunca instala, quem perdeu o acesso ao email — **o formulário manual da Fase 1 mantém-se e é o que fecha a lacuna**. Um segundo sistema de tokens não se paga.
 
-**Diagrama original (mantido para referência da parte OTP):**
+**Porque a ordem `contacts` → `delete-account` não é negociável.** Depois de a edge function apagar o utilizador, o `sub` do JWT deixa de resolver em `auth.users`, o `getUser(token)` devolve 401 e a linha em `contacts` ficaria inapagável para sempre — porque a pessoa também já não se consegue autenticar. Se o passo do `contacts` falhar, abortar antes de destruir o que quer que seja.
+
+**Porque não há atalho para dispensar o OTP.** Apagar a conta da app exige um JWT daquele utilizador. Dar a `service_role` do projeto da app à landing-page, ou criar uma edge function `delete-account-by-email` com segredo partilhado, troca uma prova de posse do email por uma chave que apaga qualquer conta. O OTP já é a prova, e é gratuita.
+
+**Nota sobre o `DELETION_REQUEST_TO_EMAIL`.** A Fase 2 **não** dispensa esta variável — só reduz o tráfego que passa pelo formulário manual, que continua a ser o caminho de quem não consegue completar o OTP. Desde 2026-08-31 o handler devolve **503** quando ela falta, em vez de 202: um sucesso silencioso era o pior resultado possível, porque a página parecia saudável à Google e ao utilizador enquanto os pedidos de apagamento desapareciam.
+
+**Diagrama anterior, mantido para referência dos detalhes de OTP:**
 
 ```
 POST /api/account-deletion/request      → Turnstile + rate limit + signInWithOtp (server-side)
