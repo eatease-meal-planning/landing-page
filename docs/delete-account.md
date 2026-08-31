@@ -101,7 +101,29 @@ POST /api/account-deletion              → Zod + rate limit `del:${ip}` + Turns
                                           → 202. Nada é escrito na DB, nada é destruído aqui.
 ```
 
-**Fase 2 — desenho alvo, por implementar:**
+**Fase 2 — desenho alvo corrigido (2026-08-31).**
+
+O problema central: quem só existe em `contacts` e nunca criou conta na app **não recebe OTP nenhum** (`shouldCreateUser: false`), e distinguir os dois casos na resposta seria um oráculo de enumeração. Solução: **um pedido, duas provas independentes, emitidas em paralelo**. O handler dispara ambas e responde sempre o mesmo; o utilizador segue o que lhe chegar.
+
+```
+POST /api/account-deletion/request   (Turnstile + rate limit `del:${ip}`)
+  ├─ signInWithOtp({shouldCreateUser:false})   → só chega a quem TEM conta na app
+  └─ se existir linha em contacts:
+       token próprio da landing-page + email com link de eliminação
+  → resposta CONSTANTE: "se houver algo neste endereço, enviámos instruções"
+
+Caminho A — conta da app          Caminho B — só contacts
+  verifyOtp → access_token          clica no link → token válido?
+  ↓                                 ↓
+  DELETE contacts (Bearer)          DELETE contacts
+  ↓                                 (fim — não há conta a apagar)
+  POST delete-account (Bearer)
+  (irreversível — sempre o último)
+```
+
+**Porque não há atalho.** Apagar a conta da app exige um JWT daquele utilizador do projeto da app. A landing-page não o consegue fabricar, e a alternativa — dar-lhe a `service_role` do projeto da app, ou criar uma edge function `delete-account-by-email` com segredo partilhado — troca uma prova de posse do email por uma chave que apaga qualquer conta. Não compensa: o OTP é a prova, e é gratuita.
+
+**Diagrama original (mantido para referência da parte OTP):**
 
 ```
 POST /api/account-deletion/request      → Turnstile + rate limit + signInWithOtp (server-side)
