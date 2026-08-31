@@ -14,4 +14,12 @@ export const emails = {
     expiresNote: "Acest link expiră în 48 de ore.",
     signOff:     "Pe curând,",
   },
+  deletionRequest: {
+    subject:  "Am primit cererea ta de ștergere",
+    greeting: "Salut,",
+    intro:    "Am primit o cerere de ștergere a contului Eatease asociat acestei adrese de e-mail, împreună cu toate datele personale aferente.",
+    body:     "O vom procesa în termen de 30 de zile. După finalizare, ștergerea este permanentă, iar datele nu mai pot fi recuperate.",
+    ignore:   "Dacă nu tu ai făcut această cerere, răspunde la acest e-mail și o vom anula. Deocamdată nu a fost șters nimic.",
+    signOff:  "Cu stimă,",
+  },
 };

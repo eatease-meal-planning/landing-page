@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Gjord för din hektiska vardag.",
   createdBy:     "Skapad av",
   cookiePreferences: "Cookie-inställningar",
-  cookiePolicy: "Cookies"
+  cookiePolicy: "Cookies",
+  deleteAccount: "Radera konto"
 };

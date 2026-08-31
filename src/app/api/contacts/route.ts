@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { contacts, rateLimits } from "@/db/schema";
+import { contacts } from "@/db/schema";
 import { Resend } from "resend";
 import { z } from "zod";
 import { eq, sql } from "drizzle-orm";
 import { isValidLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { renderEmail } from "@/lib/email";
+import { getClientIp, verifyTurnstile } from "@/lib/turnstile";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const RATE_LIMIT_MAX    = 5;
-const RATE_LIMIT_WINDOW = 10 * 60 * 1000;
-const EMAIL_COOLDOWN    = 60 * 60 * 1000;
+const EMAIL_COOLDOWN = 60 * 60 * 1000;
 
 const schema = z.object({
   name:              z.string().min(2).max(50),
@@ -21,64 +21,10 @@ const schema = z.object({
   cfTurnstileToken:  z.string().min(1),
 });
 
-async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
-  try {
-    const secret = (process.env.TURNSTILE_SECRET_KEY ?? "").trim();
-    console.log("[Turnstile] secret length:", secret.length, "| starts:", secret.slice(0, 4), "| ends:", secret.slice(-4));
-    const body = new URLSearchParams({
-      secret,
-      response: token,
-      remoteip: ip,
-    });
-    const res  = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method:  "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body:    body.toString(),
-    });
-    const data = await res.json() as { success: boolean; "error-codes"?: string[] };
-    if (!data.success) console.error("[Turnstile] verification failed:", data["error-codes"]);
-    return data.success === true;
-  } catch (err) {
-    console.error("[Turnstile] fetch error:", err);
-    return false;
-  }
-}
-
-function getClientIp(req: NextRequest): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  return forwarded?.split(",")[0]?.trim() ?? "unknown";
-}
-
-async function checkIpRateLimit(ip: string): Promise<boolean> {
-  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW);
-
-  const [row] = await db
-    .insert(rateLimits)
-    .values({ ip, count: 1, windowStart: new Date() })
-    .onConflictDoUpdate({
-      target: rateLimits.ip,
-      set: {
-        count: sql`CASE
-          WHEN rate_limits.window_start > ${windowStart.toISOString()}
-          THEN rate_limits.count + 1
-          ELSE 1
-        END`,
-        windowStart: sql`CASE
-          WHEN rate_limits.window_start > ${windowStart.toISOString()}
-          THEN rate_limits.window_start
-          ELSE now()
-        END`,
-      },
-    })
-    .returning();
-
-  return (row?.count ?? 0) > RATE_LIMIT_MAX;
-}
-
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
 
-  const limited = await checkIpRateLimit(ip);
+  const limited = await checkRateLimit(`wl:${ip}`);
   if (limited) {
     return NextResponse.json(
       { error: "Too many attempts. Please wait a few minutes and try again." },

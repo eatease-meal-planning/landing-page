@@ -14,6 +14,8 @@ import { privacyPolicy } from "../en/privacyPolicy";
 import { termsOfUse } from "../en/termsOfUse";
 import { cookiePolicy } from "../en/cookiePolicy";
 
+import { deleteAccount } from "./deleteAccount";
+
 export const it = {
-  nav, hero, howItWorks, features, testimonials, cta, aboutUs, footer, form, pages, emails, legal, privacyPolicy, termsOfUse, cookiePolicy,
+  nav, hero, howItWorks, features, testimonials, cta, aboutUs, footer, form, pages, emails, legal, privacyPolicy, termsOfUse, cookiePolicy, deleteAccount,
 };

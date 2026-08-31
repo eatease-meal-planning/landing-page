@@ -14,4 +14,12 @@ export const emails = {
     expiresNote: "Deze link verloopt over 48 uur.",
     signOff:     "Tot snel,",
   },
+  deletionRequest: {
+    subject:  "We hebben je verwijderingsverzoek ontvangen",
+    greeting: "Hallo,",
+    intro:    "We hebben een verzoek ontvangen om het Eatease-account dat aan dit e-mailadres is gekoppeld te verwijderen, samen met alle bijbehorende persoonsgegevens.",
+    body:     "We verwerken het binnen 30 dagen. Daarna is de verwijdering definitief en zijn de gegevens niet meer terug te halen.",
+    ignore:   "Heb je dit verzoek niet gedaan? Beantwoord deze e-mail, dan annuleren we het. Er is nog niets verwijderd.",
+    signOff:  "Met vriendelijke groet,",
+  },
 };

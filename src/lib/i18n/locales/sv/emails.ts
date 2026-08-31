@@ -14,4 +14,12 @@ export const emails = {
     expiresNote: "Denna länk löper ut om 48 timmar.",
     signOff:     "Vi ses snart,",
   },
+  deletionRequest: {
+    subject:  "Vi har tagit emot din begäran om radering",
+    greeting: "Hej,",
+    intro:    "Vi har tagit emot en begäran om att radera det Eatease-konto som är kopplat till den här e-postadressen, tillsammans med alla personuppgifter som hör till det.",
+    body:     "Vi behandlar den inom 30 dagar. När det är gjort är raderingen permanent och uppgifterna går inte att återskapa.",
+    ignore:   "Om det inte var du som gjorde begäran kan du svara på det här mejlet så avbryter vi den. Inget har raderats än.",
+    signOff:  "Vänliga hälsningar,",
+  },
 };

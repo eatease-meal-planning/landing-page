@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Gemaakt voor je drukke dagelijkse leven.",
   createdBy:     "Gemaakt door",
   cookiePreferences: "Cookievoorkeuren",
-  cookiePolicy: "Cookies"
+  cookiePolicy: "Cookies",
+  deleteAccount: "Account verwijderen"
 };

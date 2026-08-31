@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Made for your busy day-to-day.",
   createdBy:     "Created by",
   cookiePreferences: "Consent Preferences",
-  cookiePolicy: "Cookies"
+  cookiePolicy: "Cookies",
+  deleteAccount: "Delete account"
 };

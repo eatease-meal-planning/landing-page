@@ -14,4 +14,12 @@ export const emails = {
     expiresNote: "This link expires in 48 hours.",
     signOff:     "See you soon,",
   },
+  deletionRequest: {
+    subject:  "We received your deletion request",
+    greeting: "Hello,",
+    intro:    "We received a request to delete the Eatease account linked to this email address, along with all personal data associated with it.",
+    body:     "We will process it within 30 days. Once done, the deletion is permanent and the data cannot be recovered.",
+    ignore:   "If you did not make this request, reply to this email and we will cancel it. Nothing has been deleted yet.",
+    signOff:  "Kind regards,",
+  },
 };
