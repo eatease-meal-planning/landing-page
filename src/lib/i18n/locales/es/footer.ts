@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Hecho para tu día a día ajetreado.",
   createdBy:     "Creado por",
   cookiePreferences: "Preferencias de Consentimiento",
-  cookiePolicy: "Cookies"
+  cookiePolicy: "Cookies",
+  deleteAccount: "Eliminar cuenta"
 };

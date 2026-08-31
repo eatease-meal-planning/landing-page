@@ -14,6 +14,8 @@ import { privacyPolicy } from "../en/privacyPolicy";
 import { termsOfUse } from "../en/termsOfUse";
 import { cookiePolicy } from "../en/cookiePolicy";
 
+import { deleteAccount } from "./deleteAccount";
+
 export const ptPt = {
   nav,
   hero,
@@ -29,5 +31,5 @@ export const ptPt = {
   legal,
   privacyPolicy,
   termsOfUse,
-  cookiePolicy,
+  cookiePolicy, deleteAccount,
 };

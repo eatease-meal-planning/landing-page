@@ -14,4 +14,12 @@ export const emails = {
     expiresNote: "Dieser Link läuft in 48 Stunden ab.",
     signOff:     "Bis bald,",
   },
+  deletionRequest: {
+    subject:  "Wir haben Ihren Löschantrag erhalten",
+    greeting: "Hallo,",
+    intro:    "Wir haben einen Antrag auf Löschung des Eatease-Kontos erhalten, das mit dieser E-Mail-Adresse verknüpft ist, samt aller zugehörigen personenbezogenen Daten.",
+    body:     "Wir bearbeiten ihn innerhalb von 30 Tagen. Nach der Bearbeitung ist die Löschung endgültig und die Daten können nicht wiederhergestellt werden.",
+    ignore:   "Falls Sie diesen Antrag nicht gestellt haben, antworten Sie einfach auf diese E-Mail — dann stornieren wir ihn. Bisher wurde nichts gelöscht.",
+    signOff:  "Mit freundlichen Grüßen,",
+  },
 };

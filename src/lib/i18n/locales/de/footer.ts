@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Gemacht für Ihren geschäftigen Alltag.",
   createdBy:     "Erstellt von",
   cookiePreferences: "Cookie-Einstellungen",
-  cookiePolicy: "Cookies"
+  cookiePolicy: "Cookies",
+  deleteAccount: "Konto löschen"
 };

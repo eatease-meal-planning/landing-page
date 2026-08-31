@@ -46,6 +46,7 @@ export function Footer({ t, locale }: FooterProps) {
               <li><a href={`/${locale}/privacy-policy`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.privacy}</a></li>
               <li><a href={`/${locale}/terms-of-use`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.terms}</a></li>
               <li><a href={`/${locale}/cookie-policy`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.cookiePolicy}</a></li>
+              <li><a href={`/${locale}/delete-account`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.deleteAccount}</a></li>
               <li><a href={`/${locale}/#cta`} className="text-[14px] text-white/60 transition-colors hover:text-white">{t.contact}</a></li>
               <li><CookiePreferencesButton text={t.cookiePreferences} /></li>
             </ul>

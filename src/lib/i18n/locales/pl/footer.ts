@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Stworzone dla Twojego zabieganego dnia.",
   createdBy:     "Stworzone przez",
   "cookiePreferences": "Preferencje dotyczące zgody",
-  "cookiePolicy": "Ciasteczka"
+  "cookiePolicy": "Ciasteczka",
+  deleteAccount: "Usuń konto"
 };

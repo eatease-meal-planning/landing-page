@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Feito para o seu dia-a-dia agitado.",
   createdBy:     "Criado por",
   "cookiePreferences": "Preferências de Consentimento",
-  "cookiePolicy": "Cookies"
+  "cookiePolicy": "Cookies",
+  deleteAccount: "Eliminar conta"
 };

@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Realizzato per le tue giornate frenetiche.",
   createdBy:     "Creato da",
   cookiePreferences: "Preferenze di consenso",
-  cookiePolicy: "Cookie"
+  cookiePolicy: "Cookie",
+  deleteAccount: "Elimina account"
 };

@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Conçu pour votre quotidien bien rempli.",
   createdBy:     "Créé par",
   cookiePreferences: "Préférences de consentement",
-  cookiePolicy: "Cookies"
+  cookiePolicy: "Cookies",
+  deleteAccount: "Supprimer le compte"
 };

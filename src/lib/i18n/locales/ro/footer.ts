@@ -20,5 +20,6 @@ export const footer = {
   madeWith:      "Făcut pentru viața ta aglomerată.",
   createdBy:     "Creat de",
   cookiePreferences: "Preferințe privind consimțământul",
-  cookiePolicy: "Cookie-uri"
+  cookiePolicy: "Cookie-uri",
+  deleteAccount: "Șterge contul"
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { Globe, ChevronDown } from "lucide-react";
 import { locales } from "@/lib/i18n/config";
@@ -30,6 +30,7 @@ export function Nav({ locale, t }: NavProps) {
   const langRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Close the desktop language dropdown when clicking outside it.
   useEffect(() => {
@@ -67,8 +68,12 @@ export function Nav({ locale, t }: NavProps) {
     }
   }, [menuOpen]);
 
+  // Keep the current page when switching language: strip the leading locale
+  // segment and re-prefix it. On "/en" the rest is "" → "/de", on
+  // "/en/delete-account" → "/de/delete-account".
   function switchLocale(l: Locale) {
-    router.push(`/${l}`);
+    const rest = pathname.replace(/^\/[^/]+/, "");
+    router.push(`/${l}${rest}`);
     setLangOpen(false);
     setMenuOpen(false);
   }

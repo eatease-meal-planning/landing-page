@@ -13,7 +13,8 @@ import { legal } from "./legal";
 import { privacyPolicy } from "./privacyPolicy";
 import { termsOfUse } from "./termsOfUse";
 import { cookiePolicy } from "./cookiePolicy";
+import { deleteAccount } from "./deleteAccount";
 
 export const en = {
-  nav, hero, howItWorks, features, testimonials, cta, aboutUs, footer, form, pages, emails, legal, privacyPolicy, termsOfUse, cookiePolicy,
+  nav, hero, howItWorks, features, testimonials, cta, aboutUs, footer, form, pages, emails, legal, privacyPolicy, termsOfUse, cookiePolicy, deleteAccount,
 };
