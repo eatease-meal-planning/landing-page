@@ -1,5 +1,5 @@
 export const footer = {
-  tagline:       "Tempo poupado, refeições prontas.",
+  tagline:       "Refeições prontas, tempo poupado!",
   col1:          "Produto",
   mealPlanning:  "Planeamento de refeições",
   snapFridge:    "Snap Fridge",
@@ -17,7 +17,7 @@ export const footer = {
   iosStore:      "iOS ",
   androidStore:  "Android",
   copyright:     "Todos os direitos reservados.",
-  madeWith:      "Feito para o seu dia-a-dia agitado.",
+  madeWith:      "Feito para o teu dia-a-dia agitado.",
   createdBy:     "Criado por",
   "cookiePreferences": "Preferências de Consentimento",
   "cookiePolicy": "Cookies",
