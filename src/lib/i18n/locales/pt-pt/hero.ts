@@ -21,7 +21,7 @@ export const hero = {
   appMacroProtein: "Proteína",
   appMacroCarbs:   "Hidratos",
   appMacroFat:     "Gorduras",
-  seeHow:          "Veja como funciona",
+  seeHow:          "Vê como funciona",
   floatCard1Title: "Plano criado",
   floatCard1Sub:   "21 refeições",
   floatCard2Title: "Lista de compras pronta",
