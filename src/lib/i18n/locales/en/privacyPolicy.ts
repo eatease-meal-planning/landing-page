@@ -2,9 +2,27 @@ import type { PrivacyPolicyContent } from "../../privacyPolicy.types";
 
 // AUTO-IMPORTED from privacy-policy.txt (termly export) — now the source of truth.
 // Edit directly; see scripts/import-privacy-policy.mjs to re-import.
+//
+// ⚠️ EDITED BY HAND on 9 SEP 2026 and NO LONGER a clean Termly export. Re-running
+// the importer would silently revert all of it. What changed, and why:
+//   • SUBSCRIPTIONS AND PAYMENTS — new section. Its absence blocks submission to
+//     the Google Play store, which requires the notice to cover in-app purchases.
+//   • DO WE COLLECT INFORMATION FROM MINORS — the boilerplate said we do not
+//     collect data from children. The app lets an adult add household members,
+//     children included, and stores their body data; the paediatric calculation
+//     exists for exactly that. The old text contradicted the product.
+//   • Sensitive information — was "biometric data", which we do not collect. It is
+//     health and body data, which we do.
+//   • Geolocation — removed. The application has no location code and requests no
+//     location permission, so the boilerplate claimed MORE than we collect.
+//   • Third parties — named by category, plus where the data is stored.
+//
+// ⚠️ All ten locales import THIS file (see locales/<lang>/index.ts), so every
+// language served at /<lang>/privacy-policy is this English text. There is one
+// file to edit, not ten.
 export const privacyPolicy: PrivacyPolicyContent = {
   "title": "Privacy Policy",
-  "lastUpdated": "June 23, 2026",
+  "lastUpdated": "September 9, 2026",
   "intro": [
     {
       "type": "p",
@@ -92,18 +110,28 @@ export const privacyPolicy: PrivacyPolicyContent = {
           "type": "list",
           "items": [
             "names",
-            "email addresses"
+            "email addresses",
+            "profile picture",
+            "language preference",
+            "account and subscription status, including the plan you are on and the dates of your current billing or trial period"
           ]
         },
         {
           "type": "p",
-          "text": "Sensitive Information. When necessary, with your consent or as otherwise permitted by applicable law, we process the following categories of sensitive information:"
+          "text": "Sensitive Information. Eatease is a meal planning and nutrition service, so the information you give us in order to receive it includes health-related data. When necessary, with your consent or as otherwise permitted by applicable law, we process the following categories of sensitive information:"
         },
         {
           "type": "list",
           "items": [
-            "biometric data"
+            "Body and health data about you: age, sex, height, weight, body fat percentage, activity level, weight history and weight goals, dietary restrictions, and any health conditions you choose to record",
+            "Nutritional goals derived from that data, such as daily calorie and macronutrient targets",
+            "Body and health data about the members of your household that you choose to add, in the same categories as above — see 'DO WE COLLECT INFORMATION FROM MINORS?' below",
+            "Photographs you take within the application of food or of the contents of your fridge, which may incidentally include other information captured by the camera"
           ]
+        },
+        {
+          "type": "p",
+          "text": "We use this information solely to calculate your nutritional needs, to suggest meals and portions, and to build your shopping list. Eatease is not a medical device and does not provide medical advice, diagnosis, or treatment."
         },
         {
           "type": "p",
@@ -116,8 +144,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
         {
           "type": "list",
           "items": [
-            "Geolocation Information. We may request access or permission to track location-based information from your mobile device, either continuously or while you are using our mobile application(s), to provide certain location-based services. If you wish to change our access or permissions, you may do so in your device's settings.",
-            "Mobile Device Access. We may request access or permission to certain features from your mobile device, including your mobile device's camera, and other features. If you wish to change our access or permissions, you may do so in your device's settings.",
+            "Mobile Device Access. We request access to your mobile device's camera and photo library so that you can photograph a meal or the contents of your fridge and have the application recognise the food in it. If you wish to change our access or permissions, you may do so in your device's settings. The application does not request or collect your location.",
             "Push Notifications. We may request to send you push notifications regarding your account or certain features of the application(s). If you wish to opt out from receiving these types of communications, you may turn them off in your device's settings."
           ]
         },
@@ -232,8 +259,25 @@ export const privacyPolicy: PrivacyPolicyContent = {
         {
           "type": "list",
           "items": [
+            "Cloud hosting, database, file storage and authentication providers, which host the Services and everything you store in them",
+            "Recipe data providers, which receive your recipe searches together with the dietary and cuisine preferences attached to them",
+            "Artificial-intelligence model providers, which receive the photographs you take within the application in order to recognise the food in them, and the text of recipes in order to translate it. These providers process the data on our instructions",
+            "Push notification providers, which receive the notification token of your device and the content of the notification",
+            "App store and payment providers, as described in 'SUBSCRIPTIONS AND PAYMENTS' below",
             "Data Analytics Services"
           ]
+        },
+        {
+          "type": "p",
+          "text": "The current list of the individual providers within each of these categories is available on request at privacy@eatease.eu. We keep it there rather than in this notice because the provider used within a category may change without any change to the categories of data we process or to the purposes described here."
+        },
+        {
+          "type": "subheading",
+          "text": "Where your information is stored"
+        },
+        {
+          "type": "p",
+          "text": "Our primary database and file storage are hosted in Switzerland. Switzerland is recognised by the European Commission as providing an adequate level of protection for personal data, so transfers from the European Economic Area to it do not require additional safeguards. Some of the providers listed above operate outside the European Economic Area and Switzerland; where that is the case, the transfer is made under the safeguards permitted by applicable data protection law."
         },
         {
           "type": "p",
@@ -298,6 +342,48 @@ export const privacyPolicy: PrivacyPolicyContent = {
       ]
     },
     {
+      "title": "SUBSCRIPTIONS AND PAYMENTS",
+      "blocks": [
+        {
+          "type": "inShort",
+          "text": "In Short: We do not collect or process your payment details. Purchases are handled by the app store, and we only store the resulting status of your subscription."
+        },
+        {
+          "type": "p",
+          "text": "Eatease offers a free trial period and, after it, paid subscription plans. When you subscribe from the mobile application, the purchase, its renewal, its cancellation and any refund are handled entirely by the app store your device uses — Google Play on Android, and the App Store on iOS. Your payment method, card details and billing address are given to that store and never to us. We never see them, and we cannot access them."
+        },
+        {
+          "type": "p",
+          "text": "What the store sends back to us, and what we store, is limited to what we need in order to know whether your account is entitled to the paid features:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "The identifier of the plan you purchased",
+            "The status of the subscription — for example trialing, active, cancelled, in a grace period, or expired",
+            "The start and end dates of the current billing or trial period, and whether the subscription is set to end at the end of that period",
+            "A transaction identifier issued by the store, which lets us match a purchase, a renewal or a cancellation to your account and lets us avoid processing the same transaction twice"
+          ]
+        },
+        {
+          "type": "p",
+          "text": "You manage and cancel your subscription in the app store itself, not through us. Cancelling there takes effect according to that store's terms, and we are informed of the outcome so that your account reflects it."
+        },
+        {
+          "type": "subheading",
+          "text": "The free trial, and why deleting your account does not reset it"
+        },
+        {
+          "type": "p",
+          "text": "The free trial is offered once. So that it cannot be taken repeatedly by deleting an account and creating a new one, we keep a record of the trial periods that have already been granted. That record does not contain your email address or your account details: it holds a one-way cryptographic hash of your email address and of your sign-in provider identifier, together with the start and end dates of the trial. A hash cannot be reversed back into your email address."
+        },
+        {
+          "type": "p",
+          "text": "This record is kept even when you delete your account, because that is the only way it can serve its purpose; it is retained under our legitimate interest in preventing repeated use of a one-time offer. If you delete your account and later create a new one with the same identity, the original trial window is resumed, with whatever remained of it, rather than a new one being granted."
+        }
+      ]
+    },
+    {
       "title": "HOW LONG DO WE KEEP YOUR INFORMATION?",
       "blocks": [
         {
@@ -332,11 +418,23 @@ export const privacyPolicy: PrivacyPolicyContent = {
       "blocks": [
         {
           "type": "inShort",
-          "text": "In Short: We do not knowingly collect data from or market to children under 18 years of age."
+          "text": "In Short: Only an adult can hold an Eatease account. An adult account holder may add members of their household, including children, and enter body and health data about them."
         },
         {
           "type": "p",
-          "text": "We do not knowingly collect, solicit data from, or market to children under 18 years of age, nor do we knowingly sell such personal information. By using the Services, you represent that you are at least 18 or that you are the parent or guardian of such a minor and consent to such minor dependent’s use of the Services. If we learn that personal information from users less than 18 years of age has been collected, we will deactivate the account and take reasonable measures to promptly delete such data from our records. If you become aware of any data we may have collected from children under age 18, please contact us at ricardo.rato@eatease.eu."
+          "text": "You must be at least 18 years old to create an Eatease account, and the application enforces this: an account holder who gives an age under 18 cannot complete registration. Children do not have accounts, do not log in, and do not interact with the Services themselves, and we do not market to them."
+        },
+        {
+          "type": "p",
+          "text": "The Services do, however, let an adult account holder plan meals for their household. If you choose to add a household member, you enter their name or nickname, their relationship to you, and the body data needed to calculate their nutritional needs — age, sex, height, weight, activity level and any dietary restrictions. A household member may be a child; the nutritional calculations for anyone under 18 follow paediatric energy requirements rather than the adult equations, which is why their age is needed."
+        },
+        {
+          "type": "p",
+          "text": "By adding a household member who is a minor, you confirm that you are their parent or guardian, or that you are otherwise authorised to provide their information to us. This information is entered by you, is visible only within your account, and is deleted together with your account. You can remove a household member, and their data, at any time from within the application."
+        },
+        {
+          "type": "p",
+          "text": "If you believe a child has created an account or that we hold information about a child other than as described above, please contact us at privacy@eatease.eu and we will delete it promptly."
         }
       ]
     },
