@@ -27,12 +27,34 @@ const schema = z.object({
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
 
+  // Configuration is checked before anything else: it costs nothing, it is the
+  // failure a fresh deploy is most likely to hit, and putting it first makes it
+  // reachable with a plain curl instead of a valid Turnstile token.
+  const operator = process.env.DELETION_REQUEST_TO_EMAIL;
+  if (!operator) {
+    console.error("[account-deletion] DELETION_REQUEST_TO_EMAIL is not set — refusing requests");
+    return fail(503, "CONFIG_MISSING_OPERATOR");
+  }
+  if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+    console.error("[account-deletion] RESEND_API_KEY / RESEND_FROM_EMAIL is not set — refusing requests");
+    return fail(503, "CONFIG_MISSING_RESEND");
+  }
+
   // Prefixed key: deletion requests get their own budget, so hammering this
   // endpoint can't lock the waitlist form for the same visitor.
-  const limited = await checkRateLimit(`del:${ip}`);
+  let limited: boolean;
+  try {
+    limited = await checkRateLimit(`del:${ip}`);
+  } catch (err) {
+    // A cold or paused database used to surface as an empty-body 500 that told
+    // nobody anything — on a page where a dropped erasure request is a
+    // compliance failure.
+    console.error("[account-deletion] rate limit check failed:", err);
+    return fail(503, "DB_UNAVAILABLE");
+  }
   if (limited) {
     return NextResponse.json(
-      { error: "Too many attempts. Please wait a few minutes and try again." },
+      { error: "Too many attempts. Please wait a few minutes and try again.", code: "RATE_LIMITED" },
       { status: 429 }
     );
   }
@@ -40,14 +62,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid data." }, { status: 400 });
+    return fail(400, "INVALID_DATA");
   }
 
   const { email, reason, cfTurnstileToken } = parsed.data;
 
   const captchaOk = await verifyTurnstile(cfTurnstileToken, ip);
   if (!captchaOk) {
-    return NextResponse.json({ error: "Security check failed." }, { status: 400 });
+    return fail(400, "CAPTCHA_FAILED");
   }
 
   const rawLocale = parsed.data.locale ?? "en";
@@ -57,57 +79,60 @@ export async function POST(req: NextRequest) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const from    = `Eatease <${process.env.RESEND_FROM_EMAIL}>`;
-  const operator = process.env.DELETION_REQUEST_TO_EMAIL;
 
-  // Forwarding to the operator IS the deletion mechanism. Without it there is
-  // nothing to acknowledge, so fail loudly rather than return 202 and drop an
-  // erasure request on the floor — a silent success here is the worst outcome:
-  // the page looks healthy to Google and to the user while nothing happens.
-  if (!operator) {
-    console.error("[account-deletion] DELETION_REQUEST_TO_EMAIL is not set — refusing to accept requests");
-    return NextResponse.json({ error: "Service unavailable." }, { status: 503 });
+  // Forwarding to the operator IS the deletion mechanism, so this send is the
+  // one that must succeed. Anything it throws — a Resend rejection, a template
+  // missing from the deployment bundle — is reported with a code instead of
+  // becoming an empty-body 500 that tells nobody anything.
+  try {
+    await resend.emails.send({
+      from,
+      to:      operator,
+      replyTo: email,
+      subject: `[Account deletion] ${email}`,
+      html: [
+        `<p><strong>Account deletion requested</strong></p>`,
+        `<p>Email: <code>${escapeHtml(email)}</code><br/>`,
+        `Locale: ${locale}<br/>`,
+        `Requested at: ${new Date().toISOString()}<br/>`,
+        `IP: ${escapeHtml(ip)}</p>`,
+        reason ? `<p>Reason:<br/>${escapeHtml(reason).replace(/\n/g, "<br/>")}</p>` : "",
+        `<p>Verify the requester controls this address before deleting. Delete the`,
+        ` Supabase auth user (cascades every owned row + storage) and the matching`,
+        ` <code>contacts</code> row on the landing page. The trial_ledger row is`,
+        ` retained by design — remove it only on an article 21 objection.</p>`,
+      ].join(""),
+    });
+  } catch (err) {
+    console.error("[account-deletion] operator notification failed:", err);
+    return fail(500, "OPERATOR_MAIL_FAILED");
   }
 
-  // Must go out even if the acknowledgement to the requester fails.
-  await resend.emails.send({
-    from,
-    to:      operator,
-    replyTo: email,
-    subject: `[Account deletion] ${email}`,
-    html: [
-      `<p><strong>Account deletion requested</strong></p>`,
-      `<p>Email: <code>${escapeHtml(email)}</code><br/>`,
-      `Locale: ${locale}<br/>`,
-      `Requested at: ${new Date().toISOString()}<br/>`,
-      `IP: ${escapeHtml(ip)}</p>`,
-      reason ? `<p>Reason:<br/>${escapeHtml(reason).replace(/\n/g, "<br/>")}</p>` : "",
-      `<p>Verify the requester controls this address before deleting. Delete the`,
-      ` Supabase auth user (cascades every owned row + storage) and the matching`,
-      ` <code>contacts</code> row on the landing page. The trial_ledger row is`,
-      ` retained by design — remove it only on an article 21 objection.</p>`,
-    ].join(""),
-  });
-
-  const html = renderEmail("deletion-request.html", {
-    subject:  emailT.subject,
-    greeting: emailT.greeting,
-    intro:    emailT.intro,
-    body:     emailT.body,
-    ignore:   emailT.ignore,
-    sign_off: emailT.signOff,
-    team:     dict.emails.teamName,
-    site_url: siteUrl,
-  });
-
+  // From here the request is safely recorded with the operator. The
+  // acknowledgement is best-effort: a failure here must not tell the user their
+  // request was lost, because it wasn't.
   try {
+    const html = renderEmail("deletion-request.html", {
+      subject:  emailT.subject,
+      greeting: emailT.greeting,
+      intro:    emailT.intro,
+      body:     emailT.body,
+      ignore:   emailT.ignore,
+      sign_off: emailT.signOff,
+      team:     dict.emails.teamName,
+      site_url: siteUrl,
+    });
     await resend.emails.send({ from, to: email, subject: emailT.subject, html });
   } catch (err) {
-    // The operator already has the request; a bounced acknowledgement must not
-    // make the user think their request failed.
     console.error("[account-deletion] acknowledgement email failed:", err);
   }
 
   return NextResponse.json({ ok: true }, { status: 202 });
+}
+
+/** Error response carrying a stable code the UI can show and support can grep. */
+function fail(status: number, code: string): NextResponse {
+  return NextResponse.json({ error: code, code }, { status });
 }
 
 function escapeHtml(str: string): string {

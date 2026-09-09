@@ -115,7 +115,15 @@ function RequestForm({ t, locale }: { t: T; locale: string }) {
         return;
       }
 
-      setErrorMsg(res.status === 429 ? t.form.errorRateLimit : t.form.errorGeneric);
+      if (res.status === 429) {
+        setErrorMsg(t.form.errorRateLimit);
+      } else {
+        // Append the server's code. This page carries a legal promise, so a
+        // failed request has to leave the user something they can quote to us
+        // rather than an untraceable "something went wrong".
+        const code = await res.json().then((d) => d?.code).catch(() => null);
+        setErrorMsg(code ? `${t.form.errorGeneric} (${code})` : t.form.errorGeneric);
+      }
       setState("error");
     } catch {
       setErrorMsg(t.form.errorNetwork);
