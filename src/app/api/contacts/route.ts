@@ -40,9 +40,12 @@ export async function POST(req: NextRequest) {
 
   const { name, email, cfTurnstileToken } = parsed.data;
 
-  const captchaOk = await verifyTurnstile(cfTurnstileToken, ip);
-  if (!captchaOk) {
-    return NextResponse.json({ error: "Security check failed." }, { status: 400 });
+  const captcha = await verifyTurnstile(cfTurnstileToken, ip);
+  if (!captcha.ok) {
+    return NextResponse.json(
+      { error: "Security check failed.", code: `CAPTCHA_FAILED:${captcha.codes.join(",") || "unknown"}` },
+      { status: 400 }
+    );
   }
 
   const rawLocale = parsed.data.locale ?? "en";

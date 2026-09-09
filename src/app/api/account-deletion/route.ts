@@ -67,9 +67,12 @@ export async function POST(req: NextRequest) {
 
   const { email, reason, cfTurnstileToken } = parsed.data;
 
-  const captchaOk = await verifyTurnstile(cfTurnstileToken, ip);
-  if (!captchaOk) {
-    return fail(400, "CAPTCHA_FAILED");
+  const captcha = await verifyTurnstile(cfTurnstileToken, ip);
+  if (!captcha.ok) {
+    // Cloudflare's code names the cause: invalid-input-secret (site key and
+    // secret are from different widgets), timeout-or-duplicate (token expired
+    // or replayed), missing-secret-env, ...
+    return fail(400, `CAPTCHA_FAILED:${captcha.codes.join(",") || "unknown"}`);
   }
 
   const rawLocale = parsed.data.locale ?? "en";
