@@ -180,3 +180,18 @@ describe("POST /api/account-deletion — the acknowledgement is a reply-able cha
     });
   });
 });
+
+describe("POST /api/account-deletion — the operator email covers every place the data is", () => {
+  it("names the Play Console tester list, which no code path can reach", async () => {
+    // The address sits on the closed-test list in the Play Console. There is
+    // no Google Group, so `edits.testers` cannot touch it and no automation
+    // ever will — if this email does not say it, nobody removes it and the
+    // person keeps access to the test build after erasing their account.
+    sendMock.mockResolvedValue(ACCEPTED);
+    const POST = await loadRoute();
+
+    await POST(deletionRequest());
+
+    expect(sendMock.mock.calls[0][0].html).toContain("Play Console");
+  });
+});

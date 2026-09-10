@@ -16,7 +16,7 @@ export const deleteAccount = {
       "Registrierte Geräte und Benachrichtigungen",
       "Abonnementdaten und Kaufbelege",
       "Von Ihnen hochgeladene Fotos (Profil, Mahlzeiten, Rezepte, Dokumente)",
-      "Ihre Anmeldung auf dieser Website, sofern Sie sich hier registriert haben",
+      "Ihre Anmeldung auf dieser Website und Ihre Adresse in der Testerliste des geschlossenen Tests in der Google Play Console, sofern Sie sich hier registriert haben",
     ],
   },
 
@@ -37,7 +37,7 @@ export const deleteAccount = {
 
   inApp: {
     title: "Schneller: direkt in der App löschen",
-    body: "Wenn Eatease noch installiert ist, können Sie Ihr Konto selbst unter Einstellungen → Mehr löschen. Diese Löschung erfolgt sofort und läuft nicht über dieses Formular.",
+    body: "Wenn Eatease noch installiert ist, können Sie Ihr Konto selbst unter Einstellungen → Mehr löschen. Diese Löschung erfolgt sofort, erreicht aber nur die App: Ihre Anmeldung auf dieser Website und Ihre Adresse in der Testerliste des geschlossenen Tests in der Google Play Console bleiben bestehen. Wenn Sie sich hier registriert haben, nutzen Sie zusätzlich das Formular unten.",
   },
 
   form: {

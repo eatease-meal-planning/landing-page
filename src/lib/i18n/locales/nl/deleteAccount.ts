@@ -16,7 +16,7 @@ export const deleteAccount = {
       "Geregistreerde apparaten en meldingen",
       "Abonnementsgegevens en aankoopbewijzen",
       "Foto's die je hebt geüpload (profiel, maaltijden, recepten, documenten)",
-      "Je aanmelding op deze website, als je je hier hebt ingeschreven",
+      "Je aanmelding op deze website en je adres op de testerslijst van de closed test in de Google Play Console, als je je hier hebt ingeschreven",
     ],
   },
 
@@ -37,7 +37,7 @@ export const deleteAccount = {
 
   inApp: {
     title: "Sneller: verwijderen in de app",
-    body: "Heb je Eatease nog geïnstalleerd? Dan kun je je account zelf verwijderen via Instellingen → Meer. Die verwijdering is direct en loopt niet via dit formulier.",
+    body: "Heb je Eatease nog geïnstalleerd? Dan kun je je account zelf verwijderen via Instellingen → Meer. Die verwijdering is direct, maar bereikt alleen de app: je aanmelding op deze website en je adres op de testerslijst van de closed test in de Google Play Console blijven staan. Heb je je hier ingeschreven, gebruik dan ook het formulier hieronder.",
   },
 
   form: {

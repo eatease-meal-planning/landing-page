@@ -16,7 +16,7 @@ export const deleteAccount = {
       "Registrerade enheter och aviseringar",
       "Prenumerationsuppgifter och köpkvitton",
       "Foton du laddat upp (profil, måltider, recept, dokument)",
-      "Din anmälan på den här webbplatsen, om du registrerade dig här",
+      "Din anmälan på den här webbplatsen och din adress på testarlistan för den slutna testningen i Google Play Console, om du registrerade dig här",
     ],
   },
 
@@ -37,7 +37,7 @@ export const deleteAccount = {
 
   inApp: {
     title: "Snabbare: radera i appen",
-    body: "Om du fortfarande har Eatease installerad kan du radera kontot själv under Inställningar → Mer. Den raderingen sker direkt och går inte via det här formuläret.",
+    body: "Om du fortfarande har Eatease installerad kan du radera kontot själv under Inställningar → Mer. Den raderingen sker direkt, men når bara appen: din anmälan på den här webbplatsen och din adress på testarlistan för den slutna testningen i Google Play Console finns kvar. Om du registrerade dig här, använd även formuläret nedan.",
   },
 
   form: {

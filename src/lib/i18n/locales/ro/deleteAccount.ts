@@ -16,7 +16,7 @@ export const deleteAccount = {
       "Dispozitivele înregistrate și notificările",
       "Datele de abonament și chitanțele de achiziție",
       "Fotografiile pe care le-ai încărcat (profil, mese, rețete, documente)",
-      "Înscrierea ta pe acest site, dacă te-ai înregistrat aici",
+      "Înscrierea ta pe acest site și adresa ta din lista de testeri a testării închise din Google Play Console, dacă te-ai înregistrat aici",
     ],
   },
 
@@ -37,7 +37,7 @@ export const deleteAccount = {
 
   inApp: {
     title: "Mai rapid: șterge din aplicație",
-    body: "Dacă mai ai Eatease instalată, îți poți șterge singur contul din Setări → Mai multe. Acea ștergere este instantanee și nu trece prin acest formular.",
+    body: "Dacă mai ai Eatease instalată, îți poți șterge singur contul din Setări → Mai multe. Acea ștergere este instantanee, dar ajunge doar la aplicație: înscrierea ta pe acest site și adresa ta din lista de testeri a testării închise din Google Play Console rămân. Dacă te-ai înregistrat aici, folosește și formularul de mai jos.",
   },
 
   form: {

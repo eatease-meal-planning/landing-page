@@ -84,3 +84,33 @@ describe("every locale states the same processing deadline", () => {
     expect(emailBody, `${locale}: emails.deletionRequest.body omits the deadline`).toContain(DEADLINE);
   });
 });
+
+/**
+ * The closed-test tester list lives in the Google Play Console, outside both
+ * databases, and nothing reaches it automatically: `edits.testers` in the Play
+ * Developer API only accepts Google Groups, and there is no group. Removing a
+ * tester is a manual step by the operator, forever.
+ *
+ * Two consequences the copy has to carry. The page must say the tester list is
+ * part of what gets deleted — otherwise "your registration on this website" is
+ * a promise that stops at the row in `contacts`. And the in-app shortcut has to
+ * stop reading as the better option: `app/supabase/functions/delete-account`
+ * removes the auth user and storage in the app's own Supabase project, which
+ * cannot see the landing-page `contacts` row and certainly cannot see the Play
+ * Console. Someone who deletes in the app stays a tester with access to the
+ * build.
+ */
+describe("deletion reaches the closed-test tester list, or says so", () => {
+  it.each(locales)("%s — the list of what gets deleted names Google Play", async (locale) => {
+    const dict = await getDictionary(locale);
+    const items = dict.deleteAccount.whatIsDeleted.items.join(" ");
+
+    expect(items, `${locale}: deleteAccount.whatIsDeleted never mentions the tester list`).toContain("Google Play");
+  });
+
+  it.each(locales)("%s — the in-app shortcut warns that it does not reach the tester list", async (locale) => {
+    const dict = await getDictionary(locale);
+
+    expect(dict.deleteAccount.inApp.body, `${locale}: deleteAccount.inApp.body`).toContain("Google Play");
+  });
+});
