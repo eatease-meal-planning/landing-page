@@ -5,7 +5,7 @@ import type { Translations } from "@/lib/i18n/dictionaries";
 interface AboutSectionProps {
   t: Translations["aboutUs"];
   locale: Locale;
-  joinWaitlist: string;
+  joinClosedTest: string;
 }
 
 const VALUE_ICONS = [
@@ -14,7 +14,7 @@ const VALUE_ICONS = [
   <Leaf key="leaf" className="size-6 text-primary" />,
 ];
 
-export function AboutSection({ t, locale, joinWaitlist }: AboutSectionProps) {
+export function AboutSection({ t, locale, joinClosedTest }: AboutSectionProps) {
   const values = [t.value1, t.value2, t.value3];
 
   return (
@@ -98,7 +98,7 @@ export function AboutSection({ t, locale, joinWaitlist }: AboutSectionProps) {
             href={`/${locale}#waitlist`}
             className="mt-8 inline-flex items-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-primary shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-white/90 hover:shadow-md"
           >
-            {joinWaitlist}
+            {joinClosedTest}
           </a>
         </div>
       </section>

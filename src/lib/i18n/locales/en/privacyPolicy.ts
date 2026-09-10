@@ -33,7 +33,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
       "items": [
         "Visit our website at https://www.eatease.eu or any website of ours that links to this Privacy Notice",
         "Download and use our mobile application (Eatease), or any other application of ours that links to this Privacy Notice",
-        "Use Meal Planning Service. Eatease is a meal planning and nutritional tracking platform designed to help users organize their daily meals and monitor their macronutrients (such as calories, protein, carbohydrates, and fats). Currently, our website provides information about the service and allows visitors to join a waitlist to gain early access to the application and receive updates and communications regarding the launch.",
+        "Use Meal Planning Service. Eatease is a meal planning and nutritional tracking platform designed to help users organize their daily meals and monitor their macronutrients (such as calories, protein, carbohydrates, and fats). Currently, our website provides information about the service and allows visitors to sign up for the closed test of our Android application. If you sign up, we add the email address you give us to the closed-test tester list in the Google Play Console, which means the address is shared with Google for that purpose, and we email you the opt-in link you need in order to install the app. We also use the address to send you updates and communications about the service.",
         "Engage with us in other related ways, including any marketing or events"
       ]
     },

@@ -146,7 +146,7 @@ export function Nav({ locale, t }: NavProps) {
             href={`/${locale}#waitlist`}
             className="hidden items-center rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-600 hover:-translate-y-px hover:shadow-md md:inline-flex"
           >
-            {t.joinWaitlist}
+            {t.joinClosedTest}
           </a>
 
           {/* Mobile hamburger */}
@@ -215,7 +215,7 @@ export function Nav({ locale, t }: NavProps) {
               onClick={() => setMenuOpen(false)}
               className="mt-3 inline-flex items-center justify-center rounded-lg bg-primary px-5 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-600"
             >
-              {t.joinWaitlist}
+              {t.joinClosedTest}
             </a>
           </div>
       </div>

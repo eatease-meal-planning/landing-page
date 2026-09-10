@@ -6,5 +6,5 @@ export const cta = {
   perk2:       { title: "Liste della spesa condivisibili", sub: "Invia la lista a chiunque" },
   perk3:       { title: "Macro tramite foto", sub: "Registra i pasti fotografando il piatto" },
   perk4:       { title: "Porzioni per famiglie", sub: "Adatta ogni ricetta automaticamente per persona" },
-  joinWaitlist: "Unisciti alla lista d'attesa",
+  joinClosedTest: "Unisciti al test chiuso",
 };

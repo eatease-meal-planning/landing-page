@@ -1,7 +1,7 @@
 export const pages = {
   confirmed: {
     title:    "Anmeldung bestätigt!",
-    body:     "Willkommen bei Eatease. Sie werden zu den Ersten gehören, die erfahren, wenn die App gestartet wird. Vielen Dank für Ihr Vertrauen!",
+    body:     "Willkommen bei Eatease. Ihre Einladung zum geschlossenen Test kommt innerhalb von 48 Stunden per E-Mail — mit dem Anmeldelink, den Sie brauchen, bevor Sie die App bei Google Play installieren können.",
     backHome: "Zurück zur Startseite",
   },
   linkExpired: {

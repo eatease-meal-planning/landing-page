@@ -6,5 +6,5 @@ export const cta = {
   perk2:       { title: "Listes de courses partageables", sub: "Envoyez la liste à n'importe qui" },
   perk3:       { title: "Macros par photo",         sub: "Enregistrez les repas en photographiant l'assiette" },
   perk4:       { title: "Portions familiales",      sub: "Ajustez automatiquement chaque recette par personne" },
-  joinWaitlist: "Rejoindre la liste d'attente",
+  joinClosedTest: "Rejoindre le test fermé",
 };

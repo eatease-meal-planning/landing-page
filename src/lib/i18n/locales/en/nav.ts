@@ -2,7 +2,7 @@ export const nav = {
   howItWorks:  "How it works",
   features:    "Features",
   aboutUs:     "About us",
-  joinWaitlist: "Join waitlist",
+  joinClosedTest: "Join the closed test",
   openMenu:    "Open menu",
   closeMenu:   "Close menu",
 };

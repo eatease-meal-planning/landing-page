@@ -4,7 +4,7 @@ export const emails = {
   welcome: {
     subject:  "Benvenuto in Eatease!",
     greeting: "Ciao {name},",
-    body:     "Grazie per la registrazione! Stiamo ultimando gli ultimi dettagli per il lancio della nostra App, così sarai uno dei primi a poter utilizzare il nostro servizio.",
+    body:     "Grazie per esserti registrato! Il tuo invito al test chiuso è in arrivo: lo riceverai entro 48 ore, con il link di adesione che ti serve prima di installare l'app da Google Play. Fino ad allora non devi fare nulla.",
     signOff:  "A presto,",
   },
   confirmation: {

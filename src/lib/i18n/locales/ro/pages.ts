@@ -1,7 +1,7 @@
 export const pages = {
   confirmed: {
     title:    "Înregistrare confirmată!",
-    body:     "Bun venit la Eatease. Vei fi printre primii care vor afla când se lansează aplicația. Îți mulțumim pentru încredere!",
+    body:     "Bine ai venit la Eatease. Îți trimitem invitația la testarea închisă în termen de 48 de ore, cu linkul de înscriere de care ai nevoie înainte de a putea instala aplicația din Google Play.",
     backHome: "Înapoi acasă",
   },
   linkExpired: {

@@ -57,7 +57,8 @@ export function CtaSection({ t, tForm, locale }: CtaProps) {
           ))}
         </div>
 
-        {/* Waitlist form — lives here now (scroll target for nav CTA) */}
+        {/* Closed-test signup form (scroll target for the nav CTA; the
+            #waitlist anchor is kept so links already in the wild still land here) */}
         <div id="waitlist" className="mx-auto max-w-sm scroll-mt-24 text-left">
           <ContactForm t={tForm} locale={locale} />
         </div>

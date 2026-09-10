@@ -6,5 +6,5 @@ export const cta = {
   perk2:       { title: "Shareable shopping lists", sub: "Send the list to anyone" },
   perk3:       { title: "Macros by photo",         sub: "Log meals by taking a picture of the plate" },
   perk4:       { title: "Family portions",      sub: "Scale each recipe automatically per person" },
-  joinWaitlist: "Join the waitlist",
+  joinClosedTest: "Join the closed test",
 };

@@ -17,7 +17,7 @@ export default async function AboutUsPage({
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Nav locale={locale} t={dict.nav} />
-      <AboutSection t={dict.aboutUs} locale={locale} joinWaitlist={dict.cta.joinWaitlist} />
+      <AboutSection t={dict.aboutUs} locale={locale} joinClosedTest={dict.cta.joinClosedTest} />
       <Footer t={dict.footer} locale={locale} />
     </div>
   );

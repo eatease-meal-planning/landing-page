@@ -2,7 +2,7 @@ export const nav = {
   howItWorks:  "Hoe het werkt",
   features:    "Functies",
   aboutUs:     "Over ons",
-  joinWaitlist: "Aanmelden voor de wachtlijst",
+  joinClosedTest: "Meedoen aan de closed test",
   openMenu:    "Menu openen",
   closeMenu:   "Menu sluiten",
 };

@@ -1,7 +1,7 @@
 export const pages = {
   confirmed: {
     title:    "Aanmelding bevestigd!",
-    body:     "Welkom bij Eatease. Je zult een van de eersten zijn die weet wanneer de app wordt gelanceerd. Bedankt voor je vertrouwen!",
+    body:     "Welkom bij Eatease. Je uitnodiging voor de closed test komt binnen 48 uur per e-mail, met de deelnamelink die je nodig hebt voordat je de app kunt installeren via Google Play.",
     backHome: "Terug naar start",
   },
   linkExpired: {

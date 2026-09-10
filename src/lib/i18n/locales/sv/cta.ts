@@ -6,5 +6,5 @@ export const cta = {
   perk2:       { title: "Delbara inköpslistor", sub: "Skicka listan till vem som helst" },
   perk3:       { title: "Makron via foto",         sub: "Registrera måltider genom att fota tallriken" },
   perk4:       { title: "Familjeportioner",      sub: "Anpassa varje recept automatiskt per person" },
-  joinWaitlist: "Gå med i väntelistan",
+  joinClosedTest: "Gå med i den slutna testningen",
 };
