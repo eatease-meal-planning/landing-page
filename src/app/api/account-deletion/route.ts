@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { z } from "zod";
 import { isValidLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { renderEmail } from "@/lib/email";
+import { escapeHtml, renderEmail } from "@/lib/email";
+import { fail } from "@/lib/apiError";
+import { getResend } from "@/lib/resend";
 import { getClientIp, verifyTurnstile } from "@/lib/turnstile";
 import { checkRateLimit } from "@/lib/rateLimit";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 const schema = z.object({
   email:            z.string().email(),
@@ -35,7 +34,11 @@ export async function POST(req: NextRequest) {
     console.error("[account-deletion] DELETION_REQUEST_TO_EMAIL is not set — refusing requests");
     return fail(503, "CONFIG_MISSING_OPERATOR");
   }
-  if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+  // getResend() returns null rather than throwing: `new Resend(undefined)`
+  // throws, so building the client at module scope would kill this route on
+  // import and this branch would never run.
+  const resend = getResend();
+  if (!resend || !process.env.RESEND_FROM_EMAIL) {
     console.error("[account-deletion] RESEND_API_KEY / RESEND_FROM_EMAIL is not set — refusing requests");
     return fail(503, "CONFIG_MISSING_RESEND");
   }
@@ -53,10 +56,7 @@ export async function POST(req: NextRequest) {
     return fail(503, "DB_UNAVAILABLE");
   }
   if (limited) {
-    return NextResponse.json(
-      { error: "Too many attempts. Please wait a few minutes and try again.", code: "RATE_LIMITED" },
-      { status: 429 }
-    );
+    return fail(429, "RATE_LIMITED", "Too many attempts. Please wait a few minutes and try again.");
   }
 
   const body = await req.json().catch(() => null);
@@ -84,11 +84,16 @@ export async function POST(req: NextRequest) {
   const from    = `Eatease <${process.env.RESEND_FROM_EMAIL}>`;
 
   // Forwarding to the operator IS the deletion mechanism, so this send is the
-  // one that must succeed. Anything it throws — a Resend rejection, a template
-  // missing from the deployment bundle — is reported with a code instead of
-  // becoming an empty-body 500 that tells nobody anything.
+  // one that must succeed.
+  //
+  // It has to be checked two ways. `resend.emails.send()` does NOT reject: the
+  // SDK resolves to `{ data, error }` for an API rejection (unverified domain,
+  // revoked key, 429) *and* for a transport failure. A bare try/catch around it
+  // therefore never fires, and the route would answer 202 "request received"
+  // with nothing in the operator's inbox — the exact silent failure this page
+  // cannot afford. The try/catch stays for what genuinely throws.
   try {
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from,
       to:      operator,
       replyTo: email,
@@ -106,9 +111,14 @@ export async function POST(req: NextRequest) {
         ` retained by design — remove it only on an article 21 objection.</p>`,
       ].join(""),
     });
+
+    if (error) {
+      console.error("[account-deletion] Resend rejected the operator notification:", error);
+      return fail(502, `OPERATOR_MAIL_FAILED:${error.name}`);
+    }
   } catch (err) {
-    console.error("[account-deletion] operator notification failed:", err);
-    return fail(500, "OPERATOR_MAIL_FAILED");
+    console.error("[account-deletion] operator notification threw:", err);
+    return fail(500, "OPERATOR_MAIL_FAILED:threw");
   }
 
   // From here the request is safely recorded with the operator. The
@@ -125,23 +135,11 @@ export async function POST(req: NextRequest) {
       team:     dict.emails.teamName,
       site_url: siteUrl,
     });
-    await resend.emails.send({ from, to: email, subject: emailT.subject, html });
+    const { error } = await resend.emails.send({ from, to: email, subject: emailT.subject, html });
+    if (error) console.error("[account-deletion] Resend rejected the acknowledgement:", error);
   } catch (err) {
-    console.error("[account-deletion] acknowledgement email failed:", err);
+    console.error("[account-deletion] acknowledgement email threw:", err);
   }
 
   return NextResponse.json({ ok: true }, { status: 202 });
-}
-
-/** Error response carrying a stable code the UI can show and support can grep. */
-function fail(status: number, code: string): NextResponse {
-  return NextResponse.json({ error: code, code }, { status });
-}
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
