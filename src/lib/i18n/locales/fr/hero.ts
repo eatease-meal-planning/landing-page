@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Test fermé",
   description:     "Planifiez tous vos repas de la semaine, autour de la nourriture que vous aimez vraiment, du temps dont vous disposez réellement, et des calories et macros dont vous avez réellement besoin. En un clic, la liste de courses s'écrit toute seule.",
-  formSubtitle:    "Rejoignez le test fermé sur Google Play. Il vous faut un appareil Android et un compte Google.",
+  formSubtitle:    "Inscrivez-vous au test fermé : nous vous envoyons l'invitation par e-mail sous 48 heures. Il vous faut un appareil Android et un compte Google.",
   stat1Value:      "4 semaines",
   stat1Label:      "d'accès gratuit à toutes les fonctionnalités",
   stat2Value:      "2 h",

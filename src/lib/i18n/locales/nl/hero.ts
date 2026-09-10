@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Closed test",
   description:     "Plan al je wekelijkse maaltijden, rond het eten waar je echt van houdt, de tijd die je echt hebt en de calorieën en macro's die je daadwerkelijk nodig hebt. Eén tik en je boodschappenlijstje schrijft zichzelf.",
-  formSubtitle:    "Doe mee aan de closed test op Google Play. Je hebt een Android-toestel en een Google-account nodig.",
+  formSubtitle:    "Meld je aan voor de closed test — de uitnodiging komt binnen 48 uur per e-mail. Je hebt een Android-toestel en een Google-account nodig.",
   stat1Value:      "4 weken",
   stat1Label:      "gratis toegang tot alle functies",
   stat2Value:      "2 u",

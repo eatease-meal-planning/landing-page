@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Prueba cerrada",
   description:     "Planifica todas tus comidas semanales, en torno a la comida que realmente te gusta, el tiempo que realmente tienes y las calorías y macros que realmente necesitas. Un toque y la lista de la compra se escribe sola.",
-  formSubtitle:    "Únete a la prueba cerrada en Google Play. Necesitas un dispositivo Android y una cuenta de Google.",
+  formSubtitle:    "Apúntate a la prueba cerrada: te enviamos la invitación por correo en un plazo de 48 horas. Necesitas un dispositivo Android y una cuenta de Google.",
   stat1Value:      "4 semanas",
   stat1Label:      "acceso gratuito a todas las funcionalidades",
   stat2Value:      "2 h",

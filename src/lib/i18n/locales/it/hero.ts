@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Test chiuso",
   description:     "Pianifica tutti i tuoi pasti settimanali, intorno al cibo che ami davvero, al tempo che hai davvero e alle calorie e ai macro di cui hai davvero bisogno. Un tocco e la lista della spesa si scrive da sola.",
-  formSubtitle:    "Unisciti al test chiuso su Google Play. Ti servono un dispositivo Android e un account Google.",
+  formSubtitle:    "Iscriviti al test chiuso: ti inviamo l'invito via email entro 48 ore. Ti servono un dispositivo Android e un account Google.",
   stat1Value:      "4 settimane",
   stat1Label:      "accesso gratuito a tutte le funzionalità",
   stat2Value:      "2 h",

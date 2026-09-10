@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Sluten testning",
   description:     "Planera alla dina veckomåltider kring maten du faktiskt gillar, den tid du faktiskt har och de kalorier och makron du faktiskt behöver. Ett tryck och inköpslistan skriver sig själv.",
-  formSubtitle:    "Gå med i den slutna testningen på Google Play. Du behöver en Android-enhet och ett Google-konto.",
+  formSubtitle:    "Anmäl dig till den slutna testningen — vi skickar inbjudan via e-post inom 48 timmar. Du behöver en Android-enhet och ett Google-konto.",
   stat1Value:      "4 veckor",
   stat1Label:      "gratis tillgång till alla funktioner",
   stat2Value:      "2 h",

@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Closed test",
   description:     "Plan all your weekly meals around the food you really like, the time you actually have, and the calories and macros you really need. One tap and the shopping list writes itself.",
-  formSubtitle:    "Join the closed test on Google Play. You need an Android device and a Google account.",
+  formSubtitle:    "Sign up for the closed test — we email your invite within 48 hours. You need an Android device and a Google account.",
   stat1Value:      "4 weeks",
   stat1Label:      "free access to all features",
   stat2Value:      "2 h",

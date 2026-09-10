@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Testare închisă",
   description:     "Planifică-ți toate mesele săptămânale, în jurul mâncării care îți place cu adevărat, a timpului pe care îl ai cu adevărat și a caloriilor și macro-urilor de care ai cu adevărat nevoie. O simplă atingere și lista de cumpărături se scrie singură.",
-  formSubtitle:    "Înscrie-te în testarea închisă pe Google Play. Ai nevoie de un dispozitiv Android și de un cont Google.",
+  formSubtitle:    "Înscrie-te în testarea închisă — îți trimitem invitația pe e-mail în termen de 48 de ore. Ai nevoie de un dispozitiv Android și de un cont Google.",
   stat1Value:      "4 săptămâni",
   stat1Label:      "acces gratuit la toate funcționalitățile",
   stat2Value:      "2 h",

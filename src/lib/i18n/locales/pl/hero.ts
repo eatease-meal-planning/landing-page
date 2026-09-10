@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Testy zamknięte",
   description:     "Zaplanuj wszystkie cotygodniowe posiłki wokół jedzenia, które naprawdę lubisz, czasu, którym naprawdę dysponujesz, oraz kalorii i makro, których naprawdę potrzebujesz. Jedno dotknięcie, a lista zakupów pisze się sama.",
-  formSubtitle:    "Dołącz do testów zamkniętych w Google Play. Potrzebujesz urządzenia z Androidem i konta Google.",
+  formSubtitle:    "Zapisz się na testy zamknięte — zaproszenie wyślemy e-mailem w ciągu 48 godzin. Potrzebujesz urządzenia z Androidem i konta Google.",
   stat1Value:      "4 tygodnie",
   stat1Label:      "darmowego dostępu do wszystkich funkcji",
   stat2Value:      "2 h",

@@ -1,7 +1,7 @@
 export const hero = {
   badge:           "Geschlossener Test",
   description:     "Planen Sie alle Ihre wöchentlichen Mahlzeiten rund um das Essen, das Sie wirklich mögen, die Zeit, die Sie wirklich haben, und die Kalorien und Makros, die Sie wirklich brauchen. Ein Tippen und die Einkaufsliste schreibt sich von selbst.",
-  formSubtitle:    "Nehmen Sie am geschlossenen Test bei Google Play teil. Sie benötigen ein Android-Gerät und ein Google-Konto.",
+  formSubtitle:    "Melden Sie sich für den geschlossenen Test an — die Einladung kommt innerhalb von 48 Stunden per E-Mail. Sie benötigen ein Android-Gerät und ein Google-Konto.",
   stat1Value:      "4 Wochen",
   stat1Label:      "kostenloser Zugang zu allen Funktionen",
   stat2Value:      "2 h",
