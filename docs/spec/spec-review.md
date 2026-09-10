@@ -250,13 +250,13 @@ O `closed-test-signup` põe o endereço do tester num **Grupo Google** (TASK-D) 
 Um tester que elimine a conta **continua inscrito no teste fechado** e continua a ter acesso à versão de teste na Play Store. E `deleteAccount.whatIsDeleted` (`en/deleteAccount.ts:20`) promete apagar *«Your registration on this website, if you signed up here»* — promessa que deixa de ser verdadeira no instante em que uma linha em `contacts` significa «tester inscrito».
 
 **Critérios de aceitação:**
-- [ ] O email ao operador (`api/account-deletion/route.ts`) instrui explicitamente a remover o endereço da **lista de testers do Play Console**, além de apagar o utilizador Supabase e a linha `contacts`.
-- [ ] ~~Na Fase 2, a remoção tem caminho automático via Directory API (TASK-E)~~ — **não tem, e não terá.** Sem Grupo Google não há API (`edits.testers` não suporta listas de emails), portanto a instrução explícita é a única via, e o passo 3 da Fase 2 tem de a dizer ao utilizador.
-- [ ] `deleteAccount.whatIsDeleted` reflecte o que é, de facto, apagado.
+- [x] O email ao operador (`api/account-deletion/route.ts`) instrui explicitamente a remover o endereço da **lista de testers do Play Console**, em lista numerada, além de apagar o utilizador Supabase e a linha `contacts`.
+- [x] ~~Na Fase 2, a remoção tem caminho automático via Directory API (TASK-E)~~ — **não tem, e não terá.** Sem Grupo Google não há API (`edits.testers` não suporta listas de emails), portanto a instrução explícita é a única via. Registado na TASK-13 para o passo 3 da Fase 2 o dizer também ao utilizador.
+- [x] `deleteAccount.whatIsDeleted` reflecte o que é, de facto, apagado — passou a nomear a lista de testers, que a promessa «o teu registo neste site» não cobria.
 - [x] **O caso em que os dois endereços não coincidem deixou de existir.** A lista do Play Console contém exactamente os endereços que lá pomos, vindos do `contacts` — a mesma chave que o pedido de eliminação traz. A preocupação era válida para um Grupo Google, onde a adesão fica presa à conta Google do tester.
 
-**Verificação:** eliminar uma conta de teste ponta-a-ponta e confirmar no Grupo Google que a adesão desapareceu.
-**Dependências:** TASK-D. Bloqueia a TASK-13 (a Fase 2 não pode prometer eliminação completa enquanto isto ficar de fora).
+**Verificação:** eliminar uma conta de teste ponta-a-ponta e confirmar no Play Console que o endereço saiu da lista de testers.
+**Dependências:** ~~TASK-D~~ — feita. **Já não bloqueia a TASK-13**: a Fase 2 pode prometer eliminação completa porque o passo manual está nomeado no email ao operador. O que a TASK-13 herda é o critério novo abaixo.
 **Ficheiros:** `src/app/api/account-deletion/route.ts`, `src/lib/i18n/locales/{10}/deleteAccount.ts`
 **Scope:** M
 
@@ -274,7 +274,7 @@ Apagá-la preventivamente exigiria `service_role` do projeto da app dentro da la
 
 **Critérios de aceitação acrescentados à TASK-13:**
 - [ ] O passo 3 avisa, antes do botão irreversível, que a oposição ao registo de trial (art. 21.º) tem de ser pedida **antes** da eliminação, com o endereço de contacto.
-
+- [ ] **O passo 3 diz também que a remoção da lista de testers do teste fechado é manual** e não acontece no instante em que o botão é carregado — a eliminação self-service é imediata na app e na BD, mas o Play Console não tem API que a alcance (TASK-E, impossível). Sem isto, a Fase 2 promete «imediato e completo» sendo imediato e parcial.
 **Critério acrescentado à TASK-14:**
 - [ ] A copy divulga **as duas** chaves do ledger (email e provider), alinhando `deleteAccount.whatRemains` com `privacyPolicy.ts:378`.
 

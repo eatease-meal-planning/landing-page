@@ -29,7 +29,9 @@ A correção que mudou o desenho: **a Google não envia o convite.** O Play Cons
 1. **A TASK-E morre.** O `edits.testers` da Play Developer API só aceita `googleGroups`; a documentação diz literalmente que *«does not support email lists»*. Não há forma de acrescentar ou remover testers por API, hoje nem depois — o que faz da instrução ao operador (TASK-16) a **única** via de remoção quando alguém elimina a conta.
 2. **A divergência de chaves da §3.5 desaparece.** A preocupação era que a adesão a um grupo fica presa à *conta Google* do tester enquanto o pedido de eliminação traz o endereço escrito no formulário. A lista do Console contém exactamente os endereços que lá pomos, vindos do `contacts` — coincidem por construção.
 
-**Por confirmar (não encontrei fonte da Google):** fontes da comunidade dizem que editar a lista *dentro* do Console mexe no track e pode partir a contagem de 14 dias consecutivos, enquanto trocar membros de um grupo não mexeria. Com testers a entrar ao longo do tempo, isto importa — verificar na Consola antes do próximo lote.
+**Sobre os 14 dias (resolvido a 2026-09-10):** a contagem só arranca quando houver **pelo menos 12 testers com opt-in**, e o que tem de se manter durante os 14 dias é esse mínimo. Acrescentar testers à lista não parte nada — só faria diferença se o total descesse abaixo de 12. Portanto o desenho «o formulário vai alimentando a lista» é compatível com o requisito, e a preocupação que fontes da comunidade levantavam sobre editar a lista dentro do Console não se aplica ao caso de **adicionar**.
+
+> A implicação inversa continua de pé, e liga-se à TASK-16: **remover** um tester que eliminou a conta pode fazer o total descer abaixo de 12 e partir a contagem. Não é razão para não remover — é razão para o operador saber que, se estiver no limite, remover reinicia o período.
 
 Requisitos do lado do tester: o email tem de ser uma **conta Google**, e a adesão ao grupo tem de estar **ativa** (não pendente) antes de o link de opt-in funcionar.
 
@@ -140,6 +142,11 @@ Isto importa para a página de eliminação: `contacts` continua a guardar nome 
 ### ~~TASK-E (futuro): automatizar a adição ao grupo~~
 - **Status:** [—] IMPOSSÍVEL. O `edits.testers` da Play Developer API só aceita `googleGroups` e a documentação diz que *«does not support email lists»*. Sem grupo não há API, e sem API a adição e a remoção de testers são manuais para sempre.
 - **Consequência a jusante:** a remoção do tester quando ele elimina a conta (TASK-16) só pode ser uma instrução ao operador. A Fase 2 não pode prometer automatização.
+
+### TASK-16: a eliminação alcança a lista de testers
+- **O quê:** o email ao operador de `api/account-deletion/route.ts` instrui a remover o endereço da lista do Play Console, e o `deleteAccount` deixa de prometer mais do que apaga.
+- **Descoberto durante:** verificar o caminho *in-app*. A edge function da app (`app/supabase/functions/delete-account/index.ts`) apaga storage e o utilizador de auth **no projeto Supabase da app**, que não vê o `contacts` da landing-page nem o Play Console. Quem elimina por lá continuava tester, com acesso ao build, e o `inApp.body` apresentava esse caminho como o mais rápido sem dizer que era o incompleto.
+- **Status:** [x] COMPLETE — guardado por 20 asserções em `deleteAccountCopy.test.ts` + 1 em `account-deletion/route.test.ts`.
 
 ## Nota de i18n — a *Constraint dura* durante edições em paralelo
 
