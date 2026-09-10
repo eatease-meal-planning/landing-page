@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 
-function escapeHtml(str: string): string {
+/** Escapes text interpolated into an HTML email body. */
+export function escapeHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

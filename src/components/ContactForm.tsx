@@ -40,12 +40,18 @@ export function ContactForm({ t, locale }: { t: FormT; locale: string }) {
         return;
       }
 
-      if (res.status === 409) {
+      // Append the server's code on anything the user can't act on alone.
+      // This form answered "something went wrong" for weeks while the server
+      // was already naming the cause (CAPTCHA_FAILED:invalid-input-secret) —
+      // showing it is what makes a report actionable instead of a guess.
+      const code = await res.json().then((d) => d?.code).catch(() => null);
+
+      if (res.status === 409 || code === "COOLDOWN_ACTIVE") {
         setErrorMsg(t.errorDuplicate);
       } else if (res.status === 429) {
         setErrorMsg(t.errorRateLimit);
       } else {
-        setErrorMsg(t.errorGeneric);
+        setErrorMsg(code ? `${t.errorGeneric} (${code})` : t.errorGeneric);
       }
       setState("error");
     } catch {
@@ -119,7 +125,7 @@ export function ContactForm({ t, locale }: { t: FormT; locale: string }) {
       </div>
 
       {state === "error" && (
-        <p className="rounded-md border border-red-500/20 bg-red-500/10 px-3.5 py-2.5 text-sm text-red-300">
+        <p role="alert" className="rounded-md border border-red-500/20 bg-red-500/10 px-3.5 py-2.5 text-sm text-red-300">
           {errorMsg}
         </p>
       )}
