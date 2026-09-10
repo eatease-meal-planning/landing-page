@@ -1,6 +1,7 @@
 # Página pública de eliminação de conta (Google Play Console)
 
-> Estado: **direção aprovada, por implementar** · Criado 2026-08-31
+> Estado: **Fase 1 em produção e verificada** (2026-09-10) · **Fase 2 aprovada, por implementar** · Criado 2026-08-31
+> Spec de implementação: [`docs/delete-account.md`](../delete-account.md)
 > Repos envolvidos: `landing-page` (principal) · `app` (1 migration isolada)
 
 ## Problem Statement
@@ -140,9 +141,25 @@ Sem `TO`, o Postgres assume `TO public`, que inclui `anon`. Qualquer pessoa com 
 | **Captcha nativo do Supabase Auth** | É project-wide: partiria o `signInWithPassword` da app em produção. |
 | **Privacy Center completo (export + delete)** | Versão 10x correta a prazo (Art. 20), mas fora do que desbloqueia a submissão hoje. |
 
-## Open Questions
+## Open Questions — estado a 2026-09-10
 
-- Que endereço de contacto humano usar na página — `privacy@eatease.eu`, `support@eatease.eu`, ou o que já consta na privacy policy? Tem de ser consistente com o que lá está.
-- A landing-page deve apagar a linha em `contacts` **sempre**, ou apresentar checkbox ("também me remover da lista de espera")? Recomendação: sempre, com aviso explícito no ecrã de confirmação — é o que a intenção do utilizador significa.
-- O template *Magic Link* passa a ser usado para eliminação de conta. Vale a pena um template dedicado com copy própria ("Confirma a eliminação da tua conta EatEase"), em vez de reutilizar copy genérica de login?
-- Prazo de submissão ao Play Console — se for esta semana, ponderar o plano B estático primeiro e o self-service logo a seguir.
+- [x] **Contacto humano** → `privacy@eatease.eu`, o que já consta na privacy policy. *(Nota: `privacy-policy.txt` contém também `privacy@greenlink.pt`, resíduo do template Termly, por limpar.)*
+- [x] **Apagar a linha em `contacts` sempre, ou com checkbox?** → sempre, com aviso explícito. É o que a intenção do utilizador significa.
+- [x] **Template dedicado para o Magic Link?** → sim, copy própria de eliminação de conta. Registado na TASK-09.
+- [x] **Prazo de submissão** → resolvido pelo faseamento: a Fase 1 saiu sem depender do Dashboard nem do repo `app`.
+- [ ] **Palavra de confirmação do passo 3** — traduzida por locale ou fixa em EN?
+- [ ] **Apple Private Relay** — testar com uma conta real antes de anunciar o self-service.
+- [ ] **Janela de retenção dos backups do Supabase** — necessária para a copy da TASK-14.
+
+## O que a implementação ensinou (2026-08-31 → 2026-09-10)
+
+**A Fase 1 saiu em produção e foi verificada ponta-a-ponta.** Duas falhas apareceram só em produção, ambas invisíveis a `tsc`, `lint` e `build`:
+
+1. **Supabase adormece.** A primeira query após inatividade falhava e o handler devolvia **500 de corpo vazio**.
+2. **`TURNSTILE_SECRET_KEY` não pertencia ao widget da site key.** A Cloudflare devolvia `invalid-input-secret`, que era engolido. **Partia também o formulário da waitlist** — explicação bem mais provável para não haver inscritos do que falta de interesse.
+
+**A lição que ficou como regra:** nesta página, uma falha silenciosa é pior do que uma falha ruidosa. Duas sessões de depuração às cegas custaram mais do que teria custado propagar códigos de erro desde o início. Hoje toda a resposta carrega um código estável e a página mostra-o.
+
+**O double opt-in foi considerado e descartado — em favor do OTP.** Ambos provam a mesma coisa: posse do email. Mas um token da landing-page prova e mais nada; para apagar a conta da app faltaria credencial, e as duas formas de a obter (a `service_role` do projeto da app, ou uma edge function `delete-account-by-email` com segredo partilhado) criam **uma chave que apaga qualquer conta a partir de um endereço**. O OTP devolve o JWT do próprio utilizador, que o `delete-account` já aceita. Nenhuma tabela nova, nenhum código novo no repo `app`, nenhuma credencial privilegiada nova. Ir direto à Fase 2 é *menos* trabalho do que construir o double opt-in.
+
+**Uma retenção que faltava divulgar.** A verificação da questão fiscal (`iap_receipt_log`/`subscriptions` cascateiam — sem problema) revelou o `trial_ledger`: sha256 do email normalizado, sem FK por desenho, 12 meses, para impedir reutilização do período experimental. A spec do repo `app` exige que seja divulgado *«no ecrã de eliminação de conta»* — que é esta página. A primeira versão da copy omitia-o; corrigido nas 10 locales, com o cuidado de **não lhe chamar anónimo** (é pseudonimização) e de expor o direito de oposição do Art. 21.º.
