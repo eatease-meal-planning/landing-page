@@ -60,8 +60,9 @@ Duas notas de instalação, para não se repetir a investigação: `@vitejs/plug
 3. ✅ TASK-15  «ignorar» → «responder» nas 10 locales
 4. ✅ TASK-A1/A2/A3 + C + B   (B saiu em commit próprio: era perda de dados, não copy)
 5. ✅ TASK-16  a eliminação alcança a lista de testers
-6. TASK-11  fechar rate_limits ao anon    ← A SEGUIR. repo D:deveateaseapp
-7. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 14
+6. TASK-11  fechar rate_limits ao anon    ← A SEGUIR. repo D:\dev\eatease\app
+7. TASK-19  a app promete apagar tudo e não apaga  ← mesma ida ao repo da app
+8. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 14
    TASK-E   ✗ impossível — sem Grupo Google não há API
 ```
 
@@ -85,7 +86,7 @@ Reentrante: quem falhar fica com `closed_test_invited_at` a NULL e entra na exec
 
 ### Próxima task: TASK-11 — fechar `rate_limits` à role `anon`
 
-**Está no outro repo:** `D:deveateaseapp`. É a única alteração ao repo da app que os specs autorizam sem perguntar (`delete-account.md`, *Perguntar primeiro*).
+**Está no outro repo:** `D:\dev\eatease\app`. É a única alteração ao repo da app que os specs autorizam sem perguntar (`delete-account.md`, *Perguntar primeiro*).
 
 **Problema, verificado na revisão (§1).** `app/database/migrations/001_add_security_indexes.sql:43-48` cria duas políticas RLS `USING (true)` **sem cláusula `TO`**. Sem `TO`, o Postgres assume `TO public`, que inclui `anon`. Qualquer pessoa que extraia a anon key do APK — que é pública por desenho — lê, altera e **apaga** a tabela de rate limiting.
 
@@ -96,6 +97,25 @@ Reentrante: quem falhar fica com `closed_test_invited_at` a NULL e entra na exec
 **Porquê agora.** É independente de tudo o resto e não fica melhor com o tempo. Depois dela, só resta a Fase 2.
 
 > **Nota sobre testes:** o repo da app não tem o Vitest que instalámos aqui. Confirmar o que lá existe antes de assumir que há onde escrever o teste — e se não houver, o `curl` antes/depois é a prova, guardada no commit.
+
+---
+
+### Task nova, mesma viagem: TASK-19 — a app promete mais do que apaga
+
+**Encontrada ao fechar a TASK-16, e é a metade que faltava.** A TASK-16 corrigiu o `inApp.body` na landing-page: quem elimina dentro da app continua com a linha em `contacts` e com o endereço na lista de testers do Play Console. Mas **ninguém lê a landing-page antes de eliminar dentro da app** — está em Definições → Mais, no ecrã onde a decisão é tomada. A frase falsa mudou de sítio; não desapareceu.
+
+Verbatim, em `app/src/i18n/locales/en/settings.json:256,259`:
+
+> `confirmMessage`: «This permanently deletes your account and **all your data** … We keep **only** a technical identifier derived from your email»
+> `finalConfirmMessage`: «Your account and your personal data will be deleted immediately, with the **single exception** noted in the previous step.»
+
+São três excepções, não uma: o hash do trial, a linha em `contacts` e o endereço na lista de testers. As duas últimas o `delete-account` da app não alcança — verificado em `app/supabase/functions/delete-account/index.ts`, que só apaga storage e o utilizador de auth no projeto Supabase **da app**.
+
+**É a mesma forma do bug da TASK-15:** a frase verdadeira numa superfície, a falsa naquela que a pessoa lê no momento de decidir — com as superfícies trocadas.
+
+- **Ficheiros:** `app/src/i18n/locales/{n}/settings.json` → `more.deleteAccount.confirmMessage` e `finalConfirmMessage`.
+- **Não foi feita aqui de propósito:** o `delete-account.md` (*Perguntar primeiro*) só autoriza a TASK-11 no repo da app. Esta precisa de decisão do Ricardo.
+- **Faz-se na mesma ida ao repo da app que a TASK-11.**
 
 ---
 
