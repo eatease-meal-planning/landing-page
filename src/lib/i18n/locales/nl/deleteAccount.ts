@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Verwijdering aanvragen",
     submitting: "Bezig met versturen...",
     successTitle: "Verzoek ontvangen",
-    successBody: "We hebben je een bevestigingsmail gestuurd. Je account en gegevens worden binnen 30 dagen verwijderd. Heb je dit verzoek niet gedaan? Negeer de e-mail, dan gebeurt er niets.",
+    successBody: "We hebben je een bevestigingsmail gestuurd. Je account en gegevens worden binnen 30 dagen verwijderd. Heb je dit verzoek niet gedaan? Beantwoord die e-mail, dan annuleren we het. Er is nog niets verwijderd.",
     errorCaptcha: "Voltooi de beveiligingscontrole.",
     errorRateLimit: "Te veel pogingen. Wacht een paar minuten en probeer het opnieuw.",
     errorGeneric: "Er is iets misgegaan. Probeer het opnieuw.",

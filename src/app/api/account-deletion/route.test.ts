@@ -162,3 +162,21 @@ describe("POST /api/account-deletion — the operator notification must actually
     });
   });
 });
+
+describe("POST /api/account-deletion — the acknowledgement is a reply-able channel", () => {
+  it("addresses replies to the operator, not to the no-reply sender", async () => {
+    // The acknowledgement now tells the recipient to reply in order to cancel a
+    // request they did not make. RESEND_FROM_EMAIL is a no-reply address, so
+    // without an explicit reply-to that instruction points at a mailbox nobody
+    // reads — the same silent failure as the 202 that hid an unsent email.
+    sendMock.mockResolvedValue(ACCEPTED);
+    const POST = await loadRoute();
+
+    await POST(deletionRequest({ email: "someone@example.com" }));
+
+    expect(sendMock.mock.calls[1][0]).toMatchObject({
+      to:      "someone@example.com",
+      replyTo: "privacy@test.invalid",
+    });
+  });
+});

@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Request deletion",
     submitting: "Sending...",
     successTitle: "Request received",
-    successBody: "We have emailed you to confirm. Your account and data will be deleted within 30 days. If you did not make this request, simply ignore the email and nothing will happen.",
+    successBody: "We have emailed you to confirm. Your account and data will be deleted within 30 days. If you did not make this request, reply to that email and we will cancel it — nothing has been deleted yet.",
     errorCaptcha: "Please complete the security check.",
     errorRateLimit: "Too many attempts. Please wait a few minutes and try again.",
     errorGeneric: "Something went wrong. Please try again.",

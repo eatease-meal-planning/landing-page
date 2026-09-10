@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Richiedi l'eliminazione",
     submitting: "Invio in corso...",
     successTitle: "Richiesta ricevuta",
-    successBody: "Ti abbiamo inviato un'email di conferma. Il tuo account e i tuoi dati saranno eliminati entro 30 giorni. Se non sei stato tu a fare questa richiesta, ignora l'email e non accadrà nulla.",
+    successBody: "Ti abbiamo inviato un'email di conferma. Il tuo account e i tuoi dati saranno eliminati entro 30 giorni. Se non sei stato tu a fare questa richiesta, rispondi a quell'email e la annulleremo: finora non è stato eliminato nulla.",
     errorCaptcha: "Completa la verifica di sicurezza.",
     errorRateLimit: "Troppi tentativi. Attendi qualche minuto e riprova.",
     errorGeneric: "Qualcosa è andato storto. Riprova.",

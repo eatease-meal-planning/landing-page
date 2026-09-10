@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Löschung beantragen",
     submitting: "Wird gesendet...",
     successTitle: "Antrag eingegangen",
-    successBody: "Wir haben Ihnen eine Bestätigung per E-Mail geschickt. Ihr Konto und Ihre Daten werden innerhalb von 30 Tagen gelöscht. Falls Sie diesen Antrag nicht gestellt haben, ignorieren Sie die E-Mail einfach — dann passiert nichts.",
+    successBody: "Wir haben Ihnen eine Bestätigung per E-Mail geschickt. Ihr Konto und Ihre Daten werden innerhalb von 30 Tagen gelöscht. Falls Sie diesen Antrag nicht gestellt haben, antworten Sie einfach darauf — dann stornieren wir ihn. Bisher wurde nichts gelöscht.",
     errorCaptcha: "Bitte schließen Sie die Sicherheitsprüfung ab.",
     errorRateLimit: "Zu viele Versuche. Warten Sie einige Minuten und versuchen Sie es erneut.",
     errorGeneric: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",

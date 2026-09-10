@@ -19,8 +19,8 @@ export const emails = {
     subject:  "Recebemos o teu pedido de eliminação",
     greeting: "Olá,",
     intro:    "Recebemos um pedido para eliminar a conta Eatease associada a este endereço de email, bem como todos os dados pessoais associados.",
-    body:     "Após confirmares, será tudo eliminado de imediato. Depois de concluída, a eliminação é permanente e os dados não podem ser recuperados.",
-    ignore:   "Se não foste tu a efetuar o pedido, basta ignorares este email e nada acontecerá.",
+    body:     "Vamos tratar do teu pedido no prazo de 30 dias. Depois de concluída, a eliminação é permanente e os dados não podem ser recuperados.",
+    ignore:   "Se não foste tu a efetuar o pedido, responde a este email e nós cancelamo-lo. Ainda não foi eliminado nada.",
     signOff:  "Até breve,",
   },
   closedTestInvite: {

@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Solicită ștergerea",
     submitting: "Se trimite...",
     successTitle: "Cerere primită",
-    successBody: "Ți-am trimis un e-mail de confirmare. Contul și datele tale vor fi șterse în termen de 30 de zile. Dacă nu tu ai făcut această cerere, ignoră e-mailul și nu se va întâmpla nimic.",
+    successBody: "Ți-am trimis un e-mail de confirmare. Contul și datele tale vor fi șterse în termen de 30 de zile. Dacă nu tu ai făcut această cerere, răspunde la acel e-mail și o vom anula: deocamdată nu a fost șters nimic.",
     errorCaptcha: "Finalizează verificarea de securitate.",
     errorRateLimit: "Prea multe încercări. Așteaptă câteva minute și încearcă din nou.",
     errorGeneric: "Ceva nu a mers bine. Încearcă din nou.",

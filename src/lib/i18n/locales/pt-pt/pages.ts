@@ -6,7 +6,7 @@ export const pages = {
   },
   linkExpired: {
     title: "Link expirado",
-    body:  "O link de confirmação é válido durante 48 horas e já expirou. Volta ao início e submete o seu email novamente — enviamos um novo link.",
+    body:  "O link de confirmação é válido durante 48 horas e já expirou. Volta ao início e submete o teu email novamente — enviamos um novo link.",
     cta:   "Registar novamente",
   },
   error: {

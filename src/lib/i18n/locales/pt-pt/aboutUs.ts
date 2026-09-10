@@ -8,7 +8,7 @@ export const aboutUs = {
   missionEyebrow: "A nossa missão",
   missionTitle:   "Devolver tempo a todos.",
   missionBody:    "Existimos para ajudar todos os que pretendem passar menos tempo a planear as suas refeições semanais e mais tempo a desfrutá-las. Menos stress às 19h, menos desperdício, menos dúvidas — apenas boas refeições, de forma simples.",
-  value1: { title: "O tempo primeiro",      body: "Cada funcionalidade justifica o seu lugar por lhe poupar tempo todas as semanas." },
+  value1: { title: "O tempo primeiro",      body: "Cada funcionalidade justifica o seu lugar por te poupar tempo todas as semanas." },
   value2: { title: "Vida real, não dietas", body: "Planos pensados à volta da comida que gostas e do tempo que tens, para todos à mesa." },
   value3: { title: "Menos desperdício",     body: "Cozinhe com o que já tem e compre apenas o que vai mesmo usar." },
   closingCta: "Tempo poupado, refeições prontas!",

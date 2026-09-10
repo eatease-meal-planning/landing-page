@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Demander la suppression",
     submitting: "Envoi en cours...",
     successTitle: "Demande reçue",
-    successBody: "Nous vous avons envoyé un e-mail de confirmation. Votre compte et vos données seront supprimés sous 30 jours. Si vous n'êtes pas à l'origine de cette demande, ignorez l'e-mail et rien ne se passera.",
+    successBody: "Nous vous avons envoyé un e-mail de confirmation. Votre compte et vos données seront supprimés sous 30 jours. Si vous n'êtes pas à l'origine de cette demande, répondez à cet e-mail et nous l'annulerons : rien n'a encore été supprimé.",
     errorCaptcha: "Veuillez compléter la vérification de sécurité.",
     errorRateLimit: "Trop de tentatives. Patientez quelques minutes et réessayez.",
     errorGeneric: "Une erreur est survenue. Veuillez réessayer.",

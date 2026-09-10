@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Begär radering",
     submitting: "Skickar...",
     successTitle: "Begäran mottagen",
-    successBody: "Vi har skickat en bekräftelse till din e-post. Ditt konto och dina uppgifter raderas inom 30 dagar. Om det inte var du som gjorde begäran kan du bortse från mejlet — då händer ingenting.",
+    successBody: "Vi har skickat en bekräftelse till din e-post. Ditt konto och dina uppgifter raderas inom 30 dagar. Om det inte var du som gjorde begäran kan du svara på det mejlet, så avbryter vi den. Inget har raderats än.",
     errorCaptcha: "Slutför säkerhetskontrollen.",
     errorRateLimit: "För många försök. Vänta några minuter och försök igen.",
     errorGeneric: "Något gick fel. Försök igen.",

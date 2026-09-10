@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Zażądaj usunięcia",
     submitting: "Wysyłanie...",
     successTitle: "Żądanie przyjęte",
-    successBody: "Wysłaliśmy Ci wiadomość z potwierdzeniem. Twoje konto i dane zostaną usunięte w ciągu 30 dni. Jeśli to nie Ty wysłałeś to żądanie, po prostu zignoruj wiadomość — nic się nie stanie.",
+    successBody: "Wysłaliśmy Ci wiadomość z potwierdzeniem. Twoje konto i dane zostaną usunięte w ciągu 30 dni. Jeśli to nie Ty wysłałeś to żądanie, odpowiedz na tę wiadomość, a je anulujemy. Na razie nic nie zostało usunięte.",
     errorCaptcha: "Ukończ weryfikację bezpieczeństwa.",
     errorRateLimit: "Zbyt wiele prób. Odczekaj kilka minut i spróbuj ponownie.",
     errorGeneric: "Coś poszło nie tak. Spróbuj ponownie.",

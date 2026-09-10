@@ -135,7 +135,11 @@ export async function POST(req: NextRequest) {
       team:     dict.emails.teamName,
       site_url: siteUrl,
     });
-    const { error } = await resend.emails.send({ from, to: email, subject: emailT.subject, html });
+    // replyTo is the operator, not the sender: RESEND_FROM_EMAIL is a no-reply
+    // address, and this message asks the recipient to reply in order to cancel
+    // a request they did not make. Without it that instruction is as false as
+    // the "just ignore it" it replaces.
+    const { error } = await resend.emails.send({ from, to: email, replyTo: operator, subject: emailT.subject, html });
     if (error) console.error("[account-deletion] Resend rejected the acknowledgement:", error);
   } catch (err) {
     console.error("[account-deletion] acknowledgement email threw:", err);

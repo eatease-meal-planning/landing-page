@@ -50,7 +50,7 @@ export const deleteAccount = {
     submit: "Solicitar la eliminación",
     submitting: "Enviando...",
     successTitle: "Solicitud recibida",
-    successBody: "Te hemos enviado un correo de confirmación. Tu cuenta y tus datos se eliminarán en un plazo de 30 días. Si no has sido tú quien ha hecho esta solicitud, ignora el correo y no ocurrirá nada.",
+    successBody: "Te hemos enviado un correo de confirmación. Tu cuenta y tus datos se eliminarán en un plazo de 30 días. Si no has sido tú quien ha hecho esta solicitud, responde a ese correo y la cancelaremos: todavía no se ha eliminado nada.",
     errorCaptcha: "Completa la verificación de seguridad.",
     errorRateLimit: "Demasiados intentos. Espera unos minutos y vuelve a intentarlo.",
     errorGeneric: "Algo ha salido mal. Inténtalo de nuevo.",
