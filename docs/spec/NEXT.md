@@ -35,6 +35,8 @@ done
 
 | Task | O quê | Guardado por |
 |---|---|---|
+| **TASK-A1/A2/A3 + C** (`closed-test-signup`) | O formulário deixou de abrir uma lista de espera. `nav`/`cta`/`form`/`hero`/`pages` nas 10 locales, `joinWaitlist` → `joinClosedTest`, e os dois documentos legais (2 ficheiros, não 20 — só o `en` os tem) passam a declarar a inscrição no teste fechado **e a partilha do endereço com a Google**. O par da App Store fica em «brevemente», e há um teste que o exige: não há TestFlight. | `src/lib/i18n/closedTestCopy.test.ts` (60) |
+| **TASK-B** (`closed-test-signup`) | Perda de dados no `confirm`: gravava `confirmed = true` **antes** dos envios, num `Promise.all` sem `{ error }`, e o segundo clique não reenviava — um tester que confirmasse durante uma falha da Resend perdia-se em silêncio. A ordem inverteu-se: operador primeiro, marcar depois. Mais `getResend()`, `SIGNUP_NOTIFICATION_TO_EMAIL`, e o código do erro visível na página. | `src/app/api/contacts/confirm/route.test.ts` (11) |
 | **TASK-15** (`delete-account`) | A instrução de contestação. As 9 locales não-`pt-pt` diziam na página que ignorar o email bastava — e o pedido já está na caixa do operador quando alguém a lê. `pt-pt` estava ao contrário (email a mandar ignorar, página sem a frase e a prometer uma confirmação que a Fase 1 não tem). As 20 strings passam a «responder para cancelar», e `pt-pt` volta ao prazo dos 30 dias nas duas superfícies. **Além disso:** o email de acknowledgement não tinha `replyTo` — mandava responder para o `RESEND_FROM_EMAIL`, que é um no-reply. Passou a `replyTo: operator`, senão a frase nova era tão falsa como a que substituiu. | `src/lib/i18n/deleteAccountCopy.test.ts` (30) + `ptPtRegister.test.ts` (3) + 1 em `account-deletion/route.test.ts` |
 | **TASK-F** (`closed-test-signup`) | O envio do convite passou a sair da BD, não de um CSV. Duas colunas novas (`source`, `closed_test_invited_at`, migração `0003` **já aplicada à BD**), script de importação do CSV escrito e verificado em `--dry-run` (**por correr a sério**), e os dois scripts anteriores fundidos num. O antigo `send-closed-test-invite.mjs` **nunca tinha corrido**: `t` e `team` não estavam definidos (`ReferenceError` na linha 154, mesmo em `--dry-run`). | `src/lib/closedTestInvite.test.ts` (14) + `closedTestInvite.locales.test.ts` (10) |
 | **TASK-18** (`delete-account`) | `OPERATOR_MAIL_FAILED` era inalcançável — `resend.emails.send()` **não rejeita**, resolve `{ data, error }`. A rota respondia 202 «pedido recebido» com a caixa do operador vazia. Passou a inspecionar `{ error }` → `OPERATOR_MAIL_FAILED:<nome>` (502). | `src/app/api/account-deletion/route.test.ts` (7) |
@@ -42,7 +44,7 @@ done
 | — | `getResend()` (`src/lib/resend.ts`): `new Resend(undefined)` **lança**, portanto construí-lo em module scope matava a rota no import e o `CONFIG_MISSING_RESEND` nunca corria. | `src/lib/resend.test.ts` (5) |
 | — | Extraídos `fail()` → `src/lib/apiError.ts` e `escapeHtml` → exportado de `src/lib/email.ts`. | — |
 
-**Framework de testes:** Vitest 5 + jsdom + Testing Library, `npm test` (88 testes, 8 ficheiros). Decisão revertida face aos specs, que o punham fora de scope — a §2.4 da revisão mostrou que a classe de bug que custou duas sessões não é apanhável por `tsc`/`lint`/`build`.
+**Framework de testes:** Vitest 5 + jsdom + Testing Library, `npm test` (159 testes, 10 ficheiros). Decisão revertida face aos specs, que o punham fora de scope — a §2.4 da revisão mostrou que a classe de bug que custou duas sessões não é apanhável por `tsc`/`lint`/`build`.
 
 Duas notas de instalação, para não se repetir a investigação: `@vitejs/plugin-react` foi **descartado** (puxa Babel 8 e colide com `babel-plugin-react-compiler`, que está em Babel 7 — o esbuild do Vitest transforma TSX sem ele); e `@types/node` subiu de `^20` para `^24`, exigência do Vitest 5 e alinhado com o Node 24 em uso.
 
@@ -51,14 +53,15 @@ Duas notas de instalação, para não se repetir a investigação: `@vitejs/plug
 ## Ordem a seguir
 
 ```
-0. ✅ emails.privacyPolicy — feito nas 10 locales
-1. ✅ TASK-F  envio do convite de teste fechado — código pronto e testado
-2. TASK-D   Play Console: registar os testers + guardar o link de opt-in  ← utilizador
-            depois: CLOSED_TEST_OPT_IN_URL no .env.local e correr o envio
-3. ✅ TASK-15  «ignorar» → «responder» nas 10 locales — feito
-4. TASK-A1/A2/A3 + TASK-C + TASK-B                   ← um só commit
-5. TASK-11  fechar rate_limits ao anon (repo app)
-6. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 16 · 14
+0. ✅ emails.privacyPolicy
+1. ✅ TASK-F   envio do convite de teste fechado
+2. ✅ TASK-D   Play Console — lista de emails, testers a aderir
+3. ✅ TASK-15  «ignorar» → «responder» nas 10 locales
+4. ✅ TASK-A1/A2/A3 + C + B   (B saiu em commit próprio: era perda de dados, não copy)
+5. TASK-16  a eliminação não alcança a lista de testers   ← a seguir, e é curta
+6. TASK-11  fechar rate_limits ao anon                    ← repo D:deveateaseapp
+7. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 14
+   TASK-E   ✗ impossível — sem Grupo Google não há API
 ```
 
 ## Para arrancar o teste fechado
@@ -79,21 +82,20 @@ node scripts/send-closed-test-invite.mjs                 # envia e marca
 
 Reentrante: quem falhar fica com `closed_test_invited_at` a NULL e entra na execução seguinte. Quem se inscrever pelo formulário a partir daqui aparece sozinho na próxima passagem — não é preciso tocar em ficheiro nenhum.
 
-### Próxima task: TASK-A1/A2/A3 + TASK-C + TASK-B — um só commit
+### Próxima task: TASK-16 — a eliminação não alcança a lista de testers
 
-Está em [`spec-review.md` §3.3/§3.4](./spec-review.md) e no bloco de ordenação da §5. Em resumo:
+Está em [`spec-review.md` §3.5](./spec-review.md), com os critérios já reescritos para a realidade sem Grupo Google.
 
-**Bloqueada pela TASK-D**, e só em parte. A A3 (política de privacidade e termos) e a B (email ao operador) precisam do endereço do Grupo Google para o nomear; a A1 e a A2 não precisam de nada. Se a TASK-D ainda não estiver feita, a A1+A2 podem avançar — mas o commit único é a decisão do spec, porque a copy do formulário e a finalidade declarada nos documentos legais têm de mudar ao mesmo tempo.
+**Problema.** Quem elimina a conta continua na lista do teste fechado no Play Console, e continua a ter acesso à versão de teste. O `deleteAccount.whatIsDeleted` promete apagar «o teu registo neste site» — promessa que deixou de ser verdadeira no instante em que uma linha em `contacts` significa «tester inscrito».
 
-- **A1** — `form.ts` + `cta.ts` + `nav.ts` (×10): `joinWaitlist` é o CTA do cabeçalho, está em todas as páginas.
-- **A2** — `hero.ts` + `pages.ts` (×10): `badge: "Coming soon"` e `googlePlayPre` passam a ser falsos com a app no Play; `pages.confirmed.body` é **onde o utilizador aterra** ao clicar no link, e nenhuma task lhe tocava.
-- **A3** — `privacyPolicy.ts` + `termsOfUse.ts` (×10): ambos declaram hoje a finalidade «join a waitlist». Se o formulário inscreve testers, a finalidade declarada deixa de descrever o tratamento — e o argumento central do spec é precisamente a limitação das finalidades.
-- **C** — copy do email de boas-vindas (`closed-test-signup.md` §TASK-C).
-- **B** — **não é acrescentar um email**: `confirm/route.ts:63-83` já envia dois (utilizador + operador, via `new-user-confirmation.html` e `RESEND_WELCOME_EMAIL`). É mudar-lhe o conteúdo e separar o destinatário do operador do `from:` do email ao utilizador.
+**O que mudou desde que o critério foi escrito.** Duas coisas, e as duas simplificam:
 
-**Verificação:** `grep -riE "waitlist|lista de espera|warteliste|liste d'attente" src/lib/i18n/locales/*/` → zero fora do histórico; confirmar um contacto em dev e ler as **duas** mensagens (não três).
+1. **A divergência de chaves desapareceu.** A lista do Console contém exactamente os endereços vindos do `contacts` — os mesmos que o pedido de eliminação traz.
+2. **A automatização deixou de ser opção.** O `edits.testers` não suporta listas de emails, portanto a instrução ao operador é a única via, hoje e na Fase 2.
 
-**A tentação a evitar:** a TASK-B parece «criar o email ao operador». Quem a ler assim cria um terceiro envio e o operador passa a receber dois emails por inscrição.
+**Escopo, portanto:** uma frase no email ao operador de `api/account-deletion/route.ts` (o bloco de instruções já existe, falta-lhe esta linha) e um item em `deleteAccount.whatIsDeleted` nas 10 locales. É curta.
+
+**Por confirmar antes:** se editar a lista no Console parte a contagem dos 14 dias — importa para saber se a remoção pode ser imediata ou tem de esperar pelo fim do período.
 
 ---
 
@@ -110,7 +112,7 @@ O registo do `pt-pt` foi uniformizado em «tu» (decisão do Ricardo: o tom é o
 ## Portão de verificação (Boundaries dos specs)
 
 ```bash
-npm test            # 88 testes
+npm test            # 159 testes
 npx tsc --noEmit    # 0 erros exigidos
 npm run lint        # 0 erros (2 warnings pré-existentes, não introduzidos aqui)
 npm run build
@@ -131,6 +133,9 @@ npm run build
 b145508 feat: convite do teste fechado sai da BD, não de um CSV
 3424538 fix: nenhuma locale manda ignorar o email de eliminação
 89eb8c5 docs: specs passam para docs/spec/ e registam o estado da sessão
+83cdc6e docs: estado após a TASK-15 e o registo do pt-pt
+ffe007a fix: confirmar só depois de o operador saber, e mostrar o código do erro
+b699b00 feat: o formulário inscreve testers, não uma lista de espera
 ```
 
 **Convenção, a partir daqui:** cada task implementada e testada leva um

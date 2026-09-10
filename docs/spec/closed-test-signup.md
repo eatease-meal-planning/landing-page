@@ -15,13 +15,21 @@ A waitlist deixa de fazer sentido: a app vai entrar em teste fechado no Google P
 
 A correção que mudou o desenho: **a Google não envia o convite.** O Play Console dá um **link de opt-in** (`https://play.google.com/apps/testing/<package>`) que é distribuído por nós.
 
-**Usar um Grupo Google como lista de testers**, não uma lista de emails colada à mão:
+~~**Usar um Grupo Google como lista de testers**~~ — **decisão revertida a 2026-09-10, e a razão não é técnica:** criar o grupo implicava acrescentar serviços Google ao email associado à conta do Play Console, e o Ricardo não o quer fazer. A lista de testers é uma **lista de emails criada dentro do Play Console**.
 
-| | Lista de emails | **Grupo Google** ✅ |
+| | **Lista de emails no Console** ✅ | Grupo Google (descartado) |
 |---|---|---|
-| Adicionar um tester | voltar ao Play Console, colar, guardar | adicionar membro ao grupo |
-| Automatizável | não | sim (Directory API, se `eatease.eu` for Workspace) |
-| Registo no Play Console | a cada alteração | **uma vez** |
+| Adicionar um tester | voltar ao Console, colar, guardar | adicionar membro ao grupo |
+| Automatizável | **não — e nunca será** | sim (Directory API) |
+| Registo no Play Console | a cada alteração | uma vez |
+| Capacidade | 2 000 endereços/lista, 50 listas/track | sem limite publicado |
+
+**As duas consequências que isto tem no plano:**
+
+1. **A TASK-E morre.** O `edits.testers` da Play Developer API só aceita `googleGroups`; a documentação diz literalmente que *«does not support email lists»*. Não há forma de acrescentar ou remover testers por API, hoje nem depois — o que faz da instrução ao operador (TASK-16) a **única** via de remoção quando alguém elimina a conta.
+2. **A divergência de chaves da §3.5 desaparece.** A preocupação era que a adesão a um grupo fica presa à *conta Google* do tester enquanto o pedido de eliminação traz o endereço escrito no formulário. A lista do Console contém exactamente os endereços que lá pomos, vindos do `contacts` — coincidem por construção.
+
+**Por confirmar (não encontrei fonte da Google):** fontes da comunidade dizem que editar a lista *dentro* do Console mexe no track e pode partir a contagem de 14 dias consecutivos, enquanto trocar membros de um grupo não mexeria. Com testers a entrar ao longo do tempo, isto importa — verificar na Consola antes do próximo lote.
 
 Requisitos do lado do tester: o email tem de ser uma **conta Google**, e a adesão ao grupo tem de estar **ativa** (não pendente) antes de o link de opt-in funcionar.
 
@@ -33,16 +41,15 @@ Requisitos do lado do tester: o email tem de ser uma **conta Google**, e a ades�
 1. User preenche o formulário na landing-page
 2. Double opt-in — inalterado (contacts.token, 48h)
 3. User confirma
-   ├─ Email para o operador:  "adicionar <email> ao Grupo Google"
+   ├─ Email para o operador:  "adicionar <email> à lista do teste fechado no Play Console"
    └─ Email para o user:      "recebemos; o convite chega em breve (máx. 24h)"
 4. Operador adiciona o email no Google Play Console   ← passo manual
 5. Operador envia o link de opt-in ao user           ← passo manual, TASK-F
 6. User abre o link, aceita, instala da Play Store
 ```
 
-> **Nota de 2026-09-10:** o passo 4 é feito **no Play Console**, não num Grupo Google — sem esse
-> registo o utilizador não tem acesso à app. O Grupo Google (TASK-D) continua a ser a forma de
-> gerir a lista, mas quem concede acesso é o Play Console.
+> **Nota de 2026-09-10:** o passo 4 é feito **no Play Console**, na lista de emails do teste
+> fechado. Não há Grupo Google — ver a secção acima.
 
 **Porque o email do passo 3 não pode dizer «foste adicionado».** Nesse instante ainda não foi — o passo 4 é manual e vem depois. Um email que anuncia acesso que ainda não existe mente durante essa janela. Daí a formulação «recebemos, o convite chega em breve».
 
@@ -71,20 +78,25 @@ Isto importa para a página de eliminação: `contacts` continua a guardar nome 
 - **Ficheiros:** `src/lib/i18n/locales/{10}/form.ts`, `cta.ts`
 - **O quê:** de «entra na lista de espera» para «inscreve-te no teste fechado». Deixar claro que (a) é preciso uma **conta Google**, (b) o acesso chega por email, (c) é uma versão de teste.
 - **Constraint:** as 10 locales na mesma task — `Translations = typeof en` faz o `tsc` falhar até todas terem as chaves.
-- **Status:** [ ] TODO
+- **Alargada** para `nav`, `hero` e `pages` (§3.3 da revisão) e para os dois documentos legais (§3.4). A chave `joinWaitlist` passou a `joinClosedTest` — nome e valor deixam de discordar.
+- **A App Store fica como estava:** não há TestFlight, e há um teste que exige que o par `appStore*` continue a dizer «brevemente». Uma varredura que renomeasse todas as strings de loja ao mesmo tempo anunciaria um build iOS que não existe.
+- **Status:** [x] COMPLETE — guardado por `src/lib/i18n/closedTestCopy.test.ts` (60)
 
 ### TASK-B: Email ao operador na confirmação
 - **Ficheiros:** `src/app/api/contacts/confirm/route.ts`
 - **O quê:** ao confirmar, enviar ao operador um email com o endereço a adicionar ao grupo. Hoje o `confirm` só envia o email de boas-vindas ao utilizador.
 - **Porquê na confirmação e não na submissão:** garante que **todos os emails recebidos são acionáveis** — sem ruído de inscrições abandonadas ou maliciosas.
 - **⚠️ Correção à descrição acima:** o `confirm` **já envia** um email ao operador (`route.ts:63-82` → `src/templates/new-user-confirmation.html` → `RESEND_WELCOME_EMAIL`). A task é **reescrever** esse email, não acrescentar outro — implementada como está descrita, o operador passa a receber dois por inscrição.
-- **Herda o tratamento da TASK-17/TASK-18, e aqui é mais grave:** o `Promise.all` de `route.ts:70-83` não inspecciona `{ error }` e **não rejeita**. A rota grava `confirmed = true` (`:41-44`) e redirecciona para `/confirmed` mesmo que nenhum dos dois emails saia; o segundo clique cai no early-return de `:30-32` e **não reenvia** — a inscrição do tester perde-se em definitivo. Tem de passar a `getResend()` + `{ error }`, com o email do operador tratado como o que tem de suceder, e uma via de reenvio para quem ficou `confirmed` sem ter sido adicionado ao grupo.
-- **Status:** [ ] TODO
+- **Herda o tratamento da TASK-17/TASK-18, e aqui era mais grave:** o `Promise.all` não inspeccionava `{ error }`, a rota gravava `confirmed = true` **antes** dos envios, e o segundo clique caía no early-return do `contact.confirmed` e não reenviava — a inscrição do tester perdia-se em definitivo.
+- **Resolvido pela ordem, não só pela verificação:** notificar o operador primeiro, marcar a linha só depois de a Resend aceitar. O token continua válido 48h, portanto uma tentativa falhada resolve-se clicando outra vez no mesmo link — não foi preciso inventar via de reenvio. O email de boas-vindas fica best-effort.
+- **Mais:** `getResend()` (o `new Resend()` em module scope matava a rota no import), `SIGNUP_NOTIFICATION_TO_EMAIL` separado do remetente do email ao visitante, e a página de erro passa a mostrar o código — um link de confirmação falhado não tem formulário para resubmeter nem corpo de resposta para ninguém ler.
+- **Status:** [x] COMPLETE — guardado por `src/app/api/contacts/confirm/route.test.ts` (11)
 
 ### TASK-C: Copy do email de boas-vindas
 - **Ficheiros:** `src/lib/i18n/locales/{10}/emails.ts`, `src/templates/welcome-email.html`
-- **O quê:** de «avisamos-te no lançamento» para «recebemos a tua inscrição; o convite para o teste chega em 24h». **Não** afirmar que o acesso já está concedido.
-- **Status:** [ ] TODO
+- **O quê:** de «avisamos-te no lançamento» para «o convite chega em 48 horas». **Não** afirma que o acesso já está concedido — nesse instante ainda não está.
+- **48 e não 24:** prazo escolhido pelo operador (2026-09-10). Os passos 4 e 5 são manuais; 24h só se escreveria com o compromisso de olhar para a caixa todos os dias.
+- **Status:** [x] COMPLETE — a mesma frase entrou também em `pages.confirmed.body`, que é onde o utilizador aterra e que nenhuma task cobria.
 
 ### TASK-17: Endurecer `/api/contacts` e mostrar o código no formulário
 - **Status:** [x] COMPLETE — a rota que este spec vai reescrever não tinha nenhuma das protecções que a TASK-12 trouxe à `/api/account-deletion`. Agora tem:
@@ -121,14 +133,13 @@ Isto importa para a página de eliminação: `contacts` continua a guardar nome 
 - **Depende de:** TASK-D — o link. **É a única coisa que falta** para correr o envio.
 - **Status:** [x] COMPLETE (código); a correr depende do link da TASK-D
 
-### TASK-D: Play Console — Grupo Google
-- **O quê:** criar o grupo (ex.: `testers@eatease.eu`), registá-lo como lista de teste fechado, guardar o link de opt-in.
-- **Status:** [ ] TODO — **requer acesso ao Play Console (utilizador)**
+### TASK-D: Play Console — lista de testers
+- **O quê:** lista de emails criada dentro do Play Console (não um Grupo Google — ver acima), testers registados, os dois links guardados.
+- **Status:** [x] COMPLETE (2026-09-10) — convites enviados, testers a aderir.
 
-### TASK-E (futuro): automatizar a adição ao grupo
-- **O quê:** Directory API a partir do handler de confirmação; o email passa a levar o link de opt-in e o passo manual desaparece.
-- **Depende de:** `eatease.eu` em Google Workspace + service account com delegação.
-- **Status:** [ ] TODO — otimização, não bloqueia nada
+### ~~TASK-E (futuro): automatizar a adição ao grupo~~
+- **Status:** [—] IMPOSSÍVEL. O `edits.testers` da Play Developer API só aceita `googleGroups` e a documentação diz que *«does not support email lists»*. Sem grupo não há API, e sem API a adição e a remoção de testers são manuais para sempre.
+- **Consequência a jusante:** a remoção do tester quando ele elimina a conta (TASK-16) só pode ser uma instrução ao operador. A Fase 2 não pode prometer automatização.
 
 ## Nota de i18n — a *Constraint dura* durante edições em paralelo
 

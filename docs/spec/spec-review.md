@@ -185,9 +185,9 @@ Os 20 têm de conter a construção «responder para cancelar»; nenhum pode con
 **Descrição:** o email ao operador já existe (`confirm/route.ts:63-82` → `src/templates/new-user-confirmation.html` → `RESEND_WELCOME_EMAIL`). A task é mudar-lhe o conteúdo — passar a ser uma instrução accionável («adicionar `<email>` ao Grupo Google `<endereço>`») — e separar o destinatário do operador do `from:` do email de boas-vindas, que hoje são a mesma variável (§4.3).
 
 **Critérios de aceitação:**
-- [ ] A confirmação continua a enviar **exactamente dois** emails, não três.
-- [ ] O email ao operador nomeia o grupo de destino e traz o endereço em texto copiável.
-- [ ] O destinatário do operador vem de variável própria, distinta do `from:` do email ao utilizador.
+- [x] A confirmação continua a enviar **exactamente dois** emails, não três.
+- [x] O email ao operador nomeia o destino — a lista do teste fechado no Play Console, não um Grupo Google, que não chegou a existir — e traz o endereço em texto copiável.
+- [x] O destinatário do operador vem de variável própria (`SIGNUP_NOTIFICATION_TO_EMAIL`), distinta do `from:` do email ao utilizador.
 
 **Verificação:** confirmar um contacto em dev e ler as duas mensagens recebidas.
 **Dependências:** TASK-D (o endereço do grupo tem de existir para ser nomeado).
@@ -225,8 +225,8 @@ Os componentes que consomem estas chaves (`Nav.tsx:146,214`, `AboutSection.tsx:9
 Se o formulário passa a inscrever testers, estes dois parágrafos passam a descrever um tratamento que já não é o que se faz. O argumento do próprio spec exige que sejam corrigidos **no mesmo commit** que muda a copy do formulário.
 
 **Critérios de aceitação:**
-- [ ] Ambos os parágrafos, nas 10 locales, descrevem a inscrição no teste fechado (incluindo a partilha do endereço com o Grupo Google / Google Play — §3.5).
-- [ ] A alteração vai no mesmo commit que a TASK-A1.
+- [x] Ambos os parágrafos descrevem a inscrição no teste fechado, incluindo a partilha do endereço com a Google. **São dois ficheiros, não vinte:** só o `en` tem `privacyPolicy.ts` e `termsOfUse.ts`; as outras nove re-exportam-nos, o que também quer dizer que quem visita o site em português lê-os em inglês.
+- [x] A alteração foi no mesmo commit que a TASK-A1.
 
 **Verificação:** `grep -ri "waitlist\|lista de espera\|warteliste\|liste d'attente" src/lib/i18n/locales/*/privacyPolicy.ts src/lib/i18n/locales/*/termsOfUse.ts` → zero · `npm run build`
 **Dependências:** TASK-D (saber para onde vai o endereço antes de o declarar).
@@ -250,10 +250,10 @@ O `closed-test-signup` põe o endereço do tester num **Grupo Google** (TASK-D) 
 Um tester que elimine a conta **continua inscrito no teste fechado** e continua a ter acesso à versão de teste na Play Store. E `deleteAccount.whatIsDeleted` (`en/deleteAccount.ts:20`) promete apagar *«Your registration on this website, if you signed up here»* — promessa que deixa de ser verdadeira no instante em que uma linha em `contacts` significa «tester inscrito».
 
 **Critérios de aceitação:**
-- [ ] O email ao operador (`api/account-deletion/route.ts:96-107`) instrui explicitamente a remover o membro do Grupo Google, além de apagar o utilizador Supabase e a linha `contacts`.
-- [ ] Na Fase 2 (self-service), a remoção do grupo tem caminho — automática via Directory API (TASK-E) **ou** uma instrução explícita ao utilizador no passo 3 se não a houver.
+- [ ] O email ao operador (`api/account-deletion/route.ts`) instrui explicitamente a remover o endereço da **lista de testers do Play Console**, além de apagar o utilizador Supabase e a linha `contacts`.
+- [ ] ~~Na Fase 2, a remoção tem caminho automático via Directory API (TASK-E)~~ — **não tem, e não terá.** Sem Grupo Google não há API (`edits.testers` não suporta listas de emails), portanto a instrução explícita é a única via, e o passo 3 da Fase 2 tem de a dizer ao utilizador.
 - [ ] `deleteAccount.whatIsDeleted` reflecte o que é, de facto, apagado.
-- [ ] **O caso em que os dois endereços não coincidem está tratado.** A adesão ao grupo está presa à *conta Google* do tester; o pedido de eliminação traz o endereço que a pessoa escreveu no formulário. São chaves diferentes e podem divergir. O email ao operador tem de o dizer, e isto liga-se directamente à *Open Question 2* do `closed-test-signup` — se não há forma fiável de validar que o endereço submetido é uma conta Google, também não há forma fiável de o reencontrar no grupo à hora da eliminação.
+- [x] **O caso em que os dois endereços não coincidem deixou de existir.** A lista do Play Console contém exactamente os endereços que lá pomos, vindos do `contacts` — a mesma chave que o pedido de eliminação traz. A preocupação era válida para um Grupo Google, onde a adesão fica presa à conta Google do tester.
 
 **Verificação:** eliminar uma conta de teste ponta-a-ponta e confirmar no Grupo Google que a adesão desapareceu.
 **Dependências:** TASK-D. Bloqueia a TASK-13 (a Fase 2 não pode prometer eliminação completa enquanto isto ficar de fora).
