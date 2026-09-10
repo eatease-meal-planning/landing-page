@@ -1,5 +1,6 @@
 export const emails = {
-  teamName: "Het Eatease team",
+  teamName:      "Het Eatease team",
+  privacyPolicy: "Privacybeleid",
   welcome: {
     subject:  "Welkom bij Eatease!",
     greeting: "Hallo {name},",
@@ -21,5 +22,19 @@ export const emails = {
     body:     "We verwerken het binnen 30 dagen. Daarna is de verwijdering definitief en zijn de gegevens niet meer terug te halen.",
     ignore:   "Heb je dit verzoek niet gedaan? Beantwoord deze e-mail, dan annuleren we het. Er is nog niets verwijderd.",
     signOff:  "Met vriendelijke groet,",
+  },
+  closedTestInvite: {
+    subject:           "Je toegang tot de gesloten test van Eatease staat klaar!",
+    greeting:          "Hallo {name},",
+    intro:             "Goed nieuws! Je e-mailadres is toegevoegd aan ons gesloten testprogramma op Google Play. Je kunt de Eatease-app nu installeren op je Android-apparaat.",
+    instructionsTitle: "Aan de slag:",
+    step1:             "Klik op de onderstaande knop om deel te nemen aan de gesloten test met je Google-account.",
+    step2:             "Download en installeer Eatease vanuit Google Play op je Android-apparaat.",
+    cta:               "Deelnemen aan test op Google Play",
+    ctaDownload:       "Eatease downloaden in Google Play",
+    downloadNote:      "Deze tweede link werkt pas nadat je de uitnodiging in stap 1 hebt geaccepteerd — daarvoor vindt Google Play de app niet.",
+    fallbackNote:      "Als de knop niet werkt, kopieer en plak dan deze link in je browser:",
+    feedbackNote:      "Omdat dit een vroege testversie is, is jouw feedback van onschatbare waarde. Laat het ons gerust weten door deze e-mail te beantwoorden als je suggesties hebt.",
+    signOff:           "Tot snel,",
   },
 };

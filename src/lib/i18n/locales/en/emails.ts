@@ -1,5 +1,6 @@
 export const emails = {
-  teamName: "The Eatease Team",
+  teamName:      "The Eatease Team",
+  privacyPolicy: "Privacy Policy",
   welcome: {
     subject:  "Welcome to Eatease!",
     greeting: "Hello {name},",
@@ -21,5 +22,19 @@ export const emails = {
     body:     "We will process it within 30 days. Once done, the deletion is permanent and the data cannot be recovered.",
     ignore:   "If you did not make this request, reply to this email and we will cancel it. Nothing has been deleted yet.",
     signOff:  "Kind regards,",
+  },
+  closedTestInvite: {
+    subject:           "Your Eatease closed test invite is ready!",
+    greeting:          "Hello {name},",
+    intro:             "Great news! Your email address has been added to our closed testing program on Google Play. You can now access and install the Eatease Android app.",
+    instructionsTitle: "How to get started:",
+    step1:             "Click the button below to join the closed test using your Google account.",
+    step2:             "Download and install Eatease from Google Play onto your Android device.",
+    cta:               "Join closed test on Google Play",
+    ctaDownload:       "Download Eatease on Google Play",
+    downloadNote:      "This second link only works once you have accepted the invite in step 1 — before that, Google Play will not find the app.",
+    fallbackNote:      "If the button doesn't work, copy and paste this link into your browser:",
+    feedbackNote:      "As this is an early test version, your feedback is very valuable to us. If you experience any issues or have suggestions, simply reply to this email.",
+    signOff:           "See you soon,",
   },
 };

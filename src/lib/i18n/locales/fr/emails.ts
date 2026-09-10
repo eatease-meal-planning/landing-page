@@ -1,5 +1,6 @@
 export const emails = {
-  teamName: "L'équipe Eatease",
+  teamName:      "L'équipe Eatease",
+  privacyPolicy: "Politique de Confidentialité",
   welcome: {
     subject:  "Bienvenue sur Eatease !",
     greeting: "Bonjour {name},",
@@ -21,5 +22,19 @@ export const emails = {
     body:     "Nous la traiterons sous 30 jours. Une fois effectuée, la suppression est définitive et les données sont irrécupérables.",
     ignore:   "Si vous n'êtes pas à l'origine de cette demande, répondez à cet e-mail et nous l'annulerons. Rien n'a encore été supprimé.",
     signOff:  "Cordialement,",
+  },
+  closedTestInvite: {
+    subject:           "Votre accès au test fermé Eatease est prêt !",
+    greeting:          "Bonjour {name},",
+    intro:             "Bonne nouvelle ! Votre adresse e-mail a été ajoutée à notre programme de test fermé sur Google Play. Vous pouvez désormais accéder et installer l'application Eatease sur votre appareil Android.",
+    instructionsTitle: "Comment commencer :",
+    step1:             "Cliquez sur le bouton ci-dessous pour rejoindre le test fermé avec votre compte Google.",
+    step2:             "Téléchargez et installez Eatease depuis Google Play sur votre appareil Android.",
+    cta:               "Rejoindre le test sur Google Play",
+    ctaDownload:       "Télécharger Eatease sur Google Play",
+    downloadNote:      "Ce second lien ne fonctionne qu'une fois l'invitation de l'étape 1 acceptée — avant cela, Google Play ne trouvera pas l'application.",
+    fallbackNote:      "Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :",
+    feedbackNote:      "Comme il s'agit d'une version de test préliminaire, vos retours sont essentiels pour nous. Si vous rencontrez un problème ou avez des suggestions, répondez simplement à cet e-mail.",
+    signOff:           "À très bientôt,",
   },
 };

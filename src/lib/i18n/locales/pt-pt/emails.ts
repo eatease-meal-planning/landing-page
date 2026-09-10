@@ -1,5 +1,6 @@
 export const emails = {
-  teamName: "A equipa Eatease",
+  teamName:      "A equipa Eatease",
+  privacyPolicy: "Política de Privacidade",
   welcome: {
     subject:  "Bem-vindo á Eatease!",
     greeting: "Olá {name},",
@@ -18,8 +19,22 @@ export const emails = {
     subject:  "Recebemos o teu pedido de eliminação",
     greeting: "Olá,",
     intro:    "Recebemos um pedido para eliminar a conta Eatease associada a este endereço de email, bem como todos os dados pessoais associados.",
-    body:     "Vamos processá-lo no prazo de 30 dias. Depois de concluída, a eliminação é permanente e os dados não podem ser recuperados.",
-    ignore:   "Se não foste tu a efetuar o pedido, responde a este email e nós cancelamo-lo. Ainda não foi eliminado nada.",
+    body:     "Após confirmares, será tudo eliminado de imediato. Depois de concluída, a eliminação é permanente e os dados não podem ser recuperados.",
+    ignore:   "Se não foste tu a efetuar o pedido, basta ignorares este email e nada acontecerá.",
     signOff:  "Até breve,",
+  },
+  closedTestInvite: {
+    subject:           "Eatease - O teu acesso está validado!",
+    greeting:          "Olá {name},",
+    intro:             "Boas notícias! O teu email foi adicionado à lista do teste fechado na Google Play Store. Já podes aceder e instalar a aplicação Eatease no teu telemóvel Android.",
+    instructionsTitle: "Como começar:",
+    step1:             "Clica no botão abaixo para aceitar o convite de teste (garante que tens a sessão iniciada com a tua conta Google).",
+    step2:             "Transfere e instala a app Eatease diretamente a partir da Google Play Store.",
+    cta:               "Aceder ao teste no Google Play",
+    ctaDownload:       "Transferir a app na Google Play",
+    downloadNote:      "Este segundo link só funciona depois de aceitares o convite no passo 1 — antes disso, a Google Play não encontra a app.",
+    fallbackNote:      "Se o botão não funcionar, copia e cola o seguinte link no teu navegador:",
+    feedbackNote:      "Por se tratar de uma versão de testes preliminar, a tua opinião é essencial para nós. Se encontrares algum problema ou tiveres sugestões, basta responderes a este email.",
+    signOff:           "Até breve,",
   },
 };
