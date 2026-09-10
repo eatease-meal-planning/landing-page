@@ -1,0 +1,123 @@
+# Estado e próximo passo
+
+> Ponto de partida de cada sessão. Atualizado a **2026-09-10**.
+> Specs: [`closed-test-signup.md`](./closed-test-signup.md) · [`delete-account.md`](./delete-account.md) · Revisão: [`spec-review.md`](./spec-review.md)
+
+## Estado do `tsc` — verificar sempre ao começar
+
+**`closedTestInvite`: concluído.** As 10 locales têm as 10 chaves (`subject`, `greeting` com `{name}`, `intro`, `instructionsTitle`, `step1`, `step2`, `cta`, `fallbackNote`, `feedbackNote`, `signOff`). ✅
+
+**`emails.privacyPolicy`: concluído.** As 10 locales têm a chave. ✅ (Estava dado como em falta em 6 — o Ricardo terminou o rollout entretanto. Serve de exemplo do aviso abaixo.)
+
+**Nenhuma chave de i18n em curso.** `npx tsc --noEmit` dá 0 erros.
+
+### A armadilha a conhecer
+
+`Translations = typeof en`. Acrescentar uma chave a `en/*.ts` parte o `tsc` nas outras nove até todas a terem — é a *Constraint dura* dos specs, e durante uma edição em paralelo ela aparece **a meio**, sem que ninguém tenha feito nada de errado.
+
+Duas consequências práticas:
+
+1. **`npm test` continua verde durante essa janela** (30/30). O Vitest não faz type-check e em runtime só `en` é carregado. **Uma suite verde não prova que o build passa.** Correr sempre `npx tsc --noEmit` à parte.
+2. **O estado muda debaixo dos pés.** Nesta sessão o `tsc` deu 0 erros numa passagem e falhou na seguinte, porque um ficheiro foi gravado entretanto. Verificar imediatamente antes de concluir seja o que for.
+
+Comando genérico, serve para qualquer chave nova:
+
+```bash
+npx tsc --noEmit 2>&1 | grep -oE "Property '[a-zA-Z]+' is missing" | sort -u
+for l in de en es fr it nl pl pt-pt ro sv; do
+  printf "%-6s " "$l"; grep -q "<chave>" src/lib/i18n/locales/$l/emails.ts && echo ok || echo FALTA
+done
+```
+
+---
+
+## Feito nesta sessão
+
+| Task | O quê | Guardado por |
+|---|---|---|
+| **TASK-15** (`delete-account`) | A instrução de contestação. As 9 locales não-`pt-pt` diziam na página que ignorar o email bastava — e o pedido já está na caixa do operador quando alguém a lê. `pt-pt` estava ao contrário (email a mandar ignorar, página sem a frase e a prometer uma confirmação que a Fase 1 não tem). As 20 strings passam a «responder para cancelar», e `pt-pt` volta ao prazo dos 30 dias nas duas superfícies. **Além disso:** o email de acknowledgement não tinha `replyTo` — mandava responder para o `RESEND_FROM_EMAIL`, que é um no-reply. Passou a `replyTo: operator`, senão a frase nova era tão falsa como a que substituiu. | `src/lib/i18n/deleteAccountCopy.test.ts` (30) + 1 em `account-deletion/route.test.ts` |
+| **TASK-F** (`closed-test-signup`) | O envio do convite passou a sair da BD, não de um CSV. Duas colunas novas (`source`, `closed_test_invited_at`, migração `0003` **já aplicada à BD**), script de importação do CSV escrito e verificado em `--dry-run` (**por correr a sério**), e os dois scripts anteriores fundidos num. O antigo `send-closed-test-invite.mjs` **nunca tinha corrido**: `t` e `team` não estavam definidos (`ReferenceError` na linha 154, mesmo em `--dry-run`). | `src/lib/closedTestInvite.test.ts` (14) + `closedTestInvite.locales.test.ts` (10) |
+| **TASK-18** (`delete-account`) | `OPERATOR_MAIL_FAILED` era inalcançável — `resend.emails.send()` **não rejeita**, resolve `{ data, error }`. A rota respondia 202 «pedido recebido» com a caixa do operador vazia. Passou a inspecionar `{ error }` → `OPERATOR_MAIL_FAILED:<nome>` (502). | `src/app/api/account-deletion/route.test.ts` (7) |
+| **TASK-17** (`closed-test-signup`) | `/api/contacts` ganhou verificação de configuração, `try/catch` nos dois caminhos de BD, `{ error }` no envio, e códigos estáveis em todas as respostas. O `ContactForm` mostra o código (já era devolvido e era deitado fora) e ganhou `role="alert"`, que não tinha. | `src/app/api/contacts/route.test.ts` (11) + `src/components/ContactForm.test.tsx` (7) |
+| — | `getResend()` (`src/lib/resend.ts`): `new Resend(undefined)` **lança**, portanto construí-lo em module scope matava a rota no import e o `CONFIG_MISSING_RESEND` nunca corria. | `src/lib/resend.test.ts` (5) |
+| — | Extraídos `fail()` → `src/lib/apiError.ts` e `escapeHtml` → exportado de `src/lib/email.ts`. | — |
+
+**Framework de testes:** Vitest 5 + jsdom + Testing Library, `npm test` (85 testes, 7 ficheiros). Decisão revertida face aos specs, que o punham fora de scope — a §2.4 da revisão mostrou que a classe de bug que custou duas sessões não é apanhável por `tsc`/`lint`/`build`.
+
+Duas notas de instalação, para não se repetir a investigação: `@vitejs/plugin-react` foi **descartado** (puxa Babel 8 e colide com `babel-plugin-react-compiler`, que está em Babel 7 — o esbuild do Vitest transforma TSX sem ele); e `@types/node` subiu de `^20` para `^24`, exigência do Vitest 5 e alinhado com o Node 24 em uso.
+
+---
+
+## Ordem a seguir
+
+```
+0. ✅ emails.privacyPolicy — feito nas 10 locales
+1. ✅ TASK-F  envio do convite de teste fechado — código pronto e testado
+2. TASK-D   Play Console: registar os testers + guardar o link de opt-in  ← utilizador
+            depois: CLOSED_TEST_OPT_IN_URL no .env.local e correr o envio
+3. ✅ TASK-15  «ignorar» → «responder» nas 10 locales — feito
+4. TASK-A1/A2/A3 + TASK-C + TASK-B                   ← um só commit
+5. TASK-11  fechar rate_limits ao anon (repo app)
+6. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 16 · 14
+```
+
+## Para arrancar o teste fechado
+
+```bash
+node scripts/import-closed-test-contacts.mjs --dry-run   # confere as 13 linhas
+node scripts/import-closed-test-contacts.mjs             # CSV -> contacts (uma vez)
+# ... registar os emails no Play Console, guardar o link de opt-in ...
+# no .env.local, os DOIS links de "Como os testadores participam no seu teste":
+#   CLOSED_TEST_OPT_IN_URL=https://play.google.com/apps/testing/<package>        (Adesao na web)
+#   CLOSED_TEST_DOWNLOAD_URL=https://play.google.com/store/apps/details?id=<pkg>  (Adesao Android)
+#   CLOSED_TEST_FROM_EMAIL=ricardo.rato@eatease.eu   (caixa real: o email pede resposta)
+node scripts/send-closed-test-invite.mjs --dry-run       # quem receberia
+node scripts/send-closed-test-invite.mjs                 # envia e marca
+```
+
+**A ordem importa, duas vezes.** Sem a importação, o envio encontra menos contactos do que julgas. E dentro do email, o link de **adesão na web** vem primeiro: a ficha da loja só resolve depois da adesão, e instalar por ela **não conta** para o requisito dos 12 testadores.
+
+Reentrante: quem falhar fica com `closed_test_invited_at` a NULL e entra na execução seguinte. Quem se inscrever pelo formulário a partir daqui aparece sozinho na próxima passagem — não é preciso tocar em ficheiro nenhum.
+
+### Próxima task: TASK-A1/A2/A3 + TASK-C + TASK-B — um só commit
+
+Está em [`spec-review.md` §3.3/§3.4](./spec-review.md) e no bloco de ordenação da §5. Em resumo:
+
+**Bloqueada pela TASK-D**, e só em parte. A A3 (política de privacidade e termos) e a B (email ao operador) precisam do endereço do Grupo Google para o nomear; a A1 e a A2 não precisam de nada. Se a TASK-D ainda não estiver feita, a A1+A2 podem avançar — mas o commit único é a decisão do spec, porque a copy do formulário e a finalidade declarada nos documentos legais têm de mudar ao mesmo tempo.
+
+- **A1** — `form.ts` + `cta.ts` + `nav.ts` (×10): `joinWaitlist` é o CTA do cabeçalho, está em todas as páginas.
+- **A2** — `hero.ts` + `pages.ts` (×10): `badge: "Coming soon"` e `googlePlayPre` passam a ser falsos com a app no Play; `pages.confirmed.body` é **onde o utilizador aterra** ao clicar no link, e nenhuma task lhe tocava.
+- **A3** — `privacyPolicy.ts` + `termsOfUse.ts` (×10): ambos declaram hoje a finalidade «join a waitlist». Se o formulário inscreve testers, a finalidade declarada deixa de descrever o tratamento — e o argumento central do spec é precisamente a limitação das finalidades.
+- **C** — copy do email de boas-vindas (`closed-test-signup.md` §TASK-C).
+- **B** — **não é acrescentar um email**: `confirm/route.ts:63-83` já envia dois (utilizador + operador, via `new-user-confirmation.html` e `RESEND_WELCOME_EMAIL`). É mudar-lhe o conteúdo e separar o destinatário do operador do `from:` do email ao utilizador.
+
+**Verificação:** `grep -riE "waitlist|lista de espera|warteliste|liste d'attente" src/lib/i18n/locales/*/` → zero fora do histórico; confirmar um contacto em dev e ler as **duas** mensagens (não três).
+
+**A tentação a evitar:** a TASK-B parece «criar o email ao operador». Quem a ler assim cria um terceiro envio e o operador passa a receber dois emails por inscrição.
+
+---
+
+### Fica em aberto na TASK-15 (não bloqueia)
+
+O `replyTo` do acknowledgement passou a ser o `DELETION_REQUEST_TO_EMAIL` — correcto em qualquer cenário, porque essa caixa é lida por definição. Fica por confirmar se o `RESEND_FROM_EMAIL` aceita correio de entrada; se aceitar, não muda nada, o `replyTo` continua a ser o destino certo.
+
+O registo do `pt-pt` continua dividido: a página trata por «você», o email por «tu». É pré-existente e não foi tocado aqui — se for para uniformizar, é uma passagem própria a todo o `pt-pt`, não uma linha.
+
+---
+
+## Portão de verificação (Boundaries dos specs)
+
+```bash
+npm test            # 85 testes
+npx tsc --noEmit    # 0 erros exigidos
+npm run lint        # 0 erros (2 warnings pré-existentes, não introduzidos aqui)
+npm run build
+```
+
+> O servidor de dev é corrido pelo utilizador num terminal próprio — **não arrancar `npm run dev`**.
+
+---
+
+## Estado do git
+
+Nada commitado nesta sessão. `docs/closed-test-signup.md` e `docs/delete-account.md` aparecem como apagados, com as cópias novas por rastrear em `docs/spec/` — é uma mudança de sítio feita pelo utilizador, e o `git add` é decisão dele.

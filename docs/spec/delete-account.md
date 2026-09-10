@@ -215,6 +215,11 @@ A Fase 2 acrescenta `step2` (código) e `step3` (confirmação) — ver TASK-13.
 - **Status:** [x] COMPLETE (variáveis) — `DELETION_REQUEST_TO_EMAIL=privacy@eatease.eu` e `TURNSTILE_SECRET_KEY` corrigida, ambas em Production e Preview.
 - **Falta:** submeter `https://www.eatease.eu/delete-account` no Play Console (campo de eliminação **e** formulário *Data safety*).
 
+### TASK-18: Tornar `OPERATOR_MAIL_FAILED` alcançável
+- **Status:** [x] COMPLETE — o `try/catch` do envio ao operador nunca disparava: `resend.emails.send()` **não rejeita**, resolve `{ data, error }` para rejeição da API e para falha de rede (`node_modules/resend/dist/index.mjs` — `fetchRequest`). A rota respondia **202 «pedido recebido» com a caixa do operador vazia**. Agora inspecciona `{ error }` e devolve `OPERATOR_MAIL_FAILED:<error.name>` (502); o `try/catch` fica para o que lança de facto.
+- **Também corrigido:** `new Resend(process.env.RESEND_API_KEY)` estava em module scope e **lança** quando a chave falta, matando a rota no import — o `CONFIG_MISSING_RESEND` era igualmente inalcançável. Passou a `getResend()` (`src/lib/resend.ts`), que devolve `null` em vez de lançar.
+- **Guardado por:** `src/app/api/account-deletion/route.test.ts` (7 testes).
+
 ### TASK-12: Diagnóstico de falhas
 - **Status:** [x] COMPLETE — códigos estáveis em todas as respostas; verificação de configuração primeiro (alcançável por `curl`, sem token do Turnstile); `checkRateLimit` em try/catch; códigos da Cloudflare propagados.
 
@@ -267,7 +272,7 @@ A Fase 2 acrescenta `step2` (código) e `step3` (confirmação) — ver TASK-13.
 
 - Exportação de dados (Art. 20.º — portabilidade). Obrigação real a prazo, não é o que a Google pede.
 - Eliminação parcial de dados · dashboard de gestão de pedidos.
-- Framework de testes na landing-page (`package.json` só tem `dev`/`build`/`start`/`lint`).
+- ~~Framework de testes na landing-page~~ — **decisão revertida a 2026-09-10.** Vitest + jsdom + Testing Library instalados (`npm test`), depois de a §2.4 da revisão mostrar que a classe de bug que nos custou duas sessões (um guard que nunca dispara) não é apanhável por `tsc`, `lint` nem `build`.
 - Cache partilhado `recipes`/`recipe_translations` com escrita livre a qualquer autenticado (`038a`, `060`) — decisão consciente e documentada, não é `anon`.
 - Rotina de limpeza da tabela `rate_limits` — ver *Outras retenções*.
 
