@@ -6,10 +6,13 @@ import type { Locale } from "@/lib/i18n/config";
 
 export default async function ErrorPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ lang: string }>;
+  searchParams: Promise<{ code?: string }>;
 }) {
   const { lang } = await params;
+  const { code } = await searchParams;
   const locale: Locale = isValidLocale(lang) ? lang : "en";
   const { pages } = await getDictionary(locale);
   const t = pages.error;
@@ -38,6 +41,15 @@ export default async function ErrorPage({
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{t.title}</h1>
             <p className="text-sm leading-relaxed text-muted-foreground">{t.body}</p>
+            {/*
+              The confirmation link is the one failure the visitor cannot work
+              around: there is no form to re-submit and no response body to
+              read. Without the code on screen, a signup lost to a mail outage
+              looks exactly like an expired link.
+            */}
+            {code ? (
+              <code className="mt-1 break-all font-mono text-xs text-muted-foreground/70">{code}</code>
+            ) : null}
           </div>
 
           <Link
