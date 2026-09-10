@@ -35,14 +35,14 @@ done
 
 | Task | O quê | Guardado por |
 |---|---|---|
-| **TASK-15** (`delete-account`) | A instrução de contestação. As 9 locales não-`pt-pt` diziam na página que ignorar o email bastava — e o pedido já está na caixa do operador quando alguém a lê. `pt-pt` estava ao contrário (email a mandar ignorar, página sem a frase e a prometer uma confirmação que a Fase 1 não tem). As 20 strings passam a «responder para cancelar», e `pt-pt` volta ao prazo dos 30 dias nas duas superfícies. **Além disso:** o email de acknowledgement não tinha `replyTo` — mandava responder para o `RESEND_FROM_EMAIL`, que é um no-reply. Passou a `replyTo: operator`, senão a frase nova era tão falsa como a que substituiu. | `src/lib/i18n/deleteAccountCopy.test.ts` (30) + 1 em `account-deletion/route.test.ts` |
+| **TASK-15** (`delete-account`) | A instrução de contestação. As 9 locales não-`pt-pt` diziam na página que ignorar o email bastava — e o pedido já está na caixa do operador quando alguém a lê. `pt-pt` estava ao contrário (email a mandar ignorar, página sem a frase e a prometer uma confirmação que a Fase 1 não tem). As 20 strings passam a «responder para cancelar», e `pt-pt` volta ao prazo dos 30 dias nas duas superfícies. **Além disso:** o email de acknowledgement não tinha `replyTo` — mandava responder para o `RESEND_FROM_EMAIL`, que é um no-reply. Passou a `replyTo: operator`, senão a frase nova era tão falsa como a que substituiu. | `src/lib/i18n/deleteAccountCopy.test.ts` (30) + `ptPtRegister.test.ts` (3) + 1 em `account-deletion/route.test.ts` |
 | **TASK-F** (`closed-test-signup`) | O envio do convite passou a sair da BD, não de um CSV. Duas colunas novas (`source`, `closed_test_invited_at`, migração `0003` **já aplicada à BD**), script de importação do CSV escrito e verificado em `--dry-run` (**por correr a sério**), e os dois scripts anteriores fundidos num. O antigo `send-closed-test-invite.mjs` **nunca tinha corrido**: `t` e `team` não estavam definidos (`ReferenceError` na linha 154, mesmo em `--dry-run`). | `src/lib/closedTestInvite.test.ts` (14) + `closedTestInvite.locales.test.ts` (10) |
 | **TASK-18** (`delete-account`) | `OPERATOR_MAIL_FAILED` era inalcançável — `resend.emails.send()` **não rejeita**, resolve `{ data, error }`. A rota respondia 202 «pedido recebido» com a caixa do operador vazia. Passou a inspecionar `{ error }` → `OPERATOR_MAIL_FAILED:<nome>` (502). | `src/app/api/account-deletion/route.test.ts` (7) |
 | **TASK-17** (`closed-test-signup`) | `/api/contacts` ganhou verificação de configuração, `try/catch` nos dois caminhos de BD, `{ error }` no envio, e códigos estáveis em todas as respostas. O `ContactForm` mostra o código (já era devolvido e era deitado fora) e ganhou `role="alert"`, que não tinha. | `src/app/api/contacts/route.test.ts` (11) + `src/components/ContactForm.test.tsx` (7) |
 | — | `getResend()` (`src/lib/resend.ts`): `new Resend(undefined)` **lança**, portanto construí-lo em module scope matava a rota no import e o `CONFIG_MISSING_RESEND` nunca corria. | `src/lib/resend.test.ts` (5) |
 | — | Extraídos `fail()` → `src/lib/apiError.ts` e `escapeHtml` → exportado de `src/lib/email.ts`. | — |
 
-**Framework de testes:** Vitest 5 + jsdom + Testing Library, `npm test` (85 testes, 7 ficheiros). Decisão revertida face aos specs, que o punham fora de scope — a §2.4 da revisão mostrou que a classe de bug que custou duas sessões não é apanhável por `tsc`/`lint`/`build`.
+**Framework de testes:** Vitest 5 + jsdom + Testing Library, `npm test` (88 testes, 8 ficheiros). Decisão revertida face aos specs, que o punham fora de scope — a §2.4 da revisão mostrou que a classe de bug que custou duas sessões não é apanhável por `tsc`/`lint`/`build`.
 
 Duas notas de instalação, para não se repetir a investigação: `@vitejs/plugin-react` foi **descartado** (puxa Babel 8 e colide com `babel-plugin-react-compiler`, que está em Babel 7 — o esbuild do Vitest transforma TSX sem ele); e `@types/node` subiu de `^20` para `^24`, exigência do Vitest 5 e alinhado com o Node 24 em uso.
 
@@ -101,14 +101,16 @@ Está em [`spec-review.md` §3.3/§3.4](./spec-review.md) e no bloco de ordenaç
 
 O `replyTo` do acknowledgement passou a ser o `DELETION_REQUEST_TO_EMAIL` — correcto em qualquer cenário, porque essa caixa é lida por definição. Fica por confirmar se o `RESEND_FROM_EMAIL` aceita correio de entrada; se aceitar, não muda nada, o `replyTo` continua a ser o destino certo.
 
-O registo do `pt-pt` continua dividido: a página trata por «você», o email por «tu». É pré-existente e não foi tocado aqui — se for para uniformizar, é uma passagem própria a todo o `pt-pt`, não uma linha.
+O registo do `pt-pt` foi uniformizado em «tu» (decisão do Ricardo: o tom é o da app). O `deleteAccount.ts` era o único ficheiro em «você»; corrigidos também `aboutUs.value1` («por lhe poupar tempo») e `pages.linkExpired` («submete o seu email»), onde a divisão atravessava uma frase. Guardado por `ptPtRegister.test.ts`.
+
+**O que esse teste não vê, e é preciso saber:** o `pt-pt` não tem tradução dos três documentos legais — o `locales/pt-pt/index.ts` re-exporta os objectos do `en` (`privacyPolicy`, `termsOfUse`, `cookiePolicy`). Quem visita o site em português lê-os em inglês. O teste detecta-o por identidade de objecto e salta-os; no dia em que forem traduzidos, passam a ser verificados sozinhos.
 
 ---
 
 ## Portão de verificação (Boundaries dos specs)
 
 ```bash
-npm test            # 85 testes
+npm test            # 88 testes
 npx tsc --noEmit    # 0 erros exigidos
 npm run lint        # 0 erros (2 warnings pré-existentes, não introduzidos aqui)
 npm run build
@@ -120,4 +122,16 @@ npm run build
 
 ## Estado do git
 
-Nada commitado nesta sessão. `docs/closed-test-signup.md` e `docs/delete-account.md` aparecem como apagados, com as cópias novas por rastrear em `docs/spec/` — é uma mudança de sítio feita pelo utilizador, e o `git add` é decisão dele.
+Árvore limpa. O acumulado por commitar foi separado por task, por ordem:
+
+```
+2dc5c57 feat: framework de testes (Vitest 5 + jsdom + Testing Library)
+6895af4 fix: /api/contacts falha ruidosamente, com código na resposta e no ecrã
+3de7313 fix: OPERATOR_MAIL_FAILED era inalcançável na página de eliminação
+b145508 feat: convite do teste fechado sai da BD, não de um CSV
+3424538 fix: nenhuma locale manda ignorar o email de eliminação
+89eb8c5 docs: specs passam para docs/spec/ e registam o estado da sessão
+```
+
+**Convenção, a partir daqui:** cada task implementada e testada leva um
+commit próprio, com `feat:` / `arch:` / `fix:` e uma descrição breve.
