@@ -264,7 +264,53 @@ A Fase 2 acrescenta `step2` (código) e `step3` (confirmação) — ver TASK-13.
 ### TASK-11: [repo `app`] Fechar `rate_limits` à role `anon`
 - **O quê:** `001_add_security_indexes.sql:44-48` cria duas políticas `USING (true)` **sem cláusula `TO`** → o Postgres assume `TO public`, que inclui `anon`. Qualquer pessoa com a key do APK lê, altera e **apaga** a tabela de rate limiting. Nova migration: `DROP POLICY` das duas, recriar com `TO service_role`.
 - **Verify:** `curl` ao PostgREST com a anon key, antes e depois.
-- **Status:** [ ] TODO — independente desta feature, deve ser feita de qualquer forma
+- **Status:** [x] COMPLETE — `app/database/migrations/122_lock_rate_limits_to_service_role.sql`, aplicada a 2026-09-11 (`20260911100930`). Commit `eb3b87e9` no repo `app`.
+
+  **O «O quê» desta task estava incompleto, e o DROP POLICY sozinho não a fechava.** Duas das seis vias de acesso nunca consultam RLS: `check_rate_limit` e `cleanup_expired_rate_limits` são `SECURITY DEFINER` de `postgres`, que tem `rolbypassrls`, e tinham `EXECUTE` concedido a `anon`. E `cleanup_expired_rate_limits()` apaga tudo o que tem mais de uma hora — **`EXECUTE` nela é `DELETE` na tabela**. Além disso o RLS só é consultado *depois* de o teste de privilégio da tabela passar, e `anon` tinha o conjunto `arwdDxt` completo: era por isso que o PostgREST respondia `200`/`204` em vez de «permission denied». A migration faz as três coisas — políticas, grants da tabela, `EXECUTE` das funções — e revoga **pelo nome**, não só de `PUBLIC` (lição da `094`, reverificada: há `ALTER DEFAULT PRIVILEGES` a conceder a `anon` por dois concedentes).
+
+  **Verificado antes e depois,** da internet aberta e só com a anon key:
+
+  | Pedido | Antes | Depois |
+  |---|---|---|
+  | `GET /rest/v1/rate_limits` | `200 []` | `401` `42501 permission denied for table` |
+  | `POST /rest/v1/rpc/cleanup_expired_rate_limits` | `204` | `401` `42501 permission denied for function` |
+  | `POST /rest/v1/rpc/check_rate_limit` | `200` | `401` `42501 permission denied for function` |
+
+  E como `anon` dentro da BD, em transação revertida: `SELECT`/`INSERT`/`UPDATE`/`DELETE` e as duas RPC, todos aceites antes, todos `42501` depois. O teste vive em `app/database/migrations/test_122_rate_limits_locked.sql` — falha antes nomeando cada via aberta, passa depois, e não precisa de key nem de rede.
+
+---
+
+## Tasks abertas pela verificação da TASK-11
+
+Quatro achados da verificação, todos no repo `app` e **nenhum autorizado pelos
+*Boundaries*** — carecem de decisão do Ricardo antes de se tocar em código.
+Escritas aqui para não se perderem; a TASK-23 é a que não devia esperar.
+
+### TASK-23: [repo `app`] A mesma classe da TASK-11, em duas funções com escrita a sério
+- **O quê:** o linter do Supabase (`anon_security_definer_function_executable`), corrido depois da `122`, lista mais **seis** funções `SECURITY DEFINER` executáveis por `anon`. Quatro são inofensivas — `handle_new_user`/`handle_updated_at` são funções de trigger (sem `NEW` falham), e `accept_meal_plan`/`update_user_profile_secure` **verificam `auth.uid()`** (lido o corpo das duas: a segunda devolve `'User not found or unauthorized'` a quem não está autenticado). **Duas não verificam nada:**
+  - `cleanup_expired_sessions()` — `UPDATE public.user_sessions SET revoked_at = NOW()` em todas as expiradas e `DELETE` das revogadas há mais de 30 dias. Zero verificação de quem chama. É a gémea exacta do `cleanup_expired_rate_limits`, na mesma migration `001`, sobre uma tabela com **11 linhas**.
+  - `migrate_existing_user_profiles()` — `RETURNS TABLE(user_id uuid, …)` e faz `UPDATE public.user_profiles` a partir do `raw_user_meta_data` do `auth.users`. Zero verificação. Devolve **UUIDs de utilizadores reais** a quem a chamar: **8 das 18** linhas de `user_profiles` batem no filtro dela. É um ajudante de migração de uso único que ficou executável para sempre.
+- **Porquê é uma task e não um `fix` já feito:** os *Boundaries* só autorizam a TASK-11 no repo `app`. E, ao contrário da `122`, esta **tem chamadores possíveis** — `user_sessions` tem linhas, `user_profiles` tem 18 — portanto quem a fizer verifica primeiro quem chama o quê, em vez de revogar às cegas.
+- **Não verificado empiricamente, de propósito:** provar a via do `migrate_existing_user_profiles` exigia executar uma escrita não autenticada em produção; foi bloqueado e não se contornou. A prova é o corpo das funções (`pg_get_functiondef`) e as contagens de linhas, ambos lidos.
+- **O quê, quando se fizer:** migration nova, no molde da `122` — `REVOKE EXECUTE … FROM PUBLIC, anon, authenticated`, `service_role` fica. E estender o `test_122` a estas duas, ou fazer-lhe um par.
+- **Status:** [ ] TODO — **perguntar primeiro**
+
+### TASK-20: [repo `app`] `rate_limits` está morta — fechá-la foi o mínimo, não o fim
+- **O quê:** a tabela tem **0 linhas**, e `rate_limits`, `check_rate_limit` e `cleanup_expired_rate_limits` não aparecem em sítio nenhum do repo `app` fora da própria migration `001` (`grep` a tudo menos `node_modules`/`coverage`). Nenhum `cron.job` os chama — a linha 193 da `001` é uma sugestão comentada que nunca correu. É infraestrutura especulativa de 2025 que nunca teve um chamador.
+- **Porquê é uma decisão e não uma limpeza:** `DROP TABLE` + `DROP FUNCTION` apaga a superfície em vez de a defender, e torna a TASK-22 desnecessária. Mas apagar é irreversível e os *Boundaries* não o autorizam. A alternativa é deixar como está: já está fechada.
+- **Status:** [ ] TODO — **perguntar primeiro**
+
+### TASK-21: [repo `app`] O `check_rate_limit` vivo está avariado e a `001` já não o descreve
+- **O quê:** duas divergências entre a função em produção e a `001`, ambas lidas em `pg_get_functiondef`:
+  1. **Assinatura:** a viva tem **três** argumentos (`p_identifier text, p_endpoint text, p_limit integer`); a `001` declara quatro (mais `p_window_minutes integer DEFAULT 60`). Foi substituída fora das migrações — não há migration que o registe.
+  2. **Corpo:** perdeu o guard `current_count IS NULL OR`. Como `SELECT … INTO` sobre zero linhas deixa `current_count` a `NULL`, e `NULL < 100` é `NULL` e não `TRUE`, a função entra sempre no `ELSE` — **devolve `FALSE` ao primeiro pedido de cada par identificador/endpoint e nunca insere linha nenhuma.** Um rate limiter que recusa tudo e não conta nada. Foi assim que se explicou o `200 false` do probe com 0 linhas na tabela.
+- **Impacto real: nenhum**, porque não tem chamadores (TASK-20). Fica registado para que ninguém a adopte a julgar que funciona, e para a `001` deixar de descrever algo que não está lá.
+- **Status:** [ ] TODO — **perguntar primeiro**; resolvida de graça pela TASK-20 se a decisão for `DROP`
+
+### TASK-22: [repo `app`] `search_path` mutável nas duas funções (e em 16 outras)
+- **O quê:** ambas são `SECURITY DEFINER` com `proconfig` a `NULL`, isto é sem `SET search_path`. É o `function_search_path_mutable` do linter do Supabase, que conta **18** funções no projeto.
+- **Porquê fica em aberto:** o `REVOKE` da `122` torna-o inalcançável por `anon` nestas duas, portanto não é urgente **nelas** — mas o defeito fica, e as outras 16 não foram tocadas. Se se fizer, faz-se às 18 de uma vez, não a duas.
+- **Status:** [ ] TODO — **perguntar primeiro**
 
 ---
 

@@ -1,6 +1,6 @@
 # Estado e próximo passo
 
-> Ponto de partida de cada sessão. Atualizado a **2026-09-10**.
+> Ponto de partida de cada sessão. Atualizado a **2026-09-11**.
 > Specs: [`closed-test-signup.md`](./closed-test-signup.md) · [`delete-account.md`](./delete-account.md) · Revisão: [`spec-review.md`](./spec-review.md)
 
 ## Estado do `tsc` — verificar sempre ao começar
@@ -35,6 +35,7 @@ done
 
 | Task | O quê | Guardado por |
 |---|---|---|
+| **TASK-11** (`delete-account`, repo `app`) | `rate_limits` estava aberta a `anon`. **E o `DROP POLICY` que a task pedia não a fechava:** duas das seis vias de acesso nunca consultam RLS — as duas funções são `SECURITY DEFINER` de `postgres`, que tem `rolbypassrls`, e tinham `EXECUTE` concedido a `anon`; e `cleanup_expired_rate_limits()` apaga tudo o que tem mais de uma hora, portanto **`EXECUTE` nela é `DELETE` na tabela**. Mais: o RLS só é consultado depois de o teste de privilégio da tabela passar, e `anon` tinha o `arwdDxt` completo — era isso que fazia o PostgREST responder `200`/`204` e não «permission denied». A migration `122` faz as três coisas e revoga **pelo nome**, não só de `PUBLIC` (lição da `094`). Aplicada a 2026-09-11. | `app/database/migrations/test_122_rate_limits_locked.sql` (4 asserções, 6 probes) + antes/depois do PostgREST |
 | **TASK-16** (atravessa os dois specs) | A eliminação não alcançava a lista de testers do Play Console, e o atalho dentro da app apresentava-se como o caminho rápido sendo o incompleto: a edge function da app apaga auth e storage no projeto **dela**, que não vê o `contacts` da landing-page nem o Console. Quem eliminava por lá continuava tester. O email ao operador ganhou o passo 3, e o `inApp.body` das 10 locales passou a dizê-lo. | 20 asserções em `deleteAccountCopy.test.ts` + 1 em `account-deletion/route.test.ts` |
 | **TASK-A1/A2/A3 + C** (`closed-test-signup`) | O formulário deixou de abrir uma lista de espera. `nav`/`cta`/`form`/`hero`/`pages` nas 10 locales, `joinWaitlist` → `joinClosedTest`, e os dois documentos legais (2 ficheiros, não 20 — só o `en` os tem) passam a declarar a inscrição no teste fechado **e a partilha do endereço com a Google**. O par da App Store fica em «brevemente», e há um teste que o exige: não há TestFlight. | `src/lib/i18n/closedTestCopy.test.ts` (60) |
 | **TASK-B** (`closed-test-signup`) | Perda de dados no `confirm`: gravava `confirmed = true` **antes** dos envios, num `Promise.all` sem `{ error }`, e o segundo clique não reenviava — um tester que confirmasse durante uma falha da Resend perdia-se em silêncio. A ordem inverteu-se: operador primeiro, marcar depois. Mais `getResend()`, `SIGNUP_NOTIFICATION_TO_EMAIL`, e o código do erro visível na página. | `src/app/api/contacts/confirm/route.test.ts` (11) |
@@ -60,9 +61,11 @@ Duas notas de instalação, para não se repetir a investigação: `@vitejs/plug
 3. ✅ TASK-15  «ignorar» → «responder» nas 10 locales
 4. ✅ TASK-A1/A2/A3 + C + B   (B saiu em commit próprio: era perda de dados, não copy)
 5. ✅ TASK-16  a eliminação alcança a lista de testers
-6. TASK-11  fechar rate_limits ao anon    ← A SEGUIR. repo D:\dev\eatease\app
-7. TASK-19  a app promete apagar tudo e não apaga  ← mesma ida ao repo da app
-8. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 14
+6. ✅ TASK-11  fechar rate_limits ao anon   (migration 122, aplicada 2026-09-11)
+7. TASK-19  a app promete apagar tudo e não apaga  ← A SEGUIR. precisa de decisão
+8. TASK-23  anon executa duas SECURITY DEFINER que escrevem a sério  ← aberta pela 11
+9. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 14
+   TASK-20/21/22  achados da 11, todos «perguntar primeiro» (ver `delete-account.md`)
    TASK-E   ✗ impossível — sem Grupo Google não há API
 ```
 
@@ -84,23 +87,28 @@ node scripts/send-closed-test-invite.mjs                 # envia e marca
 
 Reentrante: quem falhar fica com `closed_test_invited_at` a NULL e entra na execução seguinte. Quem se inscrever pelo formulário a partir daqui aparece sozinho na próxima passagem — não é preciso tocar em ficheiro nenhum.
 
-### Próxima task: TASK-11 — fechar `rate_limits` à role `anon`
+### A TASK-11 está fechada — o que ela ensinou
 
-**Está no outro repo:** `D:\dev\eatease\app`. É a única alteração ao repo da app que os specs autorizam sem perguntar (`delete-account.md`, *Perguntar primeiro*).
+O repo da app **tem** framework de testes: **Jest** (`npm test`, `jest-expo`), com um
+precedente de guarda de arquitectura em
+`src/__tests__/architecture/subscriptionWriteBoundary.test.ts`. Mas nenhum teste
+offline vê *grants* de Postgres, e uma guarda estática sobre as 121 migrações
+cobriria as políticas e ficaria verde com os `EXECUTE` abertos — seria uma
+guarda a provar a coisa errada, exactamente a classe de bug que este projeto já
+pagou duas vezes. O teste foi escrito no idiom do próprio repo da app
+(`database/migrations/test_*.sql`, que já lá existia): **SQL, com `DO $$` que
+`RAISE`**, sem key e sem rede, a correr como `anon` via `SET LOCAL ROLE` dentro
+de `BEGIN`/`ROLLBACK`. Falha antes nomeando cada via aberta, passa depois.
 
-**Problema, verificado na revisão (§1).** `app/database/migrations/001_add_security_indexes.sql:43-48` cria duas políticas RLS `USING (true)` **sem cláusula `TO`**. Sem `TO`, o Postgres assume `TO public`, que inclui `anon`. Qualquer pessoa que extraia a anon key do APK — que é pública por desenho — lê, altera e **apaga** a tabela de rate limiting.
-
-**O quê.** Migration nova: `DROP POLICY` das duas e recriar com `TO service_role`.
-
-**Verificação.** `curl` ao PostgREST com a anon key, antes e depois. É o teste: tem de passar antes e falhar depois.
-
-**Porquê agora.** É independente de tudo o resto e não fica melhor com o tempo. Depois dela, só resta a Fase 2.
-
-> **Nota sobre testes:** o repo da app não tem o Vitest que instalámos aqui. Confirmar o que lá existe antes de assumir que há onde escrever o teste — e se não houver, o `curl` antes/depois é a prova, guardada no commit.
+**A lição transferível:** o «O quê» da task descrevia metade do buraco. O
+discriminador que vale a pena aplicar à próxima é — *a alteração que a task pede
+torna verdadeira a frase que a task existe para tornar verdadeira?* Aqui não: o
+`DROP POLICY` deixava de pé um `RPC` que qualquer pessoa podia chamar para
+apagar a tabela. Verificar a afirmação, não executar a instrução.
 
 ---
 
-### Task nova, mesma viagem: TASK-19 — a app promete mais do que apaga
+### Próxima task: TASK-19 — a app promete mais do que apaga
 
 **Encontrada ao fechar a TASK-16, e é a metade que faltava.** A TASK-16 corrigiu o `inApp.body` na landing-page: quem elimina dentro da app continua com a linha em `contacts` e com o endereço na lista de testers do Play Console. Mas **ninguém lê a landing-page antes de eliminar dentro da app** — está em Definições → Mais, no ecrã onde a decisão é tomada. A frase falsa mudou de sítio; não desapareceu.
 
@@ -113,9 +121,9 @@ São três excepções, não uma: o hash do trial, a linha em `contacts` e o end
 
 **É a mesma forma do bug da TASK-15:** a frase verdadeira numa superfície, a falsa naquela que a pessoa lê no momento de decidir — com as superfícies trocadas.
 
-- **Ficheiros:** `app/src/i18n/locales/{n}/settings.json` → `more.deleteAccount.confirmMessage` e `finalConfirmMessage`.
-- **Não foi feita aqui de propósito:** o `delete-account.md` (*Perguntar primeiro*) só autoriza a TASK-11 no repo da app. Esta precisa de decisão do Ricardo.
-- **Faz-se na mesma ida ao repo da app que a TASK-11.**
+- **Ficheiros:** `app/src/i18n/locales/{n}/settings.json` → `more.deleteAccount.confirmMessage` e `finalConfirmMessage`. São **10 ficheiros**, não 2: ao contrário dos documentos legais, o `settings.json` está traduzido em todas as locales.
+- **Continua a precisar de decisão do Ricardo:** o `delete-account.md` (*Perguntar primeiro*) só autorizava a TASK-11 no repo da app, e a TASK-11 já está feita. Esta não está autorizada por nada.
+- **A decisão não é só de copy.** A frase pode passar a ser verdadeira de dois lados: corrigir o texto para declarar as três excepções, ou **fazer a app alcançar o que promete** — o que significa a edge function `delete-account` chamar a landing-page para apagar a linha em `contacts`, e a lista de testers continuar manual porque não há API que lá chegue (é o mesmo bloqueio da TASK-E). A primeira é uma tarde; a segunda é a Fase 2 da TASK-13 vista do outro lado.
 
 ---
 
@@ -155,7 +163,17 @@ npm run build
 
 ## Estado do git
 
-Árvore limpa. O acumulado por commitar foi separado por task, por ordem:
+**A TASK-11 vive no repo `app`, não aqui.** Commit `eb3b87e9`, dois ficheiros
+(`122_lock_rate_limits_to_service_role.sql` e `test_122_rate_limits_locked.sql`).
+O `.gitignore` do repo da app estava modificado e **ficou de fora de propósito**
+— é trabalho em paralelo do Ricardo (reverte o `closed_test_contacts.csv` do
+commit `2f3c1abf`), não desta task.
+
+Nesta árvore, a TASK-11 não mexeu em código: os 180 testes e o `tsc` a 0 erros
+foram reconfirmados a 2026-09-11 depois da migration, sem alteração. O que muda
+aqui é só documentação.
+
+Histórico anterior, separado por task, por ordem:
 
 ```
 2dc5c57 feat: framework de testes (Vitest 5 + jsdom + Testing Library)
