@@ -10,10 +10,11 @@
 
 ## Estado
 
-- **Esta árvore está verde:** `npm test` 215/215, `npx tsc --noEmit` 0 erros.
+- **Esta árvore está verde:** `npm test` 243/243, `npx tsc --noEmit` 0 erros.
 - **Nenhuma chave de i18n a meio de rollout.** Se aparecerem erros de `Property … is missing`, é a *Constraint dura* — diagnóstico na *Nota de i18n* do [`closed-test-signup.md`](./closed-test-signup.md), e **não é erro de ninguém**.
 - **A Fase 1 do `/delete-account` está em produção.**
 - **O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.
+- 🔴 **O SMTP de Auth do projeto da app está desativado, e isso trava a Fase 2 e parte produção.** O serviço interno do Supabase não entrega a quem não pertence à equipa do projeto: o OTP só chega ao Ricardo, e o `resetPasswordForEmail` da app está a falhar hoje para todos os testers. Detalhe e solução na TASK-09 do [`delete-account.md`](./delete-account.md).
 - **A autorização nominal no repo `app` está esgotada.** As migrations `122`-`125` e a copy das 10 locales estão feitas; o que venha a seguir nesse repo volta ao «perguntar primeiro» (*Boundaries* do [`delete-account.md`](./delete-account.md)).
 
 ## Ordem a seguir
@@ -22,15 +23,15 @@
 1. Fase 2 do /delete-account   <- A SEGUIR, e é tudo nesta árvore menos a 09
    TASK-09  template Magic Link      (Dashboard - precisa do utilizador)
    TASK-03  clientes Supabase da app          [x] FEITA a 2026-09-12
-   TASK-04  POST /api/account-deletion/request  <- A SEGUIR (passa emailRedirectTo
-            por locale: e dele que o template tira a lingua)
-            + extrair withRequestGuards (§4.2): a TASK-17 nao o fez,
-              e sem isso esta e a terceira copia do mesmo pipeline
-   TASK-05  POST /api/account-deletion/waitlist
+   TASK-04  POST /api/account-deletion/request   [x] FEITA a 2026-09-12
+            (a §4.2 ficou feita aqui: src/lib/apiGuards.ts)
+   TASK-05  POST /api/account-deletion/waitlist  <- A SEGUIR
    TASK-13  máquina de 3 passos      (bloqueada pela §4.1: partir o componente primeiro)
    TASK-14  copy e retenções         (MESMO commit que a 13 - a copy só fica verdadeira aí)
 
 2. Sem data, e nenhuma bloqueia a Fase 2:
+   Migrar /api/contacts e /api/account-deletion para o runRequestGuards
+      <- commit proprio, com os 225+7 testes deles como portao
    Apagar o closed_test_contacts.csv  <- último passo da TASK-F, está por fazer
    TASK-24/25/26  achados da auditoria da 001, no repo `app`  <- perguntar primeiro
    Tradução dos 3 documentos legais   <- nove locales servem-nos em inglês
@@ -63,7 +64,7 @@ estritamente leitura — o `if (deps.dryRun) { … continue; }` de
 ## Portão de verificação
 
 ```bash
-npm test            # 215 testes
+npm test            # 243 testes
 npx tsc --noEmit    # 0 erros exigidos - correr SEMPRE à parte; a suite não faz type-check
 npm run lint        # 0 erros (2 warnings pré-existentes)
 npm run build

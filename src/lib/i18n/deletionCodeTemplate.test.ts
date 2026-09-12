@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { locales, defaultLocale } from "./config";
+import { locales, defaultLocale, type Locale } from "./config";
+import { deletionPageUrl } from "@/lib/deletionPageUrl";
 
 /**
  * `src/templates/deletion-code.html` is pasted into the Supabase Dashboard and
@@ -19,17 +20,12 @@ const template = fs.readFileSync(
   "utf-8",
 );
 
-/** The same URL shape TASK-04 sends as `emailRedirectTo`. */
-function deletionUrl(locale: string): string {
-  return `https://www.eatease.eu/${locale}/delete-account`;
-}
-
 /** Everything the template must say, in every language. */
 const STRINGS = ["$heading", "$intro", "$codeLabel", "$expiry", "$notYou", "$signOff", "$team"];
 
 /** The `{{ if eq .RedirectTo "…" }}…{{ end }}` block for one locale. */
-function localeBlock(locale: string): string {
-  const opening = `{{ if eq .RedirectTo "${deletionUrl(locale)}" }}`;
+function localeBlock(locale: Locale): string {
+  const opening = `{{ if eq .RedirectTo "${deletionPageUrl(locale)}" }}`;
   const start = template.indexOf(opening);
   if (start === -1) return "";
   const end = template.indexOf("{{ end }}", start);
@@ -40,7 +36,7 @@ const translated = locales.filter((l) => l !== defaultLocale);
 
 describe("deletion-code.html — locale selection", () => {
   it.each(translated)("branches on the %s deletion URL", (locale) => {
-    expect(template).toContain(`{{ if eq .RedirectTo "${deletionUrl(locale)}" }}`);
+    expect(template).toContain(`{{ if eq .RedirectTo "${deletionPageUrl(locale)}" }}`);
   });
 
   it.each(translated)("assigns every string in the %s branch", (locale) => {
@@ -61,7 +57,7 @@ describe("deletion-code.html — locale selection", () => {
   it("has no branch for a locale this site does not serve", () => {
     const branched = [...template.matchAll(/\{\{ if eq \.RedirectTo "([^"]+)" \}\}/g)].map((m) => m[1]);
 
-    expect(branched).toEqual(translated.map(deletionUrl));
+    expect(branched).toEqual(translated.map(deletionPageUrl));
   });
 });
 

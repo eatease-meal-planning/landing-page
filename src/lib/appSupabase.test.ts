@@ -127,6 +127,31 @@ describe("appSupabaseBrowser", () => {
   });
 });
 
+describe("isAppSupabaseConfigured", () => {
+  it("reports configured without building a client", async () => {
+    // The route's configuration check runs on every request and answers with a
+    // code; only the deferred work that actually calls Supabase needs a client.
+    const { isAppSupabaseConfigured } = await loadModule();
+
+    expect(isAppSupabaseConfigured()).toBe(true);
+    expect(createClientMock).not.toHaveBeenCalled();
+  });
+
+  it("reports unconfigured when the URL is absent", async () => {
+    vi.stubEnv(URL_VAR, "");
+    const { isAppSupabaseConfigured } = await loadModule();
+
+    expect(isAppSupabaseConfigured()).toBe(false);
+  });
+
+  it("reports unconfigured when the anon key is absent", async () => {
+    vi.stubEnv(KEY_VAR, "");
+    const { isAppSupabaseConfigured } = await loadModule();
+
+    expect(isAppSupabaseConfigured()).toBe(false);
+  });
+});
+
 describe("appFunctionsUrl", () => {
   it("points at the app project's edge functions, where delete-account lives", async () => {
     const { appFunctionsUrl } = await loadModule();

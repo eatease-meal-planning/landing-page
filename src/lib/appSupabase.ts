@@ -44,6 +44,18 @@ function appAnonKey(): string | null {
 }
 
 /**
+ * Whether the app project is configured, without building anything.
+ *
+ * A route's configuration check runs on every request and only needs to decide
+ * whether to answer `CONFIG_MISSING_APP_SUPABASE`; the client belongs to the
+ * work that actually calls Supabase, which on this flow happens after the
+ * response has been sent.
+ */
+export function isAppSupabaseConfigured(): boolean {
+  return appUrl() !== null && appAnonKey() !== null;
+}
+
+/**
  * A client for the app project, or null when it is not configured.
  *
  * Null rather than a throw, and read per call rather than at module scope, for

@@ -300,7 +300,9 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 
   **Defeito apanhado pelo teste, e vale para qualquer template futuro:** o Go executa **dentro de comentários HTML**. Um `{{ nome }}` sem ponto num comentário é erro de parse no Supabase, e um com ponto renderiza o valor lá dentro. O comentário de cabeçalho do ficheiro não nomeia nenhuma ação de template de propósito.
 
-  **Falta ainda saber do Dashboard,** e nenhuma se deduz do repo: (a) se o *SMTP* de Auth é personalizado — se ainda for o remetente interno do Supabase, o limite por hora torna o OTP inutilizável em uso real; (b) o *Email OTP Expiration*, que a copy afirma ser 1 hora em 10 línguas; (c) os rate limits de envio, que são o único backstop real do endpoint de OTP.
+  **Respondido pelo Dashboard a 2026-09-12:** *Email OTP Expiration* = **3600 s**, que confirma a copy «1 hora» nas 10 línguas. Redirect URLs: falta o host — foi acrescentado `https://eatease.eu/**` e o template compara com `https://www.eatease.eu/...`; o Supabase compara a string que recebe, e o redireccionamento apex→www não o ajuda.
+
+  🔴 **O SMTP está desativado, e isso é maior do que esta task.** O serviço interno do Supabase **«refuses to deliver messages to addresses that are not part of the project's team»** (documentação de `auth-smtp`), com 2 mensagens por hora fixas — o Dashboard nem deixa alterar o limite sem SMTP ou hook. Consequências: (a) o OTP só chega ao próprio Ricardo, portanto a Verify desta task e a da TASK-13 não são executáveis; (b) **o `resetPasswordForEmail` da app está a falhar hoje, em produção, para todos os testers** — é um defeito vivo num fluxo publicado, não um pré-requisito desta task. Solução: SMTP personalizado via Resend (`smtp.resend.com`, porta 465, utilizador `resend`, password = uma API key **nova**, para rodar independentemente da landing-page), remetente `noreply@eatease.eu`. Testar uma reposição de password da app logo a seguir — é o fluxo que a mudança toca e que não é nosso.
 
 ### TASK-03: Clientes Supabase do projeto da app
 - **Ficheiros:** `src/lib/appSupabase.ts` (novo)
@@ -319,8 +321,17 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 - **O quê:** Zod → `checkRateLimit('del:'+ip)` → `verifyTurnstile` → `signInWithOtp({ shouldCreateUser: false })`.
 - **Crítico:** resposta **sempre** `{ ok: true }`, exista ou não a conta. Disparar o `signInWithOtp` **sem `await`** (`.catch(console.error)`) — um email existente demora visivelmente mais, o que é por si só um oráculo de enumeração.
 - **Verify:** dois `curl -w '%{time_total}'`, corpos idênticos e tempos da mesma ordem.
-- **Pré-requisito da §4.2, e está por cumprir:** a revisão manda extrair `withRequestGuards` para `src/lib/apiGuards.ts` **antes** desta task, e aponta a TASK-17 como o momento. Verificado no commit `6895af4`: essa task extraiu o `fail()` (`apiError.ts`) e o `getResend()` (`resend.ts`) — **o `apiGuards.ts` não existe**. Escrita sem ele, esta task é a terceira cópia de `config → rate limit → zod → turnstile`. A extração faz-se aqui.
-- **Status:** [ ] TODO
+- **Status:** [x] COMPLETE (2026-09-12) — `src/app/api/account-deletion/request/route.ts`, guardada por `route.test.ts` (14). Portão: 243 testes, `tsc` 0, `lint` 0 erros, `build` passa e regista a rota.
+
+  **A §4.2 ficou cumprida aqui, não antes.** A revisão mandava extrair o `withRequestGuards` antes desta task e apontava a TASK-17 como o momento; verificado no commit `6895af4`, essa task extraiu o `fail()` e o `getResend()` e **não** os guards. Ficou `src/lib/apiGuards.ts` (`runRequestGuards`, 11 testes) e esta rota é a primeira consumidora. **O `/api/contacts` e o `/api/account-deletion` continuam com a cópia deles** — migrá-los é refactor de um caminho de conformidade e de um de inscrição, e leva commit próprio com os 225+7 testes deles como portão.
+
+  **O `after()` do Next substituiu o «sem `await`» do desenho, e corrige mais do que o oráculo de tempo.** Uma promessa solta é cortada quando a função serverless é desmontada ao responder: o email deixaria de sair de vez em quando, com o utilizador já informado de que estava tudo bem. O `after()` corre depois da resposta e mantém a função viva. A constância no tempo vem de graça, porque a chamada ao Supabase já não está no caminho da resposta.
+
+  **O `emailRedirectTo` não é destino nenhum** — este email não tem um único link. Viaja só para chegar ao template como `{{ .RedirectTo }}`, que é o único sinal disponível para escolher a língua. Por isso é uma constante (`src/lib/deletionPageUrl.ts`) e não o `NEXT_PUBLIC_SITE_URL`: um pedido de localhost tem de produzir o mesmo email localizado que produção, e a allow-list do projeto da app fica com exatamente 10 URLs em vez de um conjunto por ambiente.
+
+  **A rota e o template derivam do mesmo `deletionPageUrl()`,** e o teste do template passou a asseri-lo contra a função em vez de contra uma cópia da string. Sem isso os dois lados podiam divergir com os dois ficheiros de teste verdes — e o sintoma seria um email em inglês, sem erro em lado nenhum.
+
+  **Verify por correr, e bloqueado pela configuração de SMTP** (ver TASK-09): sem SMTP personalizado o serviço interno do Supabase **recusa entregar a quem não pertence à equipa do projeto**, portanto os dois `curl -w '%{time_total}'` mediriam o mesmo caminho nos dois casos e não provavam nada.
 
 ### TASK-05: `POST /api/account-deletion/waitlist`
 - **O quê:** lê `Authorization: Bearer` → `getUser(token)` → 401 se inválido → `db.delete(contacts).where(eq(contacts.email, user.email))`. Idempotente.
