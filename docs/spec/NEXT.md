@@ -189,7 +189,15 @@ dfa3d380 fix(db):   fecha ao anon as duas SECURITY DEFINER sem travao   (123)
 08ca9070 arch(db):  apaga a superficie de rate limiting sem chamador    (124)
 42edd555 fix(db):   pina o search_path nas 15 funcoes                   (125)
 ffdcb747 fix(i18n): o ecra de eliminacao declara tres excepcoes         (10 locales)
+ff3d4cc7 docs(db):  da ficheiro a versao 125a, que estava na tabela sem um
 ```
+
+Os **quatro ficheiros de teste foram corridos verbatim**, tal como estão em
+disco e não a versão retipeada à mão que serviu para o RED/GREEN de cada um:
+`test_122` (4/4), `test_123` (dois blocos), `test_124` e `test_125` (25/25).
+Valia a pena: o `test_124` tinha sido editado *depois* da corrida de RED (o
+cast `::text`, que o plpgsql exige contra um literal sem tipo), e um ficheiro
+de teste que nunca correu como está escrito não é um teste.
 
 Migrations aplicadas a produção: `20260911100930` (122), `123`, `124`,
 `125a` (o probe de uma função só) e `125`.
