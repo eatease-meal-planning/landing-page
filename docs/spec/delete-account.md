@@ -297,12 +297,19 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 - **O quê:** `createClient` de `@supabase/supabase-js` (não `@supabase/ssr`), com `auth: { persistSession: false, autoRefreshToken: false }`. `appSupabaseServer()` para handlers; `appSupabaseBrowser()` singleton de módulo; `APP_FUNCTIONS_URL`.
 - **Env:** `NEXT_PUBLIC_APP_SUPABASE_URL` + `NEXT_PUBLIC_APP_SUPABASE_ANON_KEY` (a anon key já vai no APK — publicá-la não acrescenta superfície de ataque).
 - **Verify:** DevTools → Local Storage sem chaves `sb-dagpia*`.
-- **Status:** [ ] TODO
+- **Status:** [x] COMPLETE (2026-09-12) — `src/lib/appSupabase.ts`, guardado por `src/lib/appSupabase.test.ts` (13 testes). Portão: 193 testes, `tsc` 0, `lint` 0 erros, `build` passa.
+
+  **`APP_FUNCTIONS_URL` é `appFunctionsUrl()`, uma função, não uma constante de módulo.** A configuração é lida por chamada, não no import, pela razão que o `getResend()` já documenta — e as três exportações devolvem `null` em vez de lançar, para a TASK-04 poder responder com um código estável em vez de um 500 sem nada para citar. `process.env.NEXT_PUBLIC_*` fica escrito por extenso em cada sítio: a substituição do Next é textual e um `process.env[nome]` calculado dava `undefined` no bundle do browser.
+
+  **O `appSupabaseServer()` devolve instância nova por chamada** — o `signInWithOtp` deixa estado de sessão no objeto que fez a chamada, e em Fluid compute o mesmo processo serve vários pedidos. O `appSupabaseBrowser()` é que é singleton, e por razão oposta: a TASK-13 lê o que o `verifyOtp` devolveu.
+
+  **O `Verify` do DevTools continua por fazer, e não podia ser feito aqui:** só há cliente no browser quando a TASK-13 o renderizar. Até lá quem guarda o `persistSession: false` são duas asserções do teste.
 
 ### TASK-04: `POST /api/account-deletion/request`
 - **O quê:** Zod → `checkRateLimit('del:'+ip)` → `verifyTurnstile` → `signInWithOtp({ shouldCreateUser: false })`.
 - **Crítico:** resposta **sempre** `{ ok: true }`, exista ou não a conta. Disparar o `signInWithOtp` **sem `await`** (`.catch(console.error)`) — um email existente demora visivelmente mais, o que é por si só um oráculo de enumeração.
 - **Verify:** dois `curl -w '%{time_total}'`, corpos idênticos e tempos da mesma ordem.
+- **Pré-requisito da §4.2, e está por cumprir:** a revisão manda extrair `withRequestGuards` para `src/lib/apiGuards.ts` **antes** desta task, e aponta a TASK-17 como o momento. Verificado no commit `6895af4`: essa task extraiu o `fail()` (`apiError.ts`) e o `getResend()` (`resend.ts`) — **o `apiGuards.ts` não existe**. Escrita sem ele, esta task é a terceira cópia de `config → rate limit → zod → turnstile`. A extração faz-se aqui.
 - **Status:** [ ] TODO
 
 ### TASK-05: `POST /api/account-deletion/waitlist`
