@@ -148,9 +148,33 @@ Isto importa para a página de eliminação: `contacts` continua a guardar nome 
 - **Descoberto durante:** verificar o caminho *in-app*. A edge function da app (`app/supabase/functions/delete-account/index.ts`) apaga storage e o utilizador de auth **no projeto Supabase da app**, que não vê o `contacts` da landing-page nem o Play Console. Quem elimina por lá continuava tester, com acesso ao build, e o `inApp.body` apresentava esse caminho como o mais rápido sem dizer que era o incompleto.
 - **Status:** [x] COMPLETE — guardado por 20 asserções em `deleteAccountCopy.test.ts` + 1 em `account-deletion/route.test.ts`.
 
+## Arrancar o teste fechado — a sequência
+
+```bash
+node scripts/import-closed-test-contacts.mjs --dry-run   # confere as 13 linhas
+node scripts/import-closed-test-contacts.mjs             # CSV -> contacts (uma vez)
+# ... registar os emails no Play Console, guardar o link de opt-in ...
+# no .env.local, os DOIS links de "Como os testadores participam no seu teste":
+#   CLOSED_TEST_OPT_IN_URL=https://play.google.com/apps/testing/<package>         (Adesao na web)
+#   CLOSED_TEST_DOWNLOAD_URL=https://play.google.com/store/apps/details?id=<pkg>  (Adesao Android)
+#   CLOSED_TEST_FROM_EMAIL=ricardo.rato@eatease.eu   (caixa real: o email pede resposta)
+node scripts/send-closed-test-invite.mjs --dry-run       # quem receberia
+node scripts/send-closed-test-invite.mjs                 # envia e marca
+```
+
+**A ordem importa, duas vezes.** Sem a importação, o envio encontra menos
+contactos do que julgas. E dentro do email o link de **adesão na web** vem
+primeiro: a ficha da loja só resolve depois da adesão, e instalar por ela **não
+conta** para o requisito dos 12 testadores.
+
+Reentrante: quem falhar fica com `closed_test_invited_at` a `NULL` e entra na
+execução seguinte. Quem se inscrever pelo formulário a partir daqui aparece
+sozinho na próxima passagem — não é preciso tocar em ficheiro nenhum.
+
 ## Nota de i18n — a *Constraint dura* durante edições em paralelo
 
-`emails.closedTestInvite` (TASK-F) está **completo nas 10 locales** desde 2026-09-10.
+`emails.closedTestInvite` (TASK-F) está **completo nas 10 locales** desde 2026-09-10,
+e o mesmo para o `emails.privacyPolicy`.
 
 Fica o padrão registado, porque volta a acontecer: `Translations = typeof en`, portanto acrescentar
 uma chave a `en` faz o `tsc` falhar nas outras nove até todas a terem. Com o Ricardo a editar o repo
@@ -160,9 +184,35 @@ em paralelo com as sessões, essa janela aparece **a meio de um rollout** — n�
 - **O `npm test` fica verde na mesma.** O Vitest não faz type-check e em runtime só `en` é carregado.
   Uma suite verde não prova que o `build` passa — correr `npx tsc --noEmit` sempre à parte.
 - **O estado muda debaixo dos pés.** Verificar imediatamente antes de dar uma task por concluída,
-  não no início da sessão.
+  não no início da sessão. Numa sessão o `tsc` deu 0 erros numa passagem e falhou na seguinte,
+  porque um ficheiro foi gravado entretanto.
 
-Estado corrente e comandos de verificação em [`NEXT.md`](./NEXT.md).
+Diagnóstico, para qualquer chave nova:
+
+```bash
+npx tsc --noEmit 2>&1 | grep -oE "Property '[a-zA-Z]+' is missing" | sort -u
+for l in de en es fr it nl pl pt-pt ro sv; do
+  printf "%-6s " "$l"; grep -q "<chave>" src/lib/i18n/locales/$l/emails.ts && echo ok || echo FALTA
+done
+```
+
+## Em aberto — não bloqueia nada
+
+**Variáveis de ambiente.** O `RESEND_WELCOME_EMAIL` faltava na Vercel e foi
+acrescentado a 2026-09-10, com redeploy — é uma caixa real, que o Ricardo lê, e
+é dela que sai o email a avisar que o endereço foi acrescentado ao Play Console.
+O `SIGNUP_NOTIFICATION_TO_EMAIL` **continua por definir** e o fallback aponta
+para ela, o que é seguro; defini-lo só serve para as duas coisas — remetente do
+email ao visitante e destinatário da notificação ao operador — deixarem de estar
+presas à mesma variável.
+
+**A tradução em falta, que é a maior coisa desta lista.** O `pt-pt` não tem
+tradução dos três documentos legais: o `locales/pt-pt/index.ts` **re-exporta os
+objectos do `en`** (`privacyPolicy`, `termsOfUse`, `cookiePolicy`). Quem visita
+o site em português lê-os em inglês, e **as outras oito locales estão na mesma
+situação** — nove sites a servir documentos legais em inglês. O
+`closedTestCopy.test.ts` detecta-o por identidade de objecto e salta-os; no dia
+em que forem traduzidos passam a ser verificados sozinhos, sem alterar o teste.
 
 ## Boundaries
 

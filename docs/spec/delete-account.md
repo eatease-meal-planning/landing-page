@@ -30,20 +30,30 @@ Dar a um utilizador — possivelmente já sem a app instalada — um URL públic
 
 Lição registada nas *Boundaries*: nesta página, uma falha silenciosa é pior do que uma falha ruidosa. Toda a resposta de erro carrega um código estável (`DB_UNAVAILABLE`, `CAPTCHA_FAILED:<código da Cloudflare>`, `CONFIG_MISSING_OPERATOR`, `OPERATOR_MAIL_FAILED`, `RATE_LIMITED`) e a página mostra-o.
 
-## ⚠️ Divergência de copy a resolver com a Fase 2
+## Divergência de copy — resolvida pela TASK-15 a 2026-09-10
 
-A 2026-09-10 a copy `pt-pt` foi editada para descrever o fluxo com confirmação — que **ainda não existe**. Duas consequências enquanto a Fase 2 não for publicada:
+**Já não há divergência.** Fica registada porque a forma do bug voltou duas vezes
+depois (TASK-16 e TASK-19) e é a mais cara deste projeto.
 
-| | `pt-pt` (editada) | outras 9 locales |
+Era assim: a `pt-pt` tinha sido editada para descrever um fluxo com confirmação
+que **não existia**, e as outras nove diziam na *página* que ignorar o email
+bastava — quando o pedido já está na caixa do operador no momento em que alguém
+lê a frase.
+
+| | `pt-pt` (editada) | outras 9 |
 |---|---|---|
-| Prazo na página | «apenas após a confirmação» | «no prazo de 30 dias» |
-| Email `ignore` | «basta ignorares e nada acontecerá» | «responde e nós cancelamos» |
+| Prazo na página | «apenas após a confirmação» ❌ | «no prazo de 30 dias» ✅ |
+| Email `ignore` | «basta ignorares e nada acontecerá» ❌ | «responde e nós cancelamos» ✅ |
+| Página `successBody` | não tinha a frase | «ignore the email and nothing will happen» ❌ |
 
-**O ponto que importa:** hoje **não há passo de confirmação**. O operador recebe o pedido de qualquer forma. Dizer a alguém que ignorar basta é impreciso — num pedido malicioso contra terceiro, a vítima seguiria a instrução e o pedido continuaria na caixa do operador. A copy anterior («responde e nós cancelamos») era a correta para o fluxo manual.
+**O ponto que importa:** não havia passo de confirmação. Num pedido malicioso
+contra terceiro, a vítima seguiria a instrução de ignorar e o pedido continuaria
+na caixa do operador. As 20 strings passaram a «responder para cancelar» e a
+`pt-pt` voltou ao prazo dos 30 dias nas duas superfícies. Ver a TASK-15.
 
-**Mitigação em vigor:** o operador não elimina uma conta só porque chegou um pedido; verifica primeiro, e o `replyTo` do email aponta para o requerente exatamente para isso.
-
-**Resolução:** a copy fica verdadeira no momento em que a Fase 2 for publicada. As 10 locales passam a «imediato após confirmação» **no mesmo commit** que publica o OTP — nunca antes.
+**O que continua em pé:** quando a Fase 2 for publicada, as 10 locales passam a
+«imediato após confirmação» **no mesmo commit** que publica o OTP — nunca antes
+(TASK-14).
 
 ## Retenção do trial ledger — divulgação obrigatória nesta página
 
@@ -165,6 +175,18 @@ deleteAccount: {
 
 A Fase 2 acrescenta `step2` (código) e `step3` (confirmação) — ver TASK-13.
 
+### Registo do `pt-pt`: «tu», não «você»
+
+Decisão do Ricardo a 2026-09-10: **o tom é o da app**, que trata por tu. O
+`deleteAccount.ts` era o único ficheiro em «você». Corrigidos na mesma passagem
+o `aboutUs.value1` («por lhe poupar tempo») e o `pages.linkExpired` («submete o
+seu email»), onde a divisão atravessava uma frase. Guardado por
+`src/lib/i18n/ptPtRegister.test.ts`.
+
+Nota para quem tocar nas outras: `de` e `fr` tratam por «Sie»/«vous» (formal),
+as restantes por tu. O `CLAUDE.md` define a voz como *warm, casual,
+second-person* — as duas formais estão por decidir e não foram tocadas.
+
 ## Boundaries
 
 - **Sempre:** `npx tsc --noEmit` + `npm run lint` + `npm run build` antes de dar uma task por concluída.
@@ -224,12 +246,46 @@ A Fase 2 acrescenta `step2` (código) e `step3` (confirmação) — ver TASK-13.
 - **Também corrigido:** `new Resend(process.env.RESEND_API_KEY)` estava em module scope e **lança** quando a chave falta, matando a rota no import — o `CONFIG_MISSING_RESEND` era igualmente inalcançável. Passou a `getResend()` (`src/lib/resend.ts`), que devolve `null` em vez de lançar.
 - **Guardado por:** `src/app/api/account-deletion/route.test.ts` (7 testes).
 
+### TASK-15: «ignorar» → «responder para cancelar» nas 10 locales
+- **O quê:** as 9 locales não-`pt-pt` diziam na página que ignorar o email bastava — e o pedido já está na caixa do operador quando alguém lê a frase. A `pt-pt` estava ao contrário: email a mandar ignorar, página sem a frase e a prometer uma confirmação que a Fase 1 não tem.
+- **Status:** [x] COMPLETE (2026-09-10) — as **20 strings** passam a «responder para cancelar», e a `pt-pt` volta ao prazo dos 30 dias nas duas superfícies. Ver a secção *Divergência de copy* acima.
+
+  **Além da copy, e sem isto a frase nova era tão falsa como a que substituiu:** o email de acknowledgement **não tinha `replyTo`**, portanto mandava responder para o `RESEND_FROM_EMAIL`, que é um no-reply. Passou a `replyTo: operator` — o `DELETION_REQUEST_TO_EMAIL`, que é correcto em qualquer cenário porque essa caixa é lida por definição.
+
+  Guardado por `src/lib/i18n/deleteAccountCopy.test.ts` (30) + `ptPtRegister.test.ts` (3) + 1 asserção em `account-deletion/route.test.ts`.
+
+### TASK-19: [repo `app`] A app prometia mais do que apaga, no ecrã da decisão
+- **O quê:** `more.deleteAccount.confirmMessage` dizia «all your data» e «We keep **only** a technical identifier»; o `finalConfirmMessage` dizia «with the **single** exception noted in the previous step». São **três** excepções: o hash do trial, a linha em `contacts` e o endereço na lista de testers do Play Console. As duas últimas o `delete-account` da app não alcança — apaga storage e o utilizador de auth no projeto Supabase **dela**.
+- **Porque não bastava a TASK-16:** essa corrigiu o `inApp.body` da landing-page, mas **ninguém lê a landing-page antes de eliminar dentro da app** — a decisão toma-se em Definições → Mais. A frase falsa tinha mudado de sítio, não desaparecido. É a forma do bug da TASK-15 com as superfícies trocadas.
+- **Status:** [x] COMPLETE (2026-09-11) — `app/src/i18n/locales/{de,en,es,fr,it,nl,pl,pt,ro,sv}/settings.json`. Commit `ffdcb747` no repo `app`. As 10 declaram as três e apontam `eatease.eu/delete-account` para as duas que a app não alcança — **sem prefixo de locale**, porque o middleware redirecciona um caminho nu para `/{locale}{path}`.
+
+  **A locale do app é `pt`, não `pt-pt`** — o site é que usa `pt-pt`, e o `src/config/links.ts` do repo da app existe precisamente para essa tradução.
+
+  **O `pt` era o caso pior e não o melhor:** não dizia «uma única excepção» porque não dizia excepção nenhuma — não tinha a frase do identificador técnico em nenhuma das duas strings, e afirmava «todos os teus dados» sem ressalva. Foi acrescentada por inteiro, não corrigida. É a TASK-15 outra vez: a locale que parece alinhada com as outras é a que está pior, e só se vê lendo as dez.
+
+  **Parágrafo único, sem `\n`:** não existe um único `\n` literal em nenhum ficheiro de locale do repo da app, e não se abre excepção numa string de `Alert.alert`.
+
+  **Não se acrescentou link nem código,** de propósito: um `getDeleteAccountUrl()` em `src/config/links.ts`, no molde do `getPrivacyPolicyUrl()` que já lá está, é a coisa certa a fazer um dia — mas a autorização era de copy.
+
+  Verificado: `check-i18n` («All locales are complete»), `type-check` a 0, e a suite completa do repo da app a **4151 testes em 208 suites**. O `npm run lint` de lá tem 57 erros de `prettier` **pré-existentes e todos em `.ts`** — o script é `eslint . --ext .ts,.tsx` e nunca leu o JSON que esta task alterou.
+
 ### TASK-12: Diagnóstico de falhas
 - **Status:** [x] COMPLETE — códigos estáveis em todas as respostas; verificação de configuração primeiro (alcançável por `curl`, sem token do Turnstile); `checkRateLimit` em try/catch; códigos da Cloudflare propagados.
+
+  **Duplicações resolvidas no mesmo trabalho** (§4.5 e o `fail()` repetido nas duas rotas): `fail()` extraído para `src/lib/apiError.ts`, e o `escapeHtml` de `src/lib/email.ts` passou a **exportado** em vez de haver uma segunda cópia idêntica em `api/account-deletion/route.ts`. Fica o que a §4.5 sugeria como melhor opção: dar ao email do operador um template como os outros têm.
 
 ---
 
 ## Fase 2 — por implementar
+
+**Ordem:** `TASK-09 · 03 · 04 · 05 · 13 · 14`. É tudo na landing-page, exceto a
+TASK-09, que é no Dashboard.
+
+Três coisas que é fácil perder de vista ao entrar aqui:
+
+- **A §4.1 da revisão bloqueia a TASK-13** até o `DeleteAccountSection.tsx` ser partido em `useAccountDeletion()` + `<StepEmail>`/`<StepCode>`/`<StepConfirm>`. A ordem obrigatória `contacts` → `delete-account` tem de ficar numa função nomeada, não enterrada num `handleSubmit` de 500 linhas.
+- **A TASK-13 herdou dois avisos obrigatórios no passo 3**, ambos pela mesma razão — a eliminação self-service é *imediata* mas não é *completa*: a oposição ao registo de trial (art. 21.º) tem de ser pedida **antes**, e a remoção da lista de testers do Play Console é manual, porque não há API que lá chegue (TASK-E).
+- **A TASK-19 já fixou a formulação das três excepções** (hash do trial, linha em `contacts`, endereço na lista de testers) em 10 locales do repo `app`. A copy da TASK-14 alinha-se com essa em vez de inventar uma quarta versão da mesma verdade — já houve três (o `inApp.body` daqui, o `confirmMessage` da app, e o `pt` da app a não dizer nada) e cada divergência custou uma task.
 
 ### TASK-09: Template Magic Link (Dashboard, projeto `dagpiagorabmliuotkoc`)
 - **O quê:** Auth → Email Templates → **Magic Link**: confirmar que não está em uso e trocar para entregar `{{ .Token }}` (6 dígitos), com copy própria de eliminação de conta — não copy genérica de login. Rever os rate limits de envio de OTP.
@@ -370,7 +426,9 @@ A autorização de 2026-09-11 está esgotada. Estas três são novas e nenhuma e
 
 - Exportação de dados (Art. 20.º — portabilidade). Obrigação real a prazo, não é o que a Google pede.
 - Eliminação parcial de dados · dashboard de gestão de pedidos.
-- ~~Framework de testes na landing-page~~ — **decisão revertida a 2026-09-10.** Vitest + jsdom + Testing Library instalados (`npm test`), depois de a §2.4 da revisão mostrar que a classe de bug que nos custou duas sessões (um guard que nunca dispara) não é apanhável por `tsc`, `lint` nem `build`.
+- ~~Framework de testes na landing-page~~ — **decisão revertida a 2026-09-10.** Vitest 5 + jsdom + Testing Library instalados (`npm test`, 180 testes em 10 ficheiros), depois de a §2.4 da revisão mostrar que a classe de bug que nos custou duas sessões (um guard que nunca dispara) não é apanhável por `tsc`, `lint` nem `build`.
+
+  Duas notas de instalação, para não se repetir a investigação: **`@vitejs/plugin-react` foi descartado** — puxa Babel 8 e colide com o `babel-plugin-react-compiler`, que está em Babel 7; o esbuild do Vitest transforma TSX sem ele. E o **`@types/node` subiu de `^20` para `^24`**, exigência do Vitest 5 e alinhado com o Node 24 em uso.
 - Cache partilhado `recipes`/`recipe_translations` com escrita livre a qualquer autenticado (`038a`, `060`) — decisão consciente e documentada, não é `anon`.
 - Rotina de limpeza da tabela `rate_limits` — ver *Outras retenções*.
 

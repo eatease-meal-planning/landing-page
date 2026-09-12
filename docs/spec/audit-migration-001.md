@@ -123,6 +123,41 @@ quem conhece os caminhos, não do contador.
 
 ---
 
+## Método — onde escrever o teste de uma invariante de BD
+
+Vale registar porque a resposta não é óbvia e custou meia sessão a decidir.
+
+**O repo da app tem framework de testes:** Jest (`npm test`, `jest-expo`), com um
+precedente de guarda de arquitectura em
+`src/__tests__/architecture/subscriptionWriteBoundary.test.ts`, que lê ficheiros
+do disco e falha quando alguém reintroduz um padrão proibido.
+
+**Mas nenhum teste offline vê *grants* de Postgres.** Uma guarda estática sobre
+as 121 migrações cobriria as políticas e ficaria **verde com os `EXECUTE`
+abertos** — e não vê de todo o `ALTER DEFAULT PRIVILEGES`, que é onde o
+re-grant realmente vive. Seria uma guarda a provar a coisa errada: exactamente a
+classe de bug que este projeto já pagou duas vezes.
+
+**A solução foi o idiom do próprio repo da app**, que já lá existia em
+`database/migrations/test_*.sql`: **SQL, com blocos `DO $$` que `RAISE`**, a
+correr como `anon` via `SET LOCAL ROLE` dentro de `BEGIN`/`ROLLBACK`. Sem key,
+sem rede, re-corrível por qualquer pessoa no SQL Editor — o que um transcript de
+shell num commit nunca é. Cada um falha antes nomeando cada via aberta e passa
+depois: `test_122`, `test_123`, `test_124`, `test_125`.
+
+Três regras que saíram da prática:
+
+1. **Contar `undefined_table`/`undefined_function` como «fechado».** É o que fez o `test_122` sobreviver à `124`, que apagou o seu sujeito, em vez de ter de ser apagado com ele.
+2. **Afirmar os grants *antes* de chamar qualquer coisa,** quando a função escreve. O `test_123` recusa-se a chamar as duas funções enquanto os grants estiverem de pé — provar a via exigiria correr uma escrita não autenticada em produção, e um script de verificação não faz isso sem que lhe peçam.
+3. **Correr o ficheiro, não a versão retipeada.** Os quatro foram corridos verbatim no fim. O `test_124` tinha sido editado *depois* da corrida de RED (o cast `::text`, que o plpgsql exige contra um literal sem tipo) — um ficheiro de teste que nunca correu como está escrito não é um teste.
+
+**E a lição que não é sobre testes.** O «O quê» da TASK-11 descrevia metade do
+buraco: o `DROP POLICY` que ela pedia deixava de pé um RPC que qualquer pessoa
+podia chamar para apagar a tabela. O discriminador que vale a pena aplicar à
+task seguinte é — *a alteração que a task pede torna verdadeira a frase que a
+task existe para tornar verdadeira?* Verificar a afirmação, não executar a
+instrução.
+
 ## O que sai daqui
 
 | | O quê | Estado |
