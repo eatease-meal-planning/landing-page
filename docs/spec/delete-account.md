@@ -169,7 +169,11 @@ A Fase 2 acrescenta `step2` (código) e `step3` (confirmação) — ver TASK-13.
 
 - **Sempre:** `npx tsc --noEmit` + `npm run lint` + `npm run build` antes de dar uma task por concluída.
 - **Sempre:** toda a resposta de erro carrega um código estável, e a página mostra-o. Numa página com peso legal, uma falha silenciosa é pior do que uma falha ruidosa — foi o que nos custou duas sessões de depuração às cegas.
-- **Perguntar primeiro:** alterações ao schema Drizzle; nova dependência npm; qualquer alteração no repo `app` além da TASK-11.
+- **Perguntar primeiro:** alterações ao schema Drizzle; nova dependência npm; qualquer alteração no repo `app` **além das autorizadas nominalmente abaixo**.
+
+  **Autorizado no repo `app` a 2026-09-11**, por decisão explícita do Ricardo, e **só isto**: TASK-11 (migration 122), TASK-23 (123), TASK-20 e TASK-21 (124), TASK-22 (125) e TASK-19 (copy das 10 locales). A autorização incluiu aplicar as migrations a produção sem perguntar migration a migration. **Está esgotada:** as seis estão feitas, e a TASK-24, a TASK-25 e a TASK-26 voltam a cair no «perguntar primeiro».
+
+  **Condição que veio com a autorização, e que fica:** dupla verificação de tudo o que se altera no repo `app`, para não partir nada. Em concreto, e porque esta sessão pagou por isso três vezes — qualquer assinatura de função vem do `pg_get_function_identity_arguments`, nunca do ficheiro `.sql` (ver [`audit-migration-001.md`](./audit-migration-001.md), achado D); e nenhuma afirmação sobre origem ou contagem entra num commit sem `grep`/query que a confirme.
 - **Nunca:** hardcodar strings visíveis ao utilizador.
 - **Nunca:** aceitar o email do body para decidir o que apagar — só o que vier de um token validado.
 - **Nunca:** devolver resposta diferente para email existente vs. inexistente.
@@ -293,24 +297,71 @@ Escritas aqui para não se perderem; a TASK-23 é a que não devia esperar.
 - **Porquê é uma task e não um `fix` já feito:** os *Boundaries* só autorizam a TASK-11 no repo `app`. E, ao contrário da `122`, esta **tem chamadores possíveis** — `user_sessions` tem linhas, `user_profiles` tem 18 — portanto quem a fizer verifica primeiro quem chama o quê, em vez de revogar às cegas.
 - **Não verificado empiricamente, de propósito:** provar a via do `migrate_existing_user_profiles` exigia executar uma escrita não autenticada em produção; foi bloqueado e não se contornou. A prova é o corpo das funções (`pg_get_functiondef`) e as contagens de linhas, ambos lidos.
 - **O quê, quando se fizer:** migration nova, no molde da `122` — `REVOKE EXECUTE … FROM PUBLIC, anon, authenticated`, `service_role` fica. E estender o `test_122` a estas duas, ou fazer-lhe um par.
-- **O argumento para não fazer disto três follow-ups:** `cleanup_expired_sessions()` está na **mesma migration `001`** que as duas que a `122` acabou de fechar, e tem a forma exacta da `cleanup_expired_rate_limits()`. Saíram da mesma sessão de autoria e do mesmo mal-entendido sobre quem é `public`. A `001` (197 linhas) cria **quatro** funções ao todo — `cleanup_expired_rate_limits`, `check_rate_limit`, `cleanup_expired_sessions` e `update_user_profile_secure` — e **três das quatro** eram `SECURITY DEFINER` executáveis por `anon`. A quarta, `update_user_profile_secure`, só escapa porque verifica `auth.uid()`; foi o único travão, e é acidente de quem a escreveu, não desenho da migration. Isso desloca a pergunta: em vez de fechar defeitos um a um à medida que aparecem, **auditar a `001` inteira** — é a migration mais antiga do projeto, escrita antes de haver convenções, e as TASK-20/21/22 são todas achados dela, o que é confirmação.
-- **Status:** [ ] TODO — **perguntar primeiro**
+- **Status:** [x] COMPLETE — `app/database/migrations/123_lock_unauthenticated_security_definer_writers.sql`, aplicada a 2026-09-11. Commit `dfa3d380` no repo `app`. Antes → depois, com a anon key da internet aberta: `POST /rpc/cleanup_expired_sessions` `204` → `401 42501`; `POST /rpc/migrate_existing_user_profiles` `200` → `401 42501`. Teste em `test_123_security_definer_locked.sql` — afirma os grants **primeiro** e recusa-se a chamar o que quer que seja antes de eles caírem, precisamente para não correr uma escrita não autenticada em produção; falhou nos 6 grants antes, passa os dois blocos depois.
 
-### TASK-20: [repo `app`] `rate_limits` está morta — fechá-la foi o mínimo, não o fim
-- **O quê:** a tabela tem **0 linhas**, e `rate_limits`, `check_rate_limit` e `cleanup_expired_rate_limits` não aparecem em sítio nenhum do repo `app` fora da própria migration `001` (`grep` a tudo menos `node_modules`/`coverage`). Nenhum `cron.job` os chama — a linha 193 da `001` é uma sugestão comentada que nunca correu. É infraestrutura especulativa de 2025 que nunca teve um chamador.
-- **Porquê é uma decisão e não uma limpeza:** `DROP TABLE` + `DROP FUNCTION` apaga a superfície em vez de a defender, e torna a TASK-22 desnecessária. Mas apagar é irreversível e os *Boundaries* não o autorizam. A alternativa é deixar como está: já está fechada.
-- **Status:** [ ] TODO — **perguntar primeiro**
+  **O RPC era a única porta, e isso foi verificado:** `user_sessions`, `user_profiles` e `user_auth_providers` têm DML concedido a `anon`, mas as políticas delas filtram por `auth.uid() = user_id`, que para `anon` é `NULL`. Como `anon`: **0 linhas nas três**. Os `refresh_token` de `user_sessions` nunca estiveram expostos. E o acesso do app à tabela é directo como `authenticated` — não foi tocado.
+- **O argumento para não fazer disto três follow-ups:** `cleanup_expired_sessions()` está na **mesma migration `001`** que as duas que a `122` fechou, e tem a forma exacta da `cleanup_expired_rate_limits()`. A `001` cria **quatro** funções e **as quatro** eram `SECURITY DEFINER` executáveis por `anon` — três sem travão nenhum; a quarta, `update_user_profile_secure`, escapa só porque verifica `auth.uid()`, o que é acidente de quem a escreveu e não desenho da migration. Isso deslocou a pergunta de «fechar este defeito» para «o que mais está na `001`».
+
+  → **Auditoria feita: [`audit-migration-001.md`](./audit-migration-001.md).** Saíram dela duas tasks novas (TASK-24 e TASK-25) e o achado estruturante: **a `001` já não descreve esta base de dados** — 7 das 20 colunas que ela escreve não existem, portanto não é reaplicável, e duas das quatro funções foram substituídas sem migration que o registe.
+
+  **Correção ao que estava escrito aqui antes:** `migrate_existing_user_profiles` **não vem da `001`** — vem da `010_fix_user_profile_trigger.sql:53`. A minha primeira análise juntou as duas funções na mesma origem; são de migrations diferentes, o que enfraquece o argumento do «mesmo autor» e não o do «mesma classe de defeito», que é o que importa.
+
+### TASK-20 e TASK-21: [repo `app`] `rate_limits` estava morta — apagada
+- **O quê:** a tabela tinha **0 linhas**, e `rate_limits`, `check_rate_limit` e `cleanup_expired_rate_limits` não apareciam em sítio nenhum do repo `app` fora da própria migration `001`. Nenhum `cron.job` os chamava — a linha 193 da `001` é uma sugestão comentada que nunca correu. Infraestrutura especulativa que nunca teve um chamador.
+- **A TASK-21 resolveu-se por eliminação:** o `check_rate_limit` vivo tinha **3** argumentos (a `001` declara 4) e tinha perdido o guard `current_count IS NULL OR`. Como `SELECT … INTO` sobre zero linhas deixa a variável a `NULL` e `NULL < 100` é `NULL` e não `TRUE`, entrava sempre no `ELSE`: **recusava o primeiro pedido de cada identificador e nunca registou uma linha.** Corrigi-la era escrever código novo para zero chamadores.
+- **Status:** [x] COMPLETE — `app/database/migrations/124_drop_dead_rate_limiting.sql`, aplicada a 2026-09-11. Commit `08ca9070`.
+
+  **Zero dependências antes de apagar** — sem FK, vista, vista materializada ou trigger a apontar para a tabela (`pg_constraint`, `pg_depend`, `pg_trigger`, `pg_views`). Por isso **não há `CASCADE`**, e não deve haver: se aparecer uma dependência, a migration deve falhar alto. As funções vão **primeiro**, porque os corpos plpgsql não entram no grafo de dependências — apagar a tabela à frente passava e deixava duas funções a referenciar uma tabela inexistente, sem erro até alguém as chamar.
+
+  Percurso completo das três vias, com a anon key da internet aberta: `200`/`204` → **`401 42501`** (122) → **`404`** (124).
+
+  **Sem regressão, e é o detalhe que vale:** o `test_122_rate_limits_locked.sql` continua a passar 4/4 *depois* de o seu objecto desaparecer, porque conta `undefined_table`/`undefined_function` como fechado. Era o desenho — a garantia da 122 sobrevive à eliminação do sujeito, em vez de o teste ter de ser apagado com ele.
 
 ### TASK-21: [repo `app`] O `check_rate_limit` vivo está avariado e a `001` já não o descreve
 - **O quê:** duas divergências entre a função em produção e a `001`, ambas lidas em `pg_get_functiondef`:
   1. **Assinatura:** a viva tem **três** argumentos (`p_identifier text, p_endpoint text, p_limit integer`); a `001` declara quatro (mais `p_window_minutes integer DEFAULT 60`). Foi substituída fora das migrações — não há migration que o registe.
   2. **Corpo:** perdeu o guard `current_count IS NULL OR`. Como `SELECT … INTO` sobre zero linhas deixa `current_count` a `NULL`, e `NULL < 100` é `NULL` e não `TRUE`, a função entra sempre no `ELSE` — **devolve `FALSE` ao primeiro pedido de cada par identificador/endpoint e nunca insere linha nenhuma.** Um rate limiter que recusa tudo e não conta nada. Foi assim que se explicou o `200 false` do probe com 0 linhas na tabela.
-- **Impacto real: nenhum**, porque não tem chamadores (TASK-20). Fica registado para que ninguém a adopte a julgar que funciona, e para a `001` deixar de descrever algo que não está lá.
-- **Status:** [ ] TODO — **perguntar primeiro**; resolvida de graça pela TASK-20 se a decisão for `DROP`
+- **Impacto real: nenhum**, porque não tinha chamadores.
+- **Status:** [x] COMPLETE — resolvida por eliminação na mesma migration `124`. Ver TASK-20 acima. O detalhe fica registado porque a divergência assinatura-vs-migration é o achado **D** da [`audit-migration-001.md`](./audit-migration-001.md), e esse não desaparece com a função.
 
-### TASK-22: [repo `app`] `search_path` mutável nas duas funções (e em 16 outras)
-- **O quê:** ambas são `SECURITY DEFINER` com `proconfig` a `NULL`, isto é sem `SET search_path`. É o `function_search_path_mutable` do linter do Supabase, que conta **18** funções no projeto.
-- **Porquê fica em aberto:** o `REVOKE` da `122` torna-o inalcançável por `anon` nestas duas, portanto não é urgente **nelas** — mas o defeito fica, e as outras 16 não foram tocadas. Se se fizer, faz-se às 18 de uma vez, não a duas.
+### TASK-22: [repo `app`] `search_path` mutável — 15 funções pinadas
+- **O quê:** `proconfig` a `NULL` significa correr com o `search_path` do chamador. O ataque: o chamador aponta o `search_path` para um schema seu com uma tabela homónima, e uma `SECURITY DEFINER` passa a ler ou escrever o objecto dele com os privilégios do dono. Era o `function_search_path_mutable` do linter — **18** funções, que a `124` reduziu a 16 ao apagar duas.
+- **Status:** [x] COMPLETE — `app/database/migrations/125_pin_function_search_path.sql`, aplicada a 2026-09-11. Commit `42edd555`. **25 de 25** funções de `public` pinadas (eram 10/25).
+
+  **O valor mudou face ao que foi aprovado, e é a correção que importa registar.** A proposta dizia `SET search_path = ''`. Usou-se **`public, pg_temp`**, por duas razões:
+
+  1. **`''` obriga a qualificar cada referência em cada corpo** — e várias destas são funções de trigger em tabelas vivas: a `update_updated_at_column` sozinha serve **10** triggers (`user_profiles`, `subscriptions`, `meal_plans`, …) e a `handle_new_user` serve o trigger de `auth.users` que cria o perfil no registo. Uma referência não qualificada sob `''` não falha no `ALTER`: falha no `INSERT` seguinte, em produção, no caminho do registo.
+  2. **`public, pg_temp` é mais seguro do que parece, e do que um `pg_catalog, public`.** Se `pg_temp` **não** for listado explicitamente, o Postgres procura-o **primeiro**, à frente de tudo. Nomeá-lo no fim é o que impede um chamador de sombrear uma tabela real com uma temporária do mesmo nome dentro de uma `SECURITY DEFINER`. E é a convenção que o projecto já tinha nas seis funções do trial (migrations `093`-`096`).
+
+  **Verificado antes:** nenhuma das 16 usa tabela temporária, nenhuma chama função de schema de extensão, e as três que tocam outro schema fazem-no qualificado (`auth.uid()`, `auth.users`). Com `public` à frente do path, qualquer referência não qualificada a `public` resolve como hoje — é preservador de comportamento por construção.
+
+  **Exercitado, não deduzido:** `UPDATE` no-op revertido em `user_profiles` (18 linhas), `user_favorite_recipes` (8), `logged_meals` (4), `meal_plan_member_portions` (92), `family_members_macro_calculations` (10) e `user_macro_calculations` (9) — passou nas seis, o que dispara todas as funções de trigger ligadas, incluindo os dois validadores. Os dois validadores puros chamados directamente devolvem o resultado certo.
+
+  **E o caso interessante, o `handle_new_user`:** escrever em `auth.users` foi bloqueado e não se contornou. Em vez disso ligou-se a função real a uma tabela temporária com os três campos que ela lê do `NEW`, dentro de transacção. O corpo correu e falhou em **`23503`** — violação da FK para `auth.users`, porque o uuid era inventado — e **não** em `42P01 relation does not exist`. É essa distinção que prova o que interessa: sob o `search_path` pinado, a função resolveu `public.user_profiles`, avaliou os `CASE`/regex/casts e chegou ao `INSERT`.
+
+  Reversível com `ALTER FUNCTION … RESET search_path`.
+
+---
+
+## Tasks abertas pela auditoria da `001` — todas «perguntar primeiro»
+
+A autorização de 2026-09-11 está esgotada. Estas três são novas e nenhuma está autorizada.
+
+### TASK-24: [repo `app`] `update_user_profile_secure` está morta **e** avariada
+- **O quê:** zero chamadores (`grep` a `src`, `supabase`, `scripts`), e das 22 colunas que escreve **4 já não existem** em `user_profiles` — `calorie_goal`, `family_members`, `fat_goal`, `protein_goal`. A primeira chamada autenticada a sério levantaria `42703 column does not exist`. Nunca deu erro a ninguém porque o `auth.uid()` barra o `anon` antes do `UPDATE` e não há chamador autenticado.
+- **É a forma da TASK-21:** função morta que ninguém sabe que está avariada, à espera de ser adoptada por quem julgue que funciona.
+- **O quê, se autorizada:** `DROP FUNCTION`. Corrigi-la é escrever código novo para zero chamadores.
+- **Status:** [ ] TODO — **perguntar primeiro**
+
+### TASK-25: [repo `app`] 12 dos 15 índices da `001` sem uso registado
+- **O quê:** `pg_stat_user_indexes.idx_scan` a zero em 12 dos 15, com `stats_reset` a `NULL`. Os 3 com leituras: `idx_user_sessions_user_id` (15) e três de `rate_limits` cujas contagens eram dos probes desta sessão — e esses já foram com a `124`. O custo não é espaço (16 kB cada), é escrita: cada índice é mantido em cada `INSERT`/`UPDATE`.
+- **Ressalva que tem de acompanhar a task:** «0 scans» é «nenhum desde que estas estatísticas começaram», e uma reposição por upgrade ou crash não deixa marca. É **forte indício, não prova** — e um índice que serve um caminho raro (suporte, relatório) é legitimamente zero. A decisão é de quem conhece os caminhos, não do contador.
+- **Status:** [ ] TODO — **perguntar primeiro**
+
+### TASK-26: [repo `app`] Ainda há 4 `SECURITY DEFINER` executáveis por `anon`
+- **O quê:** depois da `122`/`123`/`124`, o linter conta **4** (eram 6): `accept_meal_plan(jsonb)`, `handle_new_user()`, `handle_updated_at()` e `update_user_profile_secure(uuid, jsonb)`.
+- **Nenhuma é a emergência que a TASK-23 era, e é por razões diferentes:** `handle_new_user` e `handle_updated_at` são funções de trigger — chamá-las por RPC falha por falta de contexto de trigger; `accept_meal_plan` e `update_user_profile_secure` verificam `auth.uid()`. É higiene, não um buraco.
+- **O quê, se autorizada:** `REVOKE EXECUTE … FROM PUBLIC, anon`, no molde da `123`. As duas de trigger não deviam estar no schema exposto de todo.
 - **Status:** [ ] TODO — **perguntar primeiro**
 
 ---

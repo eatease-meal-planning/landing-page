@@ -1,7 +1,8 @@
 # Estado e próximo passo
 
-> Ponto de partida de cada sessão. Atualizado a **2026-09-11**.
-> Specs: [`closed-test-signup.md`](./closed-test-signup.md) · [`delete-account.md`](./delete-account.md) · Revisão: [`spec-review.md`](./spec-review.md)
+> Ponto de partida de cada sessão. Atualizado a **2026-09-12**.
+> Specs: [`closed-test-signup.md`](./closed-test-signup.md) · [`delete-account.md`](./delete-account.md)
+> Revisões: [`spec-review.md`](./spec-review.md) · [`audit-migration-001.md`](./audit-migration-001.md)
 
 ## Estado do `tsc` — verificar sempre ao começar
 
@@ -35,6 +36,11 @@ done
 
 | Task | O quê | Guardado por |
 |---|---|---|
+| **TASK-19** (repo `app`) | A app prometia «all your data» e «the **single** exception» no ecrã onde a decisão é tomada. São **três**. As 10 locales passam a declará-las. O **`pt` era o pior e não o melhor**: não dizia «uma única excepção» porque não dizia excepção nenhuma — não tinha a frase do identificador técnico em nenhuma das duas strings. Foi acrescentada por inteiro, não corrigida. | `check-i18n` completo · `type-check` 0 · **4151 testes / 208 suites** no repo da app |
+| **TASK-22** (repo `app`) | `search_path` pinado: **25/25** funções de `public` (eram 10/25). **Não se usou `search_path = ''`**, que era o aprovado — `''` obriga a qualificar cada referência, e a `update_updated_at_column` serve 10 triggers e a `handle_new_user` serve o registo de conta. Usou-se `public, pg_temp`, que é a convenção do projeto **e** mais seguro: se `pg_temp` não for listado, o Postgres procura-o *primeiro*. | `test_125` + `UPDATE` revertido em 6 tabelas reais + o `23503`-vs-`42P01` do `handle_new_user` |
+| **TASK-20/21** (repo `app`) | A superfície de rate limiting apagada — 0 linhas, 0 chamadores, 0 crons, 0 dependências. A TASK-21 resolveu-se por eliminação: o `check_rate_limit` vivo recusava o primeiro pedido de cada identificador e nunca registou uma linha. | `test_124` + o `test_122` a continuar 4/4 **depois** de o seu objecto desaparecer |
+| **Auditoria da `001`** | Pedida depois de três defeitos da mesma origem. Achado estruturante: **a `001` já não descreve esta BD** — 7 das 20 colunas que escreve não existem, e duas das quatro funções foram substituídas sem migration. Saíram três tasks novas. | [`audit-migration-001.md`](./audit-migration-001.md) |
+| **TASK-23** (repo `app`) | `cleanup_expired_sessions()` e `migrate_existing_user_profiles()` executáveis por `anon`, sem verificação de quem chama, sobre tabelas com linhas. A segunda devolvia **UUIDs de utilizadores reais**. | `test_123` + antes/depois do PostgREST |
 | **TASK-11** (`delete-account`, repo `app`) | `rate_limits` estava aberta a `anon`. **E o `DROP POLICY` que a task pedia não a fechava:** duas das seis vias de acesso nunca consultam RLS — as duas funções são `SECURITY DEFINER` de `postgres`, que tem `rolbypassrls`, e tinham `EXECUTE` concedido a `anon`; e `cleanup_expired_rate_limits()` apaga tudo o que tem mais de uma hora, portanto **`EXECUTE` nela é `DELETE` na tabela**. Mais: o RLS só é consultado depois de o teste de privilégio da tabela passar, e `anon` tinha o `arwdDxt` completo — era isso que fazia o PostgREST responder `200`/`204` e não «permission denied». A migration `122` faz as três coisas e revoga **pelo nome**, não só de `PUBLIC` (lição da `094`). Aplicada a 2026-09-11. | `app/database/migrations/test_122_rate_limits_locked.sql` (4 asserções, 6 probes) + antes/depois do PostgREST |
 | **TASK-16** (atravessa os dois specs) | A eliminação não alcançava a lista de testers do Play Console, e o atalho dentro da app apresentava-se como o caminho rápido sendo o incompleto: a edge function da app apaga auth e storage no projeto **dela**, que não vê o `contacts` da landing-page nem o Console. Quem eliminava por lá continuava tester. O email ao operador ganhou o passo 3, e o `inApp.body` das 10 locales passou a dizê-lo. | 20 asserções em `deleteAccountCopy.test.ts` + 1 em `account-deletion/route.test.ts` |
 | **TASK-A1/A2/A3 + C** (`closed-test-signup`) | O formulário deixou de abrir uma lista de espera. `nav`/`cta`/`form`/`hero`/`pages` nas 10 locales, `joinWaitlist` → `joinClosedTest`, e os dois documentos legais (2 ficheiros, não 20 — só o `en` os tem) passam a declarar a inscrição no teste fechado **e a partilha do endereço com a Google**. O par da App Store fica em «brevemente», e há um teste que o exige: não há TestFlight. | `src/lib/i18n/closedTestCopy.test.ts` (60) |
@@ -61,12 +67,18 @@ Duas notas de instalação, para não se repetir a investigação: `@vitejs/plug
 3. ✅ TASK-15  «ignorar» → «responder» nas 10 locales
 4. ✅ TASK-A1/A2/A3 + C + B   (B saiu em commit próprio: era perda de dados, não copy)
 5. ✅ TASK-16  a eliminação alcança a lista de testers
-6. ✅ TASK-11  fechar rate_limits ao anon   (migration 122, aplicada 2026-09-11)
-7. TASK-19  a app promete apagar tudo e não apaga  ← A SEGUIR. precisa de decisão
-8. TASK-23  anon executa duas SECURITY DEFINER que escrevem a sério  ← aberta pela 11
-9. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 14
-   TASK-20/21/22  achados da 11, todos «perguntar primeiro» (ver `delete-account.md`)
-   TASK-E   ✗ impossível — sem Grupo Google não há API
+6. ✅ TASK-11  fechar rate_limits ao anon              (migration 122)
+7. ✅ TASK-23  as duas SECURITY DEFINER sem travão    (migration 123)
+8. ✅ Auditoria da 001                                 (audit-migration-001.md)
+9. ✅ TASK-20/21  apagar a rate_limits morta           (migration 124)
+10. ✅ TASK-22  pinar o search_path                    (migration 125)
+11. ✅ TASK-19  a app já declara as três excepções     (10 locales)
+
+    ── a autorização de 2026-09-11 no repo `app` acaba aqui ──
+
+12. Fase 2:  TASK-09 · 03 · 04 · 05 · 13 · 14   ← A SEGUIR, e é tudo nesta árvore
+    TASK-24/25/26  achados da auditoria, «perguntar primeiro» (`delete-account.md`)
+    TASK-E   ✗ impossível — sem Grupo Google não há API
 ```
 
 ## Para arrancar o teste fechado
@@ -108,22 +120,25 @@ apagar a tabela. Verificar a afirmação, não executar a instrução.
 
 ---
 
-### Próxima task: TASK-19 — a app promete mais do que apaga
+### TASK-19 está fechada — e o `pt` era o caso pior
 
-**Encontrada ao fechar a TASK-16, e é a metade que faltava.** A TASK-16 corrigiu o `inApp.body` na landing-page: quem elimina dentro da app continua com a linha em `contacts` e com o endereço na lista de testers do Play Console. Mas **ninguém lê a landing-page antes de eliminar dentro da app** — está em Definições → Mais, no ecrã onde a decisão é tomada. A frase falsa mudou de sítio; não desapareceu.
+A app dizia «all your data» e «the **single** exception» em Definições → Mais,
+no ecrã onde a decisão é tomada. São três: o hash do trial, a linha em
+`contacts` e o endereço na lista de testers. As 10 locales passam a declarar as
+três, e a mencionar `eatease.eu/delete-account` para as duas que a app não
+alcança — sem prefixo de locale, porque o middleware redireciona um caminho nu
+para `/{locale}{path}`.
 
-Verbatim, em `app/src/i18n/locales/en/settings.json:256,259`:
+**O `pt` não estava a exagerar por uma, estava a exagerar por três.** Não dizia
+«uma única excepção» porque não tinha a frase do identificador técnico em
+nenhuma das duas strings — afirmava «todos os teus dados» sem ressalva
+nenhuma. É a TASK-15 outra vez: a locale que parece estar alinhada com as
+outras é a que está pior, e só se vê lendo as dez.
 
-> `confirmMessage`: «This permanently deletes your account and **all your data** … We keep **only** a technical identifier derived from your email»
-> `finalConfirmMessage`: «Your account and your personal data will be deleted immediately, with the **single exception** noted in the previous step.»
-
-São três excepções, não uma: o hash do trial, a linha em `contacts` e o endereço na lista de testers. As duas últimas o `delete-account` da app não alcança — verificado em `app/supabase/functions/delete-account/index.ts`, que só apaga storage e o utilizador de auth no projeto Supabase **da app**.
-
-**É a mesma forma do bug da TASK-15:** a frase verdadeira numa superfície, a falsa naquela que a pessoa lê no momento de decidir — com as superfícies trocadas.
-
-- **Ficheiros:** `app/src/i18n/locales/{n}/settings.json` → `more.deleteAccount.confirmMessage` e `finalConfirmMessage`. São **10 ficheiros**, não 2: ao contrário dos documentos legais, o `settings.json` está traduzido em todas as locales.
-- **Continua a precisar de decisão do Ricardo:** o `delete-account.md` (*Perguntar primeiro*) só autorizava a TASK-11 no repo da app, e a TASK-11 já está feita. Esta não está autorizada por nada.
-- **A decisão não é só de copy.** A frase pode passar a ser verdadeira de dois lados: corrigir o texto para declarar as três excepções, ou **fazer a app alcançar o que promete** — o que significa a edge function `delete-account` chamar a landing-page para apagar a linha em `contacts`, e a lista de testers continuar manual porque não há API que lá chegue (é o mesmo bloqueio da TASK-E). A primeira é uma tarde; a segunda é a Fase 2 da TASK-13 vista do outro lado.
+**Não se acrescentou link nem código.** Um `getDeleteAccountUrl()` em
+`src/config/links.ts`, no molde do `getPrivacyPolicyUrl()` que já lá está,
+seria a coisa certa a fazer um dia — mas esta task era de copy, e a
+autorização era dessa.
 
 ---
 
@@ -132,6 +147,7 @@ São três excepções, não uma: o hash do trial, a linha em `contacts` e o end
 `TASK-09 · 03 · 04 · 05 · 13 · 14`. Duas coisas que a TASK-16 deixou lá dentro e que é fácil perder de vista:
 
 - **A TASK-13 herdou dois avisos obrigatórios no passo 3**, ambos pela mesma razão — a eliminação self-service é *imediata* mas não é *completa*: a oposição ao registo de trial (art. 21.º) tem de ser pedida **antes**, e a remoção da lista de testers do Play Console é manual, porque não há API que lá chegue.
+- **A TASK-19 fixou a formulação das três excepções** (hash do trial, linha em `contacts`, endereço na lista de testers) em 10 locales do repo `app`. A copy da Fase 2 alinha-se com essa, em vez de inventar uma quarta versão da mesma verdade — já houve três (landing-page `inApp.body`, app `confirmMessage`, app `pt` a não dizer nada) e cada divergência custou uma task.
 - **A §4.1 bloqueia a TASK-13** até o `DeleteAccountSection.tsx` ser partido em `useAccountDeletion()` + `<StepEmail>`/`<StepCode>`/`<StepConfirm>`. A ordem obrigatória `contacts` → `delete-account` tem de ficar numa função nomeada, não enterrada num `handleSubmit` de 500 linhas.
 
 ---
@@ -163,17 +179,35 @@ npm run build
 
 ## Estado do git
 
-**A TASK-11 vive no repo `app`, não aqui.** Commit `eb3b87e9`, dois ficheiros
-(`122_lock_rate_limits_to_service_role.sql` e `test_122_rate_limits_locked.sql`).
-O `.gitignore` do repo da app estava modificado e **ficou de fora de propósito**
-— é trabalho em paralelo do Ricardo (reverte o `closed_test_contacts.csv` do
-commit `2f3c1abf`), não desta task.
+**Quase tudo desta sessão vive no repo `app`, não aqui.** Seis commits, um por
+task, por ordem de aplicação:
 
-Nesta árvore, a TASK-11 não mexeu em código: os 180 testes e o `tsc` a 0 erros
-foram reconfirmados a 2026-09-11 depois da migration, sem alteração. O que muda
-aqui é só documentação.
+```
+eb3b87e9 fix(db):   fecha a tabela rate_limits a role anon              (122)
+9488b281 docs(db):  precisao nos comentarios da 122
+dfa3d380 fix(db):   fecha ao anon as duas SECURITY DEFINER sem travao   (123)
+08ca9070 arch(db):  apaga a superficie de rate limiting sem chamador    (124)
+42edd555 fix(db):   pina o search_path nas 15 funcoes                   (125)
+ffdcb747 fix(i18n): o ecra de eliminacao declara tres excepcoes         (10 locales)
+```
 
-Histórico anterior, separado por task, por ordem:
+Migrations aplicadas a produção: `20260911100930` (122), `123`, `124`,
+`125a` (o probe de uma função só) e `125`.
+
+**O `.gitignore` do repo da app está modificado e ficou de fora de propósito, em
+todos os seis commits** — é trabalho em paralelo do Ricardo (reverte o
+`closed_test_contacts.csv` do commit `2f3c1abf`), não desta sessão. Continua por
+commitar, e é dele.
+
+Nesta árvore **não mexeu código nenhum**: os 180 testes e o `tsc` a 0 erros
+foram reconfirmados depois das migrations, sem alteração. O que muda aqui é só
+documentação. No repo da app, os portões que importavam para a TASK-19:
+`check-i18n` completo, `type-check` a 0, **4151 testes em 208 suites**. O
+`npm run lint` de lá tem 57 erros de `prettier`, **todos pré-existentes e todos
+em `.ts`** — o script é `eslint . --ext .ts,.tsx` e portanto nunca leu o JSON
+que a TASK-19 alterou.
+
+Histórico anterior desta árvore, separado por task, por ordem:
 
 ```
 2dc5c57 feat: framework de testes (Vitest 5 + jsdom + Testing Library)
