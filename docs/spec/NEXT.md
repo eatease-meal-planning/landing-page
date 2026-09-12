@@ -10,7 +10,7 @@
 
 ## Estado
 
-- **Esta árvore está verde:** `npm test` 193/193, `npx tsc --noEmit` 0 erros.
+- **Esta árvore está verde:** `npm test` 215/215, `npx tsc --noEmit` 0 erros.
 - **Nenhuma chave de i18n a meio de rollout.** Se aparecerem erros de `Property … is missing`, é a *Constraint dura* — diagnóstico na *Nota de i18n* do [`closed-test-signup.md`](./closed-test-signup.md), e **não é erro de ninguém**.
 - **A Fase 1 do `/delete-account` está em produção.**
 - **O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.
@@ -22,7 +22,8 @@
 1. Fase 2 do /delete-account   <- A SEGUIR, e é tudo nesta árvore menos a 09
    TASK-09  template Magic Link      (Dashboard - precisa do utilizador)
    TASK-03  clientes Supabase da app          [x] FEITA a 2026-09-12
-   TASK-04  POST /api/account-deletion/request  <- A SEGUIR
+   TASK-04  POST /api/account-deletion/request  <- A SEGUIR (passa emailRedirectTo
+            por locale: e dele que o template tira a lingua)
             + extrair withRequestGuards (§4.2): a TASK-17 nao o fez,
               e sem isso esta e a terceira copia do mesmo pipeline
    TASK-05  POST /api/account-deletion/waitlist
@@ -62,7 +63,7 @@ estritamente leitura — o `if (deps.dryRun) { … continue; }` de
 ## Portão de verificação
 
 ```bash
-npm test            # 193 testes
+npm test            # 215 testes
 npx tsc --noEmit    # 0 erros exigidos - correr SEMPRE à parte; a suite não faz type-check
 npm run lint        # 0 erros (2 warnings pré-existentes)
 npm run build

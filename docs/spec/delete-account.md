@@ -290,7 +290,17 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 ### TASK-09: Template Magic Link (Dashboard, projeto `dagpiagorabmliuotkoc`)
 - **O quê:** Auth → Email Templates → **Magic Link**: confirmar que não está em uso e trocar para entregar `{{ .Token }}` (6 dígitos), com copy própria de eliminação de conta — não copy genérica de login. Rever os rate limits de envio de OTP.
 - **Verify:** pedir um código em dev e ler o email recebido.
-- **Status:** [ ] TODO — **requer acesso ao Dashboard (utilizador)**
+- **Status:** [ ] TODO — **requer acesso ao Dashboard (utilizador)**. O HTML está escrito e testado: `src/templates/deletion-code.html`, guardado por `src/lib/i18n/deletionCodeTemplate.test.ts` (22). Falta colá-lo, e as três decisões de Dashboard abaixo.
+
+  **O template é localizado, e o mecanismo é o `.RedirectTo`.** O Supabase tem **um** template por projeto, sem variantes de idioma — mas expõe `{{ .RedirectTo }}` e suporta condicionais Go (`{{ if eq … }}`), ambos confirmados na documentação. O ficheiro escolhe a língua comparando o `.RedirectTo` com `https://www.eatease.eu/{locale}/delete-account`, que é o que a TASK-04 passa em `emailRedirectTo`. **Custo:** esses 10 URLs têm de entrar em *Authentication → URL Configuration → Redirect URLs*, o que reintroduz a allow-list que a decisão do OTP dizia dispensar — mas só para a escolha da língua, não para o fluxo, que continua a não pedir clique nenhum.
+
+  **Por verificar, e decide se a localização vive ou morre:** que o `signInWithOtp({ shouldCreateUser: false })` preenche mesmo o `.RedirectTo` no template do Magic Link. Se vier vazio, o Supabase cai no Site URL e **todas as línguas rendem em inglês** — silenciosamente, que é o modo de falha que esta página não tolera. Sonda: pôr `RT=[{{ .RedirectTo }}]` no template, pedir um código, ler o email.
+
+  **O que não serve, para não voltar a ser proposto:** o *Send Email Hook* localizaria e dispensava a allow-list, mas **substitui o envio de todos os emails de auth do projeto da app**, incluindo o `resetPasswordForEmail` que está em produção — e não teria de onde tirar a locale: o `signUp` da app (`SupabaseAuthService.ts:328-339`) não guarda idioma nenhum em `user_metadata`, e a anon key não lê `user_profiles` sob RLS. Sairia uma tabela nova (alteração de schema) e os emails de reposição de password da app passariam a depender do uptime de `eatease.eu`.
+
+  **Defeito apanhado pelo teste, e vale para qualquer template futuro:** o Go executa **dentro de comentários HTML**. Um `{{ nome }}` sem ponto num comentário é erro de parse no Supabase, e um com ponto renderiza o valor lá dentro. O comentário de cabeçalho do ficheiro não nomeia nenhuma ação de template de propósito.
+
+  **Falta ainda saber do Dashboard,** e nenhuma se deduz do repo: (a) se o *SMTP* de Auth é personalizado — se ainda for o remetente interno do Supabase, o limite por hora torna o OTP inutilizável em uso real; (b) o *Email OTP Expiration*, que a copy afirma ser 1 hora em 10 línguas; (c) os rate limits de envio, que são o único backstop real do endpoint de OTP.
 
 ### TASK-03: Clientes Supabase do projeto da app
 - **Ficheiros:** `src/lib/appSupabase.ts` (novo)
