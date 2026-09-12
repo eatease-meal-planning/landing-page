@@ -1,4 +1,6 @@
-import type { Locale } from "@/lib/i18n/config";
+// Relative, not the "@/" alias: scripts/probe-otp-email.mjs imports this file
+// under plain Node, which does not resolve tsconfig paths.
+import type { Locale } from "./i18n/config";
 
 /**
  * The canonical origin, deliberately not `NEXT_PUBLIC_SITE_URL`.
