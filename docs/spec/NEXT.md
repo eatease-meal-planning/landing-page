@@ -12,7 +12,8 @@
 
 - **Esta árvore está verde:** `npm test` 180/180, `npx tsc --noEmit` 0 erros.
 - **Nenhuma chave de i18n a meio de rollout.** Se aparecerem erros de `Property … is missing`, é a *Constraint dura* — diagnóstico na *Nota de i18n* do [`closed-test-signup.md`](./closed-test-signup.md), e **não é erro de ninguém**.
-- **A Fase 1 do `/delete-account` está em produção** e o teste fechado está a recrutar.
+- **A Fase 1 do `/delete-account` está em produção.**
+- **O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.
 - **A autorização nominal no repo `app` está esgotada.** As migrations `122`-`125` e a copy das 10 locales estão feitas; o que venha a seguir nesse repo volta ao «perguntar primeiro» (*Boundaries* do [`delete-account.md`](./delete-account.md)).
 
 ## Ordem a seguir
@@ -27,9 +28,14 @@
    TASK-14  copy e retenções         (MESMO commit que a 13 - a copy só fica verdadeira aí)
 
 2. Sem data, e nenhuma bloqueia a Fase 2:
+   Apagar o closed_test_contacts.csv  <- último passo da TASK-F, está por fazer
    TASK-24/25/26  achados da auditoria da 001, no repo `app`  <- perguntar primeiro
    Tradução dos 3 documentos legais   <- nove locales servem-nos em inglês
 ```
+
+**O que não está na lista porque não é código:** faltam 5 adesões ao teste
+fechado. Dos 17 convidados, 10 ainda não aderiram, e só 1 pessoa chegou pelo
+formulário do site. Nenhuma task desta lista mexe nesse número.
 
 **A TASK-09 é a primeira porque é a única que não depende de mim.** Precisa de
 acesso ao Dashboard; pedi-la cedo evita que a TASK-04 fique à espera dela.
@@ -38,14 +44,18 @@ acesso ao Dashboard; pedi-la cedo evita que a TASK-04 fique à espera dela.
 Developer API só aceita `googleGroups`; sem grupo não há API, e a gestão de
 testers é manual para sempre.
 
-## A confirmar ao começar
+## Acesso à base de dados — o que o MCP alcança e o que não
 
-Uma pergunta que não consigo responder daqui: **a importação do CSV para
-`contacts` já correu a sério?** O `closed-test-signup.md` dá a TASK-D como feita
-e os convites como enviados, mas registou a TASK-F como «código completo, a
-correr depende do link» e a importação como «por correr». Se ainda não correu, é
-o primeiro comando da secção *Arrancar o teste fechado* — e o
-`closed_test_contacts.csv` só se apaga **depois** de ela passar.
+**O Supabase MCP desta sessão está ligado ao projeto da *app***
+(`dagpiagorabmliuotkoc`), não ao da landing-page. Verificado: as tabelas que
+devolve são `user_profiles`, `recipes`, `trial_ledger`… e **não há `contacts`
+nenhum lá**. Para a BD desta árvore o MCP não serve.
+
+O caminho que serve, e não passa por ler o `.env`: um script `.mjs` que importe
+o `loadEnv()` de `scripts/_shared.mjs`, que carrega o `.env.local` para o
+`process.env` sozinho. O `send-closed-test-invite.mjs --dry-run` também é
+estritamente leitura — o `if (deps.dryRun) { … continue; }` de
+`src/lib/closedTestInvite.ts:182` sai antes do envio e antes do `markInvited`.
 
 ## Portão de verificação
 

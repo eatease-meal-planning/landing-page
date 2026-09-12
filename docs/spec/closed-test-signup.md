@@ -70,7 +70,11 @@ Duas colunas novas em `contacts`:
 
 **O que a segunda coluna não regista:** *acesso concedido*. Quem concede é o passo 4 — o registo no Play Console —, que continua manual e separado. Nada impede mandar o link a quem ainda não está registado; para essa pessoa o link simplesmente não funciona. Com um operador e uma dúzia de testers não vale um segundo timestamp: basta manter «adicionar lote à Consola» e «correr o script» juntos.
 
-**O CSV sai — mas ainda não saiu.** `closed_test_contacts.csv` guarda nome e email de 13 pessoas: dados pessoais fora do alcance do `/delete-account`. A mesma razão que obriga `contacts` a ter caminho de eliminação obriga-as a estar lá dentro. `scripts/import-closed-test-contacts.mjs` faz a importação e fica no repo para ela ser reproduzível — **por correr à data desta escrita** (só o `--dry-run` foi verificado, 13 a inserir + 1 já existente). Apagar o ficheiro **depois** de a importação passar.
+**O CSV saiu.** `closed_test_contacts.csv` guardava nome e email de pessoas que consentiram fora da plataforma: dados pessoais fora do alcance do `/delete-account`. A mesma razão que obriga `contacts` a ter caminho de eliminação obriga-as a estar lá dentro. `scripts/import-closed-test-contacts.mjs` fez a importação e fica no repo para ela ser reproduzível.
+
+**Importação confirmada a 2026-09-12** contra a BD: **16 linhas com `source = 'manual'`** — não as 13 que esta secção dizia, porque a lista cresceu entre a escrita e a corrida. Ver *Estado do recrutamento* abaixo.
+
+⚠️ **O `closed_test_contacts.csv` continua em disco** (está no `.gitignore`, portanto nunca foi commitado). O argumento desta secção era que os dados tinham de passar para `contacts` *para poderem ser apagados*; agora que passaram, o ficheiro é uma segunda cópia dos mesmos dados pessoais, fora de qualquer caminho de eliminação. **Apagá-lo é o último passo da TASK-F** e está por fazer.
 
 Isto importa para a página de eliminação: `contacts` continua a guardar nome e email sob a responsabilidade do mesmo responsável pelo tratamento, logo continua a precisar do seu caminho de eliminação — seja waitlist ou lista de testers.
 
@@ -133,7 +137,8 @@ Isto importa para a página de eliminação: `contacts` continua a guardar nome 
 - **Também corrigido:** o fallback de locale deixou de ser mudo (um tester alemão podia receber português sem nada no log), o nome passa a ser escapado no HTML, e `RESEND_FROM_EMAIL` deixou de ter fallback adivinhado — os dois scripts anteriores discordavam entre `noreply@` e `no_reply@`.
 - **Onde vive a lógica:** `src/lib/closedTestInvite.ts`, pura e com dependências injectadas, para ser testável; o `.mjs` só liga Postgres, Resend e o ambiente. Guardado por `src/lib/closedTestInvite.test.ts` (13).
 - **Depende de:** TASK-D — o link. **É a única coisa que falta** para correr o envio.
-- **Status:** [x] COMPLETE (código); a correr depende do link da TASK-D
+- **Status:** [x] COMPLETE — código **e** execução. Correu a sério a 2026-09-12: 16 contactos importados do CSV e **17 convites enviados e marcados**, 0 por convidar. Verificado contra a BD, não por relato.
+  **Falta o último passo:** apagar o `closed_test_contacts.csv`, que continua em disco. Ver a nota no *Schema*.
 
 ### TASK-D: Play Console — lista de testers
 - **O quê:** lista de emails criada dentro do Play Console (não um Grupo Google — ver acima), testers registados, os dois links guardados.
@@ -148,10 +153,34 @@ Isto importa para a página de eliminação: `contacts` continua a guardar nome 
 - **Descoberto durante:** verificar o caminho *in-app*. A edge function da app (`app/supabase/functions/delete-account/index.ts`) apaga storage e o utilizador de auth **no projeto Supabase da app**, que não vê o `contacts` da landing-page nem o Play Console. Quem elimina por lá continuava tester, com acesso ao build, e o `inApp.body` apresentava esse caminho como o mais rápido sem dizer que era o incompleto.
 - **Status:** [x] COMPLETE — guardado por 20 asserções em `deleteAccountCopy.test.ts` + 1 em `account-deletion/route.test.ts`.
 
+## Estado do recrutamento — verificado a 2026-09-12
+
+A sequência abaixo **já correu por inteiro**: importação feita, convites
+enviados, testers a aderir.
+
+| Em `contacts` (BD da landing-page) | |
+|---|---|
+| Total | **17** |
+| Confirmados | **17** (0 por confirmar) |
+| Convidados (`closed_test_invited_at`) | **17** (0 por convidar) |
+| Origem | **16** `manual` (CSV) · **1** `form` |
+| Locale | 17 × `pt-pt` |
+
+**Duas contagens diferentes, e é importante não as confundir.** «17 convidados»
+é quem recebeu o email; **«7 testers» é quem aderiu de facto** no Play Console,
+e é esse o número que conta para o requisito. São coisas distintas porque a
+adesão é um passo que a pessoa tem de dar — e é precisamente por isso que o
+convite leva o link de **adesão na web** primeiro.
+
+**O que isto quer dizer:** faltam **5 adesões** para as 12 que o Google exige
+(14 dias consecutivos). Dos 17 convidados, **10 ainda não aderiram** — e só
+**1 pessoa** chegou pelo formulário do site. O gargalo não é a captação de
+emails, é a conversão de convite em adesão.
+
 ## Arrancar o teste fechado — a sequência
 
 ```bash
-node scripts/import-closed-test-contacts.mjs --dry-run   # confere as 13 linhas
+node scripts/import-closed-test-contacts.mjs --dry-run   # confere as linhas do CSV
 node scripts/import-closed-test-contacts.mjs             # CSV -> contacts (uma vez)
 # ... registar os emails no Play Console, guardar o link de opt-in ...
 # no .env.local, os DOIS links de "Como os testadores participam no seu teste":
