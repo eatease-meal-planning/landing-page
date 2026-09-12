@@ -10,11 +10,11 @@
 
 ## Estado
 
-- **Esta árvore está verde:** `npm test` 243/243, `npx tsc --noEmit` 0 erros.
+- **Esta árvore está verde:** `npm test` 254/254, `npx tsc --noEmit` 0 erros.
 - **Nenhuma chave de i18n a meio de rollout.** Se aparecerem erros de `Property … is missing`, é a *Constraint dura* — diagnóstico na *Nota de i18n* do [`closed-test-signup.md`](./closed-test-signup.md), e **não é erro de ninguém**.
 - **A Fase 1 do `/delete-account` está em produção.**
 - **O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.
-- 🔴 **O SMTP de Auth do projeto da app está desativado, e isso trava a Fase 2 e parte produção.** O serviço interno do Supabase não entrega a quem não pertence à equipa do projeto: o OTP só chega ao Ricardo, e o `resetPasswordForEmail` da app está a falhar hoje para todos os testers. Detalhe e solução na TASK-09 do [`delete-account.md`](./delete-account.md).
+- **O SMTP de Auth do projeto da app passou a Resend a 2026-09-12**, e com ele o `resetPasswordForEmail` da app, que estava a falhar para todos os testers — o serviço interno do Supabase não entrega a quem não pertence à equipa do projeto. Por confirmar com um teste manual: uma reposição de password a partir da app.
 - **A autorização nominal no repo `app` está esgotada.** As migrations `122`-`125` e a copy das 10 locales estão feitas; o que venha a seguir nesse repo volta ao «perguntar primeiro» (*Boundaries* do [`delete-account.md`](./delete-account.md)).
 
 ## Ordem a seguir
@@ -25,8 +25,8 @@
    TASK-03  clientes Supabase da app          [x] FEITA a 2026-09-12
    TASK-04  POST /api/account-deletion/request   [x] FEITA a 2026-09-12
             (a §4.2 ficou feita aqui: src/lib/apiGuards.ts)
-   TASK-05  POST /api/account-deletion/waitlist  <- A SEGUIR
-   TASK-13  máquina de 3 passos      (bloqueada pela §4.1: partir o componente primeiro)
+   TASK-05  POST /api/account-deletion/waitlist   [x] FEITA a 2026-09-12
+   TASK-13  máquina de 3 passos  <- A SEGUIR (§4.1: partir o componente primeiro)
    TASK-14  copy e retenções         (MESMO commit que a 13 - a copy só fica verdadeira aí)
 
 2. Sem data, e nenhuma bloqueia a Fase 2:
@@ -64,7 +64,7 @@ estritamente leitura — o `if (deps.dryRun) { … continue; }` de
 ## Portão de verificação
 
 ```bash
-npm test            # 243 testes
+npm test            # 254 testes
 npx tsc --noEmit    # 0 erros exigidos - correr SEMPRE à parte; a suite não faz type-check
 npm run lint        # 0 erros (2 warnings pré-existentes)
 npm run build

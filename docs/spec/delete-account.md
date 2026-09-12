@@ -336,7 +336,17 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 ### TASK-05: `POST /api/account-deletion/waitlist`
 - **O quê:** lê `Authorization: Bearer` → `getUser(token)` → 401 se inválido → `db.delete(contacts).where(eq(contacts.email, user.email))`. Idempotente.
 - **Crítico:** o email **nunca** vem do body.
-- **Status:** [ ] TODO
+- **Status:** [x] COMPLETE (2026-09-12) — `src/app/api/account-deletion/waitlist/route.ts`, guardada por `route.test.ts` (11). Portão: 254 testes, `tsc` 0, `lint` 0 erros, `build` regista a rota.
+
+  **Nada é lido do payload — nem uma chave.** O teste que prova isto envia um `email` diferente no body e assere que o SQL executado leva o do token e não o do body. É a asserção que impede que um código enviado a uma pessoa se torne uma forma de apagar a linha de outra.
+
+  **A comparação é `lower() = lower()`, e é um defeito que existia.** O `/api/contacts` insere o email exatamente como foi escrito (o Zod não normaliza), enquanto o Supabase devolve sempre em minúsculas. Um `eq()` deixava `Alguem@Exemplo.com` na tabela **e respondia com sucesso** — a pior combinação possível numa via de apagamento. O índice único de `email` não serve o `lower()`; numa tabela desta dimensão não custa nada, e fica dito para quando deixar de ser pequena.
+
+  **Sem captcha e sem rate limit, ao contrário das rotas vizinhas.** Chegar aqui já exigiu receber um código por email e trocá-lo por um JWT, e um limite nesta rota podia deixar alguém a meio do fluxo com a conta já apagada — o único estado que este desenho recusa criar.
+
+  **O `DB_UNAVAILABLE` é o que protege a ordem.** Se esta rota respondesse ok com a linha por apagar, o passo seguinte destruía a conta e a linha ficava inalcançável para sempre. Guardado por um teste.
+
+  **A resposta traz `removed`,** a contagem de linhas apagadas: é o que a Verify ponta-a-ponta da TASK-13 usa para provar que este passo correu mesmo — não há leak, quem chama é o dono verificado do endereço.
 
 ### TASK-13: Máquina de 3 passos no `DeleteAccountSection`
 - **O quê:** passo 1 email+Turnstile → passo 2 código de 6 dígitos (`verifyOtp`, guardar `access_token` em estado) → passo 3 confirmação explícita → `/waitlist` → `delete-account`. O formulário manual passa a disclosure «Não consigo aceder ao meu email».
