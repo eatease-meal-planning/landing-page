@@ -474,6 +474,13 @@ A autorização de 2026-09-11 está esgotada. Estas três são novas e nenhuma e
 - **Ressalva que tem de acompanhar a task:** «0 scans» é «nenhum desde que estas estatísticas começaram», e uma reposição por upgrade ou crash não deixa marca. É **forte indício, não prova** — e um índice que serve um caminho raro (suporte, relatório) é legitimamente zero. A decisão é de quem conhece os caminhos, não do contador.
 - **Status:** [ ] TODO — **perguntar primeiro**
 
+### TASK-27: [repo `app`] Os cinco crons são invocáveis da internet aberta, sem chave nenhuma
+- **O quê:** `config.toml:36-47` põe `verify_jwt = false` nos cinco `*-cron` — correto, o agendador não traz JWT — mas **nenhum deles olha para o pedido**: os cinco são `Deno.serve(async () => {...})`, sem cláusula de autenticação. E o gateway de funções não exige `apikey` antes de encaminhar: um `POST` sem chave nenhuma a uma função inexistente responde `404`, não `401` (verificado a 2026-09-13). Logo qualquer pessoa que saiba o ref do projeto os dispara.
+- **Impacto, com os limites medidos e não presumidos:** o `notification-cleanup-cron` apaga, mas só o que a política de retenção já marcava — invocá-lo mil vezes não apaga mais do que às 3 da manhã. Os de lembretes têm guarda de idempotência (`alreadySent`, `trial-reminder-cron:208,251`), portanto não há spam ao utilizador. **Fica o custo de invocação e o princípio:** cinco endpoints públicos que escrevem e apagam, sem porteiro.
+- **Não tem nada a ver com a anon key,** e é por isso que está registado aqui: publicá-la no site não muda isto em nada. Já estava assim.
+- **O quê, se autorizada:** cabeçalho de segredo partilhado verificado à entrada das cinco (`CRON_SECRET`), com o agendador a enviá-lo. É o padrão que o `delete-account` já tem noutra forma.
+- **Status:** [ ] TODO — **perguntar primeiro**
+
 ### TASK-26: [repo `app`] Ainda há 4 `SECURITY DEFINER` executáveis por `anon`
 - **O quê:** depois da `122`/`123`/`124`, o linter conta **4** (eram 6): `accept_meal_plan(jsonb)`, `handle_new_user()`, `handle_updated_at()` e `update_user_profile_secure(uuid, jsonb)`.
 - **Nenhuma é a emergência que a TASK-23 era, e é por razões diferentes:** `handle_new_user` e `handle_updated_at` são funções de trigger — chamá-las por RPC falha por falta de contexto de trigger; `accept_meal_plan` e `update_user_profile_secure` verificam `auth.uid()`. É higiene, não um buraco.
