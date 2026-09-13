@@ -354,12 +354,32 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 - **O quê:** passo 1 email+Turnstile → passo 2 código de 6 dígitos (`verifyOtp`, guardar `access_token` em estado) → passo 3 confirmação explícita → `/waitlist` → `delete-account`. O formulário manual passa a disclosure «Não consigo aceder ao meu email».
 - **Design:** vermelho só no botão irreversível do passo 3; teal no resto.
 - **Verify:** fluxo completo com conta real, e **confirmar que a linha em `contacts` desapareceu**. Nem a TASK-05 nem a TASK-13 isoladamente apanham o bug de ordenação — só o teste ponta-a-ponta.
-- **Status:** [ ] TODO
+- **Status:** [x] COMPLETE (2026-09-13), no mesmo commit que a TASK-14. Portão: 328 testes, `tsc` 0, `lint` 0 erros, `build` passa.
+
+  **A §4.1 foi feita primeiro, como ela exigia.** `src/components/landing/deleteAccount/`: `useAccountDeletion.ts` (a máquina e as duas chamadas encadeadas), `StepEmail`/`StepCode`/`StepConfirm` (só apresentação), `SelfServiceDeletion` (contentor sem lógica) e `ManualRequestForm` (o formulário da Fase 1, movido para dentro de um `<details>`). O `DeleteAccountSection` deixou de ser Client Component — já não tem `"use client"` e não envia JavaScript nenhum.
+
+  **A ordem obrigatória está numa função nomeada e testada por mutação.** Trocar as duas chamadas no `confirmDeletion` faz falhar exatamente dois testes — o da ordem e o do «não destrói nada se o `contacts` falhar» — verificado invertendo-as de propósito. É a prova que o spec dizia não existir em nenhuma das duas tasks isoladamente.
+
+  **Guardado por `useAccountDeletion.test.tsx` (14).** Inclui o caso que não é óbvio: um `verifyOtp` que devolve `error: null` mas `session: null` é tratado como falha, porque sem token não há com que autorizar a eliminação e avançar mostraria o passo 3 a quem não o consegue completar.
+
+  **Os dois avisos da §3.6 estão no passo 3, nas 10 locales,** e as asserções que os guardam estão no `deleteAccountCopy.test.ts` — o `tsc` vê uma chave presente, tipada e possivelmente vazia.
+
+  **Verify por correr:** exige uma conta real na app e uma caixa de correio.
 
 ### TASK-14: Copy e retenções, no mesmo commit da Fase 2
 - **O quê:** 10 locales — prazo de «30 dias» → imediato após confirmação; alinhar `pt-pt`, que já foi editada; corrigir a `note` sobre logs (guardamos IP em `rate_limits` e no email ao operador); mencionar a janela de backups do Supabase.
 - **Porquê no mesmo commit:** a copy só se torna verdadeira quando o OTP existir.
-- **Status:** [ ] TODO
+- **Status:** [x] COMPLETE (2026-09-13), no commit da TASK-13.
+
+  **O prazo dos 30 dias não foi retirado, e não podia ser.** O formulário manual permanece na Fase 2 — para quem perdeu o acesso ao email da conta e para quem se inscreveu aqui sem nunca ter criado conta na app — e continua a ser tratado à mão. O `timing.body` passou a descrever **os dois** caminhos: imediato com código, 30 dias pelo formulário. O `form.successBody` mantém os 30 dias porque é a página de sucesso *desse* formulário, e as asserções que já existiam continuam a valer com o sentido certo.
+
+  **As duas chaves do ledger,** como a §3.6 exigia: o texto passou a declarar o hash do email **e** o do identificador do fornecedor de início de sessão, alinhado com `privacyPolicy.ts:378`. E diz onde está a janela: a oposição tem de ser pedida **antes**, porque depois de a conta desaparecer o identificador do fornecedor deixa de poder ser associado à pessoa.
+
+  **A `note` dos logs era falsa e foi corrigida.** Dizia que os registos «não te identificam»; guardamos o IP na `rate_limits` e no email ao operador. A nova redação nomeia os dois sítios, diz para que serve e oferece o apagamento a pedido — e **não** promete uma retenção que não praticamos, porque a `rate_limits` não tem rotina de limpeza.
+
+  **Acrescentada a divulgação dos backups,** que faltava: a eliminação é imediata nos dados vivos, e as cópias de segurança rodam pelo calendário do fornecedor.
+
+  **O `CONTACT_EMAIL` deixou de estar hardcoded** (§4.6) — passou a `contact.email` nas 10 locales, com um teste a fixar o endereço.
 
 ### TASK-11: [repo `app`] Fechar `rate_limits` à role `anon`
 - **O quê:** `001_add_security_indexes.sql:44-48` cria duas políticas `USING (true)` **sem cláusula `TO`** → o Postgres assume `TO public`, que inclui `anon`. Qualquer pessoa com a key do APK lê, altera e **apaga** a tabela de rate limiting. Nova migration: `DROP POLICY` das duas, recriar com `TO service_role`.
