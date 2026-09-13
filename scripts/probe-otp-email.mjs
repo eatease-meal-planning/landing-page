@@ -41,8 +41,17 @@ if (!isValidLocale(locale)) {
   process.exit(1);
 }
 
-const url = requireEnv("NEXT_PUBLIC_APP_SUPABASE_URL", "projeto da app, não o da landing-page");
-const key = requireEnv("NEXT_PUBLIC_APP_SUPABASE_ANON_KEY", "a mesma anon key que o APK envia");
+// As duas vivem no `.env.local` DESTA árvore. O valor é que vem do projeto da
+// app — o `loadEnv()` lê a partir do cwd, e o `.env` do repo `app` não é lido
+// por ninguém aqui.
+const url = requireEnv(
+  "NEXT_PUBLIC_APP_SUPABASE_URL",
+  "põe-na no .env.local da landing-page; o valor é o URL do projeto da app",
+);
+const key = requireEnv(
+  "NEXT_PUBLIC_APP_SUPABASE_ANON_KEY",
+  "põe-na no .env.local da landing-page; o valor é a EXPO_PUBLIC_SUPABASE_ANON_KEY do repo app",
+);
 
 const emailRedirectTo = deletionPageUrl(locale);
 
