@@ -1,21 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 /**
- * Clients for the *app* Supabase project (`dagpiagorabmliuotkoc`), which is a
- * different project from the one this landing page uses for itself.
+ * The client for the *app* Supabase project (`dagpiagorabmliuotkoc`), which is
+ * a different project from the one this landing page uses for itself.
  *
- * The factory is thin, so the configuration object it hands to `createClient`
- * IS the behaviour worth pinning — `persistSession: false` above all. The
- * spec's own verification for it ("DevTools → Local Storage sem chaves
- * `sb-dagpia*`") cannot run until TASK-13 renders a browser client, so until
- * then these assertions are the only thing guarding the property.
+ * It is server-side only. The anon key is public by design — the APK ships it,
+ * and the app project's RLS is the boundary, not the key's secrecy — but it
+ * never reaches the browser from here: every call the deletion flow makes goes
+ * through our own route handlers. These names carry no `NEXT_PUBLIC_` prefix,
+ * and a test asserting that is the cheapest guard against someone adding one
+ * back to "fix" a client component.
  */
 const { createClientMock } = vi.hoisted(() => ({ createClientMock: vi.fn() }));
 
 vi.mock("@supabase/supabase-js", () => ({ createClient: createClientMock }));
 
-const URL_VAR = "NEXT_PUBLIC_APP_SUPABASE_URL";
-const KEY_VAR = "NEXT_PUBLIC_APP_SUPABASE_ANON_KEY";
+const URL_VAR = "APP_SUPABASE_URL";
+const KEY_VAR = "APP_SUPABASE_ANON_KEY";
 
 const APP_URL = "https://dagpiagorabmliuotkoc.supabase.co";
 const APP_KEY = "anon-key-for-tests";
@@ -47,7 +48,7 @@ describe("appSupabaseServer", () => {
     expect(createClientMock).toHaveBeenCalledWith(APP_URL, APP_KEY, expect.anything());
   });
 
-  it("disables session persistence, so no sb-dagpia* key is ever written to storage", async () => {
+  it("disables session persistence, so no session outlives the request", async () => {
     const { appSupabaseServer } = await loadModule();
 
     appSupabaseServer();
@@ -66,8 +67,8 @@ describe("appSupabaseServer", () => {
   });
 
   it("returns a fresh client per call, so one request's session cannot leak into the next", async () => {
-    // `signInWithOtp` leaves session state on the instance that made the call.
-    // On Fluid compute the same process serves many requests — the rule
+    // `verifyOtp` leaves session state on the instance that made the call. On
+    // Fluid compute the same process serves many requests — the rule
     // src/lib/server.ts already documents for the landing page's own client.
     const { appSupabaseServer } = await loadModule();
 
@@ -100,37 +101,8 @@ describe("appSupabaseServer", () => {
   });
 });
 
-describe("appSupabaseBrowser", () => {
-  it("reuses one client across calls rather than rebuilding it per interaction", async () => {
-    // The three-step form (TASK-13) calls verifyOtp and then reads the token it
-    // returned; a client rebuilt between renders throws that state away.
-    const { appSupabaseBrowser } = await loadModule();
-
-    expect(appSupabaseBrowser()).toBe(appSupabaseBrowser());
-    expect(createClientMock).toHaveBeenCalledTimes(1);
-  });
-
-  it("disables session persistence, so the app project leaves no session on eatease.eu", async () => {
-    const { appSupabaseBrowser } = await loadModule();
-
-    appSupabaseBrowser();
-
-    const [, , options] = createClientMock.mock.calls[0];
-    expect(options.auth.persistSession).toBe(false);
-  });
-
-  it("returns null instead of throwing when configuration is absent", async () => {
-    vi.stubEnv(URL_VAR, "");
-    const { appSupabaseBrowser } = await loadModule();
-
-    expect(appSupabaseBrowser()).toBeNull();
-  });
-});
-
 describe("isAppSupabaseConfigured", () => {
   it("reports configured without building a client", async () => {
-    // The route's configuration check runs on every request and answers with a
-    // code; only the deferred work that actually calls Supabase needs a client.
     const { isAppSupabaseConfigured } = await loadModule();
 
     expect(isAppSupabaseConfigured()).toBe(true);
@@ -171,5 +143,37 @@ describe("appFunctionsUrl", () => {
     const { appFunctionsUrl } = await loadModule();
 
     expect(appFunctionsUrl()).toBeNull();
+  });
+});
+
+describe("appFunctionHeaders", () => {
+  it("identifies the project with the key and the caller with their own token", async () => {
+    const { appFunctionHeaders } = await loadModule();
+
+    expect(appFunctionHeaders("user-jwt")).toMatchObject({
+      apikey:        APP_KEY,
+      Authorization: "Bearer user-jwt",
+    });
+  });
+
+  it("returns null rather than a half-formed request when the key is absent", async () => {
+    vi.stubEnv(KEY_VAR, "");
+    const { appFunctionHeaders } = await loadModule();
+
+    expect(appFunctionHeaders("user-jwt")).toBeNull();
+  });
+});
+
+describe("the app project never reaches the browser", () => {
+  it("reads no NEXT_PUBLIC_ variable", async () => {
+    // A NEXT_PUBLIC_ name is inlined into the client bundle by static textual
+    // match. This module is server-side precisely so that never happens.
+    const source = await import("node:fs").then(({ readFileSync }) =>
+      readFileSync(new URL("./appSupabase.ts", import.meta.url), "utf-8"),
+    );
+
+    // The read is what matters, not the prose: the file explains in a comment
+    // why the prefix is avoided, and that sentence must not fail the test.
+    expect(source).not.toContain("process.env.NEXT_PUBLIC_");
   });
 });

@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import type { Translations } from "@/lib/i18n/dictionaries";
-import { appSupabaseBrowser } from "@/lib/appSupabase";
 
 type T = Translations["deleteAccount"];
 
@@ -36,9 +35,14 @@ async function codeOf(res: Response): Promise<string | null> {
  * submit handler, because one of them is a rule the spec calls non-negotiable
  * and a rule buried in markup is a rule nobody can see.
  *
- * The access token is held in state rather than read back from the Supabase
- * client: that client runs with `persistSession: false`, so there is no session
- * to read, and a token kept in a ref would not survive a remount either.
+ * **Every call goes to our own API.** The Supabase client used to live here,
+ * which meant serving the app project's URL and anon key in the browser bundle;
+ * the two exchanges it did are now `/verify` and `/confirm`. The token is the
+ * same token, belonging to the same person — it is simply obtained one hop
+ * further back, and this page now ships no Supabase client at all.
+ *
+ * The access token is held in state: it exists only for this flow, a ref would
+ * not survive a remount, and nothing should persist it anywhere.
  */
 export function useAccountDeletion({ t, locale }: { t: T; locale: string }): AccountDeletion {
   const [step, setStep]   = useState<DeletionStep>("email");
@@ -88,29 +92,32 @@ export function useAccountDeletion({ t, locale }: { t: T; locale: string }): Acc
 
   const submitCode = useCallback(
     async (code: string) => {
-      const supabase = appSupabaseBrowser();
-      if (!supabase) {
-        setError(withCode(t.form.errorGeneric, "CONFIG_MISSING_APP_SUPABASE"));
-        return;
-      }
-
       setBusy(true);
       setError("");
       try {
-        const { data, error: otpError } = await supabase.auth.verifyOtp({
-          email,
-          token: code,
-          type:  "email",
+        const res = await fetch("/api/account-deletion/verify", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({ email, code }),
         });
 
-        // No session means no token to authorise the deletion with. Advancing
-        // would show the final step to someone who cannot complete it.
-        if (otpError || !data.session) {
+        // CODE_INVALID covers a wrong code, an expired one and an address with
+        // no account alike — step 1 refuses to say which, and this step must
+        // not say it either.
+        if (!res.ok) {
           setError(t.selfService.step2.errorCode);
           return;
         }
 
-        setAccessToken(data.session.access_token);
+        const { accessToken: token } = (await res.json()) as { accessToken?: string };
+        if (!token) {
+          // Nothing to authorise the deletion with. Advancing would show the
+          // final step to someone who cannot complete it.
+          setError(t.selfService.step2.errorCode);
+          return;
+        }
+
+        setAccessToken(token);
         setStep("confirm");
       } catch {
         setError(t.form.errorNetwork);
@@ -122,8 +129,7 @@ export function useAccountDeletion({ t, locale }: { t: T; locale: string }): Acc
   );
 
   const confirmDeletion = useCallback(async () => {
-    const supabase = appSupabaseBrowser();
-    if (!supabase || !accessToken) {
+    if (!accessToken) {
       setError(withCode(t.form.errorGeneric, "NO_VERIFIED_SESSION"));
       return;
     }
@@ -148,13 +154,12 @@ export function useAccountDeletion({ t, locale }: { t: T; locale: string }): Acc
         return;
       }
 
-      const { error: functionError } = await supabase.functions.invoke("delete-account", {
+      const deletion = await fetch("/api/account-deletion/confirm", {
         method:  "POST",
         headers: authorization,
-        body:    {},
       });
-      if (functionError) {
-        setError(withCode(t.form.errorGeneric, functionError.name ?? "DELETE_ACCOUNT_FAILED"));
+      if (!deletion.ok) {
+        setError(withCode(t.form.errorGeneric, await codeOf(deletion)));
         return;
       }
 

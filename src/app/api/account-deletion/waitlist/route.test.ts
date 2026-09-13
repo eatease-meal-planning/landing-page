@@ -75,8 +75,8 @@ const REJECTED_TOKEN = {
 
 beforeEach(() => {
   vi.unstubAllEnvs();
-  vi.stubEnv("NEXT_PUBLIC_APP_SUPABASE_URL", APP_URL);
-  vi.stubEnv("NEXT_PUBLIC_APP_SUPABASE_ANON_KEY", APP_KEY);
+  vi.stubEnv("APP_SUPABASE_URL", APP_URL);
+  vi.stubEnv("APP_SUPABASE_ANON_KEY", APP_KEY);
   getUserMock.mockReset().mockResolvedValue(VERIFIED_USER);
   deleteMock.mockReset();
   whereMock.mockReset().mockResolvedValue([{ id: "contact-1" }]);
@@ -159,7 +159,7 @@ describe("POST /api/account-deletion/waitlist — refusals name their cause", ()
   });
 
   it("answers CONFIG_MISSING_APP_SUPABASE when the app project is not configured", async () => {
-    vi.stubEnv("NEXT_PUBLIC_APP_SUPABASE_URL", "");
+    vi.stubEnv("APP_SUPABASE_URL", "");
     const POST = await loadRoute();
 
     const res = await POST(waitlistRequest());

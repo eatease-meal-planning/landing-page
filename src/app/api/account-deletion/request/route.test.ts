@@ -73,8 +73,8 @@ const OTP_SENT = { data: { user: null, session: null }, error: null };
 
 beforeEach(() => {
   vi.unstubAllEnvs();
-  vi.stubEnv("NEXT_PUBLIC_APP_SUPABASE_URL", APP_URL);
-  vi.stubEnv("NEXT_PUBLIC_APP_SUPABASE_ANON_KEY", APP_KEY);
+  vi.stubEnv("APP_SUPABASE_URL", APP_URL);
+  vi.stubEnv("APP_SUPABASE_ANON_KEY", APP_KEY);
   otpMock.mockReset().mockResolvedValue(OTP_SENT);
   afterMock.mockReset();
   vi.mocked(checkRateLimit).mockReset().mockResolvedValue(false);
@@ -195,7 +195,7 @@ describe("POST /api/account-deletion/request — what it asks Supabase for", () 
 
 describe("POST /api/account-deletion/request — failures carry a code the page shows", () => {
   it("answers CONFIG_MISSING_APP_SUPABASE when the app project is not configured", async () => {
-    vi.stubEnv("NEXT_PUBLIC_APP_SUPABASE_ANON_KEY", "");
+    vi.stubEnv("APP_SUPABASE_ANON_KEY", "");
     const POST = await loadRoute();
 
     const res = await POST(deletionRequest());

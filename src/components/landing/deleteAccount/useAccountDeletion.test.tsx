@@ -12,19 +12,11 @@ import { useAccountDeletion } from "./useAccountDeletion";
  * the person, who can no longer prove the address is theirs either. The spec
  * says plainly that neither the API test nor a UI test catches that inversion
  * on its own; the assertion on call order here is what does.
+ *
+ * Every call goes to our own API: the Supabase client left the browser so the
+ * app project's key would stop being served in the bundle. The four URLs below
+ * are the whole surface this hook touches.
  */
-const { verifyOtpMock, invokeMock } = vi.hoisted(() => ({
-  verifyOtpMock: vi.fn(),
-  invokeMock:    vi.fn(),
-}));
-
-vi.mock("@/lib/appSupabase", () => ({
-  appSupabaseBrowser: () => ({
-    auth:      { verifyOtp: verifyOtpMock },
-    functions: { invoke: invokeMock },
-  }),
-}));
-
 const t = en.deleteAccount;
 const ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.access.token";
 const EMAIL = "someone@example.com";
@@ -56,23 +48,25 @@ async function reachConfirmStep() {
   return view;
 }
 
-beforeEach(() => {
-  calls = [];
-  fetchMock = vi.fn(async (input: string | URL | Request) => {
+/** What each endpoint answers unless a test overrides it. */
+function defaultResponse(url: string) {
+  if (url.endsWith("/verify")) return jsonResponse(200, { ok: true, accessToken: ACCESS_TOKEN });
+  return jsonResponse(200, { ok: true, removed: 1 });
+}
+
+/** Records every URL the hook asks for, in order. */
+function recordingFetch(override?: (url: string) => Response | undefined) {
+  return vi.fn(async (input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input.toString();
     calls.push(url);
-    return jsonResponse(200, { ok: true, removed: 1 });
+    return override?.(url) ?? defaultResponse(url);
   });
-  vi.stubGlobal("fetch", fetchMock);
+}
 
-  verifyOtpMock.mockReset().mockResolvedValue({
-    data:  { session: { access_token: ACCESS_TOKEN } },
-    error: null,
-  });
-  invokeMock.mockReset().mockImplementation(async () => {
-    calls.push("edge:delete-account");
-    return { data: { success: true }, error: null };
-  });
+beforeEach(() => {
+  calls = [];
+  fetchMock = recordingFetch();
+  vi.stubGlobal("fetch", fetchMock);
 });
 
 describe("useAccountDeletion — step 1, asking for the code", () => {
@@ -125,23 +119,22 @@ describe("useAccountDeletion — step 1, asking for the code", () => {
 });
 
 describe("useAccountDeletion — step 2, the code", () => {
-  it("verifies the code as an email OTP for the address from step 1", async () => {
+  it("sends the code and the address from step 1 to our own endpoint", async () => {
     const { result } = renderDeletion();
     await act(async () => { await result.current.requestCode(EMAIL, "turnstile-token"); });
 
     await act(async () => { await result.current.submitCode("123456"); });
 
-    expect(verifyOtpMock).toHaveBeenCalledWith({ email: EMAIL, token: "123456", type: "email" });
+    const [url, init] = fetchMock.mock.calls[1];
+    expect(url).toBe("/api/account-deletion/verify");
+    expect(JSON.parse(init.body as string)).toEqual({ email: EMAIL, code: "123456" });
     expect(result.current.step).toBe("confirm");
   });
 
-  it("stays on the code step when Supabase rejects the code", async () => {
-    verifyOtpMock.mockResolvedValue({
-      data:  { session: null },
-      error: { name: "AuthApiError", message: "Token has expired or is invalid" },
-    });
+  it("stays on the code step when the code is rejected", async () => {
     const { result } = renderDeletion();
     await act(async () => { await result.current.requestCode(EMAIL, "turnstile-token"); });
+    fetchMock.mockResolvedValue(jsonResponse(400, { code: "CODE_INVALID" }));
 
     await act(async () => { await result.current.submitCode("000000"); });
 
@@ -149,12 +142,12 @@ describe("useAccountDeletion — step 2, the code", () => {
     expect(result.current.error).toBe(t.selfService.step2.errorCode);
   });
 
-  it("treats a verified code with no session as a failure, not as permission", async () => {
+  it("treats an ok answer with no token as a failure, not as permission", async () => {
     // Without a token there is nothing to authorise the deletion with, and
     // proceeding would show the confirm step to someone who cannot delete.
-    verifyOtpMock.mockResolvedValue({ data: { session: null }, error: null });
     const { result } = renderDeletion();
     await act(async () => { await result.current.requestCode(EMAIL, "turnstile-token"); });
+    fetchMock.mockResolvedValue(jsonResponse(200, { ok: true }));
 
     await act(async () => { await result.current.submitCode("123456"); });
 
@@ -170,8 +163,9 @@ describe("useAccountDeletion — step 3, and the order that is not negotiable", 
 
     expect(calls).toEqual([
       "/api/account-deletion/request",
+      "/api/account-deletion/verify",
       "/api/account-deletion/waitlist",
-      "edge:delete-account",
+      "/api/account-deletion/confirm",
     ]);
     expect(view.result.current.step).toBe("done");
   });
@@ -184,7 +178,7 @@ describe("useAccountDeletion — step 3, and the order that is not negotiable", 
 
     await act(async () => { await view.result.current.confirmDeletion(); });
 
-    expect(invokeMock).not.toHaveBeenCalled();
+    expect(calls).not.toContain("/api/account-deletion/confirm");
     expect(view.result.current.step).toBe("confirm");
     expect(view.result.current.error).toContain(t.selfService.step3.errorWaitlist);
   });
@@ -194,25 +188,26 @@ describe("useAccountDeletion — step 3, and the order that is not negotiable", 
 
     await act(async () => { await view.result.current.confirmDeletion(); });
 
-    const waitlistCall = fetchMock.mock.calls.find(([url]) => String(url).endsWith("/waitlist"));
-    expect(waitlistCall?.[1].headers).toMatchObject({ Authorization: `Bearer ${ACCESS_TOKEN}` });
-    expect(invokeMock).toHaveBeenCalledWith(
-      "delete-account",
-      expect.objectContaining({ headers: expect.objectContaining({ Authorization: `Bearer ${ACCESS_TOKEN}` }) }),
-    );
+    for (const suffix of ["/waitlist", "/confirm"]) {
+      const call = fetchMock.mock.calls.find(([url]) => String(url).endsWith(suffix));
+      expect(call?.[1].headers, `${suffix} carries no bearer`).toMatchObject({
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      });
+    }
   });
 
   it("reports a failed account deletion instead of claiming success", async () => {
     const view = await reachConfirmStep();
-    invokeMock.mockResolvedValue({
-      data:  null,
-      error: { name: "FunctionsHttpError", message: "Edge Function returned a non-2xx status code" },
-    });
+    fetchMock.mockImplementation(
+      recordingFetch((url) =>
+        url.endsWith("/confirm") ? jsonResponse(502, { code: "DELETE_ACCOUNT_FAILED:401" }) : undefined,
+      ),
+    );
 
     await act(async () => { await view.result.current.confirmDeletion(); });
 
     expect(view.result.current.step).toBe("confirm");
-    expect(view.result.current.error).toBeTruthy();
+    expect(view.result.current.error).toContain("DELETE_ACCOUNT_FAILED:401");
   });
 
   it("reaches the done step only after both calls succeeded", async () => {

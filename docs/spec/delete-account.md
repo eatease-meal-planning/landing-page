@@ -107,15 +107,48 @@ POST /api/account-deletion
 
 ```
 POST /api/account-deletion/request   (Turnstile + rate limit `del:${ip}`)
-  → signInWithOtp({ shouldCreateUser: false })   [server-side]
+  → signInWithOtp({ shouldCreateUser: false })   [server-side, em after()]
   → resposta CONSTANTE, dispare ou não  (anti-enumeração)
 
-  [browser] verifyOtp → data.session.access_token
-  → DELETE linha em contacts   (Bearer; PRIMEIRO — reversível e idempotente)
-  → POST delete-account        (Bearer; ÚLTIMO — irreversível)
+POST /api/account-deletion/verify    { email, code }
+  → verifyOtp [server-side] → devolve o access_token ao browser
+
+  [browser, com o Bearer do próprio utilizador]
+  → POST /api/account-deletion/waitlist   (PRIMEIRO — reversível e idempotente)
+  → POST /api/account-deletion/confirm    (ÚLTIMO — reencaminha para a edge
+                                           function; irreversível)
+
+O browser não fala com o projeto da app em lado nenhum — ver *Porque nada do
+projeto da app chega ao browser*.
 ```
 
 ### Decisões e as suas razões
+
+**Porque nada do projeto da app chega ao browser.** O desenho original punha o
+`verifyOtp` e a chamada à edge function no browser, o que obriga a servir o URL
+e a anon key do projeto da app no bundle — e foi o **Vercel que recusou**
+guardar a variável: o scanner dele rejeita um valor com forma de JWT atrás de um
+`NEXT_PUBLIC_`, sem opção de forçar. A heurística está certa mesmo estando o
+caso errado: a chave legacy *é* um JWT, e um JWT numa variável de ambiente é
+quase sempre um segredo a sério. (É por isto que o Supabase passou a emitir
+`sb_publishable_…`, que não tem essa forma.)
+
+As duas trocas passaram a route handlers — `/verify` e `/confirm` — e as
+variáveis a `APP_SUPABASE_URL` / `APP_SUPABASE_ANON_KEY`, **sem prefixo**. O
+argumento de segurança não mudou: continua a não haver credencial privilegiada
+nesta árvore, e o token continua a ser o JWT do próprio utilizador, obtido por
+ele ao introduzir o código — apenas uma vez mais atrás. O que se ganhou, além de
+desbloquear o Vercel: o `@supabase/supabase-js` saiu do bundle do cliente, e a
+falha da edge function passou a trazer código estável em vez do
+`FunctionsHttpError` opaco que o `functions.invoke` devolvia — no único passo em
+que «falhou» e «correu» nunca podem confundir-se.
+
+**A chave ser pública por desenho continua a ser verdade, e continua a não ser
+o que nos protege.** O que protege é o RLS do projeto da app, verificado a
+2026-09-13: nenhuma política alcançável pela `anon` tem predicado `true` — todas
+exigem `auth.uid()` ou uma claim de `service_role` — e o catálogo partilhado
+exige `auth.role() = 'authenticated'`. Antes da migration `122` isso não era
+verdade (TASK-11).
 
 **Porque o OTP substitui o double opt-in, em vez de o complementar.** Os dois provam a mesma coisa — posse do email. Diferem no que devolvem:
 
@@ -315,9 +348,9 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 
   **`APP_FUNCTIONS_URL` é `appFunctionsUrl()`, uma função, não uma constante de módulo.** A configuração é lida por chamada, não no import, pela razão que o `getResend()` já documenta — e as três exportações devolvem `null` em vez de lançar, para a TASK-04 poder responder com um código estável em vez de um 500 sem nada para citar. `process.env.NEXT_PUBLIC_*` fica escrito por extenso em cada sítio: a substituição do Next é textual e um `process.env[nome]` calculado dava `undefined` no bundle do browser.
 
-  **O `appSupabaseServer()` devolve instância nova por chamada** — o `signInWithOtp` deixa estado de sessão no objeto que fez a chamada, e em Fluid compute o mesmo processo serve vários pedidos. O `appSupabaseBrowser()` é que é singleton, e por razão oposta: a TASK-13 lê o que o `verifyOtp` devolveu.
+  **O `appSupabaseServer()` devolve instância nova por chamada** — o `signInWithOtp` e o `verifyOtp` deixam estado de sessão no objeto que fez a chamada, e em Fluid compute o mesmo processo serve vários pedidos.
 
-  **O `Verify` do DevTools continua por fazer, e não podia ser feito aqui:** só há cliente no browser quando a TASK-13 o renderizar. Até lá quem guarda o `persistSession: false` são duas asserções do teste.
+  **O `appSupabaseBrowser()` existiu e foi removido a 2026-09-13,** com as variáveis a perderem o prefixo `NEXT_PUBLIC_`. O `Verify` original desta task — «DevTools → Local Storage sem chaves `sb-dagpia*`» — deixou de ser aplicável por uma razão mais forte do que passar: **não há cliente nenhum do projeto da app no browser**, nem chave, nem URL. Guardado por uma asserção que falha se alguém voltar a pôr um `process.env.NEXT_PUBLIC_` neste ficheiro.
 
 ### TASK-04: `POST /api/account-deletion/request`
 - **O quê:** Zod → `checkRateLimit('del:'+ip)` → `verifyTurnstile` → `signInWithOtp({ shouldCreateUser: false })`.

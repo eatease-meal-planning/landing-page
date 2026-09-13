@@ -10,7 +10,7 @@
 
 ## Estado
 
-- **Esta árvore está verde:** `npm test` 328/328, `npx tsc --noEmit` 0 erros.
+- **Esta árvore está verde:** `npm test` 345/345, `npx tsc --noEmit` 0 erros.
 - **Nenhuma chave de i18n a meio de rollout.** Se aparecerem erros de `Property … is missing`, é a *Constraint dura* — diagnóstico na *Nota de i18n* do [`closed-test-signup.md`](./closed-test-signup.md), e **não é erro de ninguém**.
 - **A Fase 1 do `/delete-account` está em produção.**
 - **O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.
@@ -29,6 +29,8 @@
    TASK-13  máquina de 3 passos                  [x] FEITA a 2026-09-13
    TASK-14  copy e retenções                     [x] FEITA a 2026-09-13
             (mesmo commit da 13, como mandava)
+   /verify + /confirm  o browser deixou de falar com o projeto da app,
+            e as envs perderam o NEXT_PUBLIC_   [x] FEITO a 2026-09-13
 
    Falta so a verificacao ponta-a-ponta, que precisa de conta real:
    pedir codigo -> ler email -> confirmar -> linha em contacts desaparecida
@@ -68,7 +70,7 @@ estritamente leitura — o `if (deps.dryRun) { … continue; }` de
 ## Portão de verificação
 
 ```bash
-npm test            # 328 testes
+npm test            # 345 testes
 npx tsc --noEmit    # 0 erros exigidos - correr SEMPRE à parte; a suite não faz type-check
 npm run lint        # 0 erros (2 warnings pré-existentes)
 npm run build
