@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Mir ist klar, dass dies endgültig ist und meine Daten nicht wiederhergestellt werden können.",
       submit: "Mein Konto endgültig löschen",
       submitting: "Wird gelöscht...",
-      errorWaitlist: "Ihre Anmeldung auf dieser Website konnte nicht entfernt werden, deshalb haben wir abgebrochen, bevor etwas gelöscht wurde. Ihr Konto ist unverändert. Bitte versuchen Sie es erneut oder schreiben Sie an die unten stehende Adresse.",
+      errorRegistration: "Ihre Anmeldung auf dieser Website konnte nicht entfernt werden, deshalb haben wir abgebrochen, bevor etwas gelöscht wurde. Ihr Konto ist unverändert. Bitte versuchen Sie es erneut oder schreiben Sie an die unten stehende Adresse.",
     },
 
     done: {

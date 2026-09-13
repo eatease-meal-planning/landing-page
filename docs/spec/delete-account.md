@@ -114,7 +114,7 @@ POST /api/account-deletion/verify    { email, code }
   → verifyOtp [server-side] → devolve o access_token ao browser
 
   [browser, com o Bearer do próprio utilizador]
-  → POST /api/account-deletion/waitlist   (PRIMEIRO — reversível e idempotente)
+  → POST /api/account-deletion/registration   (PRIMEIRO — reversível e idempotente)
   → POST /api/account-deletion/confirm    (ÚLTIMO — reencaminha para a edge
                                            function; irreversível)
 
@@ -368,10 +368,10 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 
   **Verify por correr, e bloqueado pela configuração de SMTP** (ver TASK-09): sem SMTP personalizado o serviço interno do Supabase **recusa entregar a quem não pertence à equipa do projeto**, portanto os dois `curl -w '%{time_total}'` mediriam o mesmo caminho nos dois casos e não provavam nada.
 
-### TASK-05: `POST /api/account-deletion/waitlist`
+### TASK-05: `POST /api/account-deletion/registration` (nasceu `/waitlist`)
 - **O quê:** lê `Authorization: Bearer` → `getUser(token)` → 401 se inválido → `db.delete(contacts).where(eq(contacts.email, user.email))`. Idempotente.
 - **Crítico:** o email **nunca** vem do body.
-- **Status:** [x] COMPLETE (2026-09-12) — `src/app/api/account-deletion/waitlist/route.ts`, guardada por `route.test.ts` (11). Portão: 254 testes, `tsc` 0, `lint` 0 erros, `build` regista a rota.
+- **Status:** [x] COMPLETE (2026-09-12) — `src/app/api/account-deletion/registration/route.ts`, guardada por `route.test.ts` (11). Portão: 254 testes, `tsc` 0, `lint` 0 erros, `build` regista a rota.
 
   **Nada é lido do payload — nem uma chave.** O teste que prova isto envia um `email` diferente no body e assere que o SQL executado leva o do token e não o do body. É a asserção que impede que um código enviado a uma pessoa se torne uma forma de apagar a linha de outra.
 
@@ -381,7 +381,9 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 
   **O `DB_UNAVAILABLE` é o que protege a ordem.** Se esta rota respondesse ok com a linha por apagar, o passo seguinte destruía a conta e a linha ficava inalcançável para sempre. Guardado por um teste.
 
-  **A resposta traz `removed`,** a contagem de linhas apagadas: é o que a Verify ponta-a-ponta da TASK-13 usa para provar que este passo correu mesmo — não há leak, quem chama é o dono verificado do endereço.
+  **Passou a chamar-se `/registration` a 2026-09-13.** Nasceu `/waitlist` e o nome ficou obsoleto no commit `b699b00`, quando o formulário deixou de abrir uma lista de espera e passou a inscrever testers — o endpoint apaga a linha em `contacts`, que a página chama «o teu registo neste site» nas 10 locales. A chave `step3.errorWaitlist` seguiu o mesmo caminho. **Não renomeada, de propósito:** a âncora `#waitlist` da homepage, que tem links já espalhados.
+
+  **A resposta traz `removed`, a contagem de linhas apagadas: é o que a Verify ponta-a-ponta da TASK-13 usa para provar que este passo correu mesmo — não há leak, quem chama é o dono verificado do endereço.
 
 ### TASK-13: Máquina de 3 passos no `DeleteAccountSection`
 - **O quê:** passo 1 email+Turnstile → passo 2 código de 6 dígitos (`verifyOtp`, guardar `access_token` em estado) → passo 3 confirmação explícita → `/waitlist` → `delete-account`. O formulário manual passa a disclosure «Não consigo aceder ao meu email».

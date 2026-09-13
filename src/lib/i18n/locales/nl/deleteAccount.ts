@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Ik begrijp dat dit definitief is en dat mijn gegevens niet kunnen worden hersteld.",
       submit: "Mijn account definitief verwijderen",
       submitting: "Verwijderen...",
-      errorWaitlist: "We konden je registratie op deze website niet verwijderen, dus zijn we gestopt voordat er iets werd gewist. Je account is onaangeroerd. Probeer het opnieuw, of schrijf ons op het adres hieronder.",
+      errorRegistration: "We konden je registratie op deze website niet verwijderen, dus zijn we gestopt voordat er iets werd gewist. Je account is onaangeroerd. Probeer het opnieuw, of schrijf ons op het adres hieronder.",
     },
 
     done: {

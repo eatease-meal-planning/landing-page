@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Rozumiem, że to nieodwracalne i że moich danych nie da się odzyskać.",
       submit: "Usuń moje konto na zawsze",
       submitting: "Usuwanie...",
-      errorWaitlist: "Nie udało nam się usunąć Twojej rejestracji na tej stronie, więc zatrzymaliśmy się przed usunięciem czegokolwiek. Twoje konto pozostaje nietknięte. Spróbuj ponownie albo napisz do nas na adres poniżej.",
+      errorRegistration: "Nie udało nam się usunąć Twojej rejestracji na tej stronie, więc zatrzymaliśmy się przed usunięciem czegokolwiek. Twoje konto pozostaje nietknięte. Spróbuj ponownie albo napisz do nas na adres poniżej.",
     },
 
     done: {

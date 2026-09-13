@@ -156,7 +156,7 @@ describe("useAccountDeletion — step 2, the code", () => {
 });
 
 describe("useAccountDeletion — step 3, and the order that is not negotiable", () => {
-  it("erases the waitlist row before it destroys the account", async () => {
+  it("erases the landing-page registration before it destroys the account", async () => {
     const view = await reachConfirmStep();
 
     await act(async () => { await view.result.current.confirmDeletion(); });
@@ -164,13 +164,13 @@ describe("useAccountDeletion — step 3, and the order that is not negotiable", 
     expect(calls).toEqual([
       "/api/account-deletion/request",
       "/api/account-deletion/verify",
-      "/api/account-deletion/waitlist",
+      "/api/account-deletion/registration",
       "/api/account-deletion/confirm",
     ]);
     expect(view.result.current.step).toBe("done");
   });
 
-  it("destroys nothing when the waitlist row cannot be erased", async () => {
+  it("destroys nothing when the registration row cannot be erased", async () => {
     // Reversed, this is unrecoverable: after the auth user is gone the row can
     // never be reached again, by us or by the person.
     const view = await reachConfirmStep();
@@ -180,7 +180,7 @@ describe("useAccountDeletion — step 3, and the order that is not negotiable", 
 
     expect(calls).not.toContain("/api/account-deletion/confirm");
     expect(view.result.current.step).toBe("confirm");
-    expect(view.result.current.error).toContain(t.selfService.step3.errorWaitlist);
+    expect(view.result.current.error).toContain(t.selfService.step3.errorRegistration);
   });
 
   it("authorises both calls with the token the code produced", async () => {
@@ -188,7 +188,7 @@ describe("useAccountDeletion — step 3, and the order that is not negotiable", 
 
     await act(async () => { await view.result.current.confirmDeletion(); });
 
-    for (const suffix of ["/waitlist", "/confirm"]) {
+    for (const suffix of ["/registration", "/confirm"]) {
       const call = fetchMock.mock.calls.find(([url]) => String(url).endsWith(suffix));
       expect(call?.[1].headers, `${suffix} carries no bearer`).toMatchObject({
         Authorization: `Bearer ${ACCESS_TOKEN}`,

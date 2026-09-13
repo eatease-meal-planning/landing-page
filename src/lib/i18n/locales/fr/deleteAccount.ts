@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Je comprends que c'est définitif et que mes données ne pourront pas être récupérées.",
       submit: "Supprimer définitivement mon compte",
       submitting: "Suppression...",
-      errorWaitlist: "Nous n'avons pas pu retirer votre inscription sur ce site, nous nous sommes donc arrêtés avant de supprimer quoi que ce soit. Votre compte est intact. Réessayez, ou écrivez-nous à l'adresse ci-dessous.",
+      errorRegistration: "Nous n'avons pas pu retirer votre inscription sur ce site, nous nous sommes donc arrêtés avant de supprimer quoi que ce soit. Votre compte est intact. Réessayez, ou écrivez-nous à l'adresse ci-dessous.",
     },
 
     done: {

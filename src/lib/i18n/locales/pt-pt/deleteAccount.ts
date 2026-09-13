@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Percebo que isto é permanente e que os meus dados não podem ser recuperados.",
       submit: "Eliminar a minha conta para sempre",
       submitting: "A eliminar...",
-      errorWaitlist: "Não conseguimos remover o teu registo neste site, por isso parámos antes de eliminar fosse o que fosse. A tua conta está intacta. Tenta de novo, ou escreve-nos para o endereço abaixo.",
+      errorRegistration: "Não conseguimos remover o teu registo neste site, por isso parámos antes de eliminar fosse o que fosse. A tua conta está intacta. Tenta de novo, ou escreve-nos para o endereço abaixo.",
     },
 
     done: {

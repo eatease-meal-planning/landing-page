@@ -25,7 +25,7 @@
    TASK-03  clientes Supabase da app          [x] FEITA a 2026-09-12
    TASK-04  POST /api/account-deletion/request   [x] FEITA a 2026-09-12
             (a §4.2 ficou feita aqui: src/lib/apiGuards.ts)
-   TASK-05  POST /api/account-deletion/waitlist   [x] FEITA a 2026-09-12
+   TASK-05  POST /api/account-deletion/registration   [x] FEITA a 2026-09-12
    TASK-13  máquina de 3 passos                  [x] FEITA a 2026-09-13
    TASK-14  copy e retenções                     [x] FEITA a 2026-09-13
             (mesmo commit da 13, como mandava)

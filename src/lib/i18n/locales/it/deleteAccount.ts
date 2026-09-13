@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Capisco che è definitivo e che i miei dati non potranno essere recuperati.",
       submit: "Elimina definitivamente il mio account",
       submitting: "Eliminazione in corso...",
-      errorWaitlist: "Non siamo riusciti a rimuovere la tua iscrizione su questo sito, quindi ci siamo fermati prima di eliminare qualsiasi cosa. Il tuo account è intatto. Riprova, oppure scrivici all'indirizzo qui sotto.",
+      errorRegistration: "Non siamo riusciti a rimuovere la tua iscrizione su questo sito, quindi ci siamo fermati prima di eliminare qualsiasi cosa. Il tuo account è intatto. Riprova, oppure scrivici all'indirizzo qui sotto.",
     },
 
     done: {

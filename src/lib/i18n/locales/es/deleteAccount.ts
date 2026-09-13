@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Entiendo que esto es permanente y que mis datos no se podrán recuperar.",
       submit: "Eliminar mi cuenta para siempre",
       submitting: "Eliminando...",
-      errorWaitlist: "No hemos podido eliminar tu registro en este sitio web, así que paramos antes de borrar nada. Tu cuenta está intacta. Inténtalo de nuevo o escríbenos a la dirección de abajo.",
+      errorRegistration: "No hemos podido eliminar tu registro en este sitio web, así que paramos antes de borrar nada. Tu cuenta está intacta. Inténtalo de nuevo o escríbenos a la dirección de abajo.",
     },
 
     done: {

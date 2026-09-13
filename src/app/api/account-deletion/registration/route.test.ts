@@ -43,13 +43,13 @@ async function loadRoute() {
   return (await import("./route")).POST;
 }
 
-function waitlistRequest(
+function registrationRequest(
   { token = TOKEN, body }: { token?: string | null; body?: Record<string, unknown> } = {},
 ) {
   const headers: Record<string, string> = { "content-type": "application/json" };
   if (token) headers.authorization = `Bearer ${token}`;
 
-  return new NextRequest("https://test.invalid/api/account-deletion/waitlist", {
+  return new NextRequest("https://test.invalid/api/account-deletion/registration", {
     method: "POST",
     headers,
     body: body ? JSON.stringify(body) : undefined,
@@ -82,11 +82,11 @@ beforeEach(() => {
   whereMock.mockReset().mockResolvedValue([{ id: "contact-1" }]);
 });
 
-describe("POST /api/account-deletion/waitlist — only a verified token decides what is erased", () => {
+describe("POST /api/account-deletion/registration — only a verified token decides what is erased", () => {
   it("erases the address in the token and ignores the one in the body", async () => {
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest({ body: { email: "someone-else@example.com" } }));
+    const res = await POST(registrationRequest({ body: { email: "someone-else@example.com" } }));
 
     expect(res.status).toBe(200);
     const { params } = renderedCondition();
@@ -97,7 +97,7 @@ describe("POST /api/account-deletion/waitlist — only a verified token decides 
   it("verifies the bearer token itself rather than trusting any session", async () => {
     const POST = await loadRoute();
 
-    await POST(waitlistRequest());
+    await POST(registrationRequest());
 
     expect(getUserMock).toHaveBeenCalledWith(TOKEN);
   });
@@ -109,17 +109,17 @@ describe("POST /api/account-deletion/waitlist — only a verified token decides 
     getUserMock.mockResolvedValue({ data: { user: { id: "u", email: "someone@example.com" } }, error: null });
     const POST = await loadRoute();
 
-    await POST(waitlistRequest());
+    await POST(registrationRequest());
 
     expect(renderedCondition().sql).toMatch(/lower\(.*\)\s*=\s*lower\(\$1\)/i);
   });
 });
 
-describe("POST /api/account-deletion/waitlist — refusals name their cause", () => {
+describe("POST /api/account-deletion/registration — refusals name their cause", () => {
   it("answers 401 UNAUTHORIZED without a bearer token, and touches no row", async () => {
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest({ token: null }));
+    const res = await POST(registrationRequest({ token: null }));
 
     expect(res.status).toBe(401);
     await expect(res.json()).resolves.toMatchObject({ code: "UNAUTHORIZED" });
@@ -130,7 +130,7 @@ describe("POST /api/account-deletion/waitlist — refusals name their cause", ()
     getUserMock.mockResolvedValue(REJECTED_TOKEN);
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest());
+    const res = await POST(registrationRequest());
 
     expect(res.status).toBe(401);
     await expect(res.json()).resolves.toMatchObject({ code: "UNAUTHORIZED" });
@@ -141,7 +141,7 @@ describe("POST /api/account-deletion/waitlist — refusals name their cause", ()
     getUserMock.mockRejectedValue(new Error("network down"));
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest());
+    const res = await POST(registrationRequest());
 
     expect(res.status).toBe(401);
     expect(deleteMock).not.toHaveBeenCalled();
@@ -151,7 +151,7 @@ describe("POST /api/account-deletion/waitlist — refusals name their cause", ()
     getUserMock.mockResolvedValue({ data: { user: { id: "u", email: undefined } }, error: null });
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest());
+    const res = await POST(registrationRequest());
 
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toMatchObject({ code: "TOKEN_WITHOUT_EMAIL" });
@@ -162,7 +162,7 @@ describe("POST /api/account-deletion/waitlist — refusals name their cause", ()
     vi.stubEnv("APP_SUPABASE_URL", "");
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest());
+    const res = await POST(registrationRequest());
 
     expect(res.status).toBe(503);
     await expect(res.json()).resolves.toMatchObject({ code: "CONFIG_MISSING_APP_SUPABASE" });
@@ -174,21 +174,21 @@ describe("POST /api/account-deletion/waitlist — refusals name their cause", ()
     whereMock.mockRejectedValue(new Error("connection refused"));
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest());
+    const res = await POST(registrationRequest());
 
     expect(res.status).toBe(503);
     await expect(res.json()).resolves.toMatchObject({ code: "DB_UNAVAILABLE" });
   });
 });
 
-describe("POST /api/account-deletion/waitlist — idempotence", () => {
+describe("POST /api/account-deletion/registration — idempotence", () => {
   it("answers ok when there was no row to erase", async () => {
     // Most app users never signed up on the landing page, and a retry after a
     // dropped connection must not fail either.
     whereMock.mockResolvedValue([]);
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest());
+    const res = await POST(registrationRequest());
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual({ ok: true, removed: 0 });
@@ -197,7 +197,7 @@ describe("POST /api/account-deletion/waitlist — idempotence", () => {
   it("reports how many rows it erased, which is what proves the step ran", async () => {
     const POST = await loadRoute();
 
-    const res = await POST(waitlistRequest());
+    const res = await POST(registrationRequest());
 
     await expect(res.json()).resolves.toEqual({ ok: true, removed: 1 });
   });

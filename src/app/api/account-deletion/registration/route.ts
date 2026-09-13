@@ -16,7 +16,7 @@ import { appSupabaseServer } from "@/lib/appSupabase";
  *
  * **The address comes from the verified token and never from the body.** A body
  * field would turn a code emailed to one person into a way of erasing anyone's
- * waitlist entry. Nothing here is parsed from the request payload at all.
+ * registration. Nothing here is parsed from the request payload at all.
  *
  * No captcha and no rate limit, unlike the endpoints around it: reaching this
  * point already required receiving an emailed code and exchanging it for a JWT,
@@ -41,19 +41,19 @@ export async function POST(req: NextRequest) {
     // and that the user still exists.
     const { data, error } = await supabase.auth.getUser(token);
     if (error || !data.user) {
-      console.info("[account-deletion/waitlist] token rejected:", error?.message);
+      console.info("[account-deletion/registration] token rejected:", error?.message);
       return fail(401, "UNAUTHORIZED");
     }
     email = data.user.email;
   } catch (err) {
-    console.error("[account-deletion/waitlist] token verification threw:", err);
+    console.error("[account-deletion/registration] token verification threw:", err);
     return fail(401, "UNAUTHORIZED");
   }
 
   if (!email) {
     // Possible for a phone-only account. Guessing which row to erase from
     // anything else is exactly what this route must never do.
-    console.error("[account-deletion/waitlist] verified token carries no email");
+    console.error("[account-deletion/registration] verified token carries no email");
     return fail(400, "TOKEN_WITHOUT_EMAIL");
   }
 
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     // Answering ok here would send the caller on to destroy the app account
     // believing this row was gone, after which nothing can reach it.
-    console.error("[account-deletion/waitlist] contact delete failed:", err);
+    console.error("[account-deletion/registration] contact delete failed:", err);
     return fail(503, "DB_UNAVAILABLE");
   }
 

@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Înțeleg că este definitiv și că datele mele nu vor putea fi recuperate.",
       submit: "Șterge-mi contul definitiv",
       submitting: "Se șterge...",
-      errorWaitlist: "Nu am reușit să îți scoatem înregistrarea de pe acest site, așa că ne-am oprit înainte de a șterge ceva. Contul tău este neatins. Încearcă din nou sau scrie-ne la adresa de mai jos.",
+      errorRegistration: "Nu am reușit să îți scoatem înregistrarea de pe acest site, așa că ne-am oprit înainte de a șterge ceva. Contul tău este neatins. Încearcă din nou sau scrie-ne la adresa de mai jos.",
     },
 
     done: {

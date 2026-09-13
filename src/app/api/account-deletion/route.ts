@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Prefixed key: deletion requests get their own budget, so hammering this
-  // endpoint can't lock the waitlist form for the same visitor.
+  // endpoint can't lock the signup form for the same visitor.
   let limited: boolean;
   try {
     limited = await checkRateLimit(`del:${ip}`);

@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "Jag förstår att det här är permanent och att mina uppgifter inte går att återskapa.",
       submit: "Radera mitt konto permanent",
       submitting: "Raderar...",
-      errorWaitlist: "Vi kunde inte ta bort din registrering på den här webbplatsen, så vi stannade innan något raderades. Ditt konto är orört. Försök igen, eller skriv till oss på adressen nedan.",
+      errorRegistration: "Vi kunde inte ta bort din registrering på den här webbplatsen, så vi stannade innan något raderades. Ditt konto är orört. Försök igen, eller skriv till oss på adressen nedan.",
     },
 
     done: {

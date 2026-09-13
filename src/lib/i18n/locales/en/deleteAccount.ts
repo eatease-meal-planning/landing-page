@@ -66,7 +66,7 @@ export const deleteAccount = {
       checkbox: "I understand this is permanent and that my data cannot be recovered.",
       submit: "Delete my account permanently",
       submitting: "Deleting...",
-      errorWaitlist: "We could not remove your registration on this website, so we stopped before deleting anything. Your account is untouched. Please try again, or write to us at the address below.",
+      errorRegistration: "We could not remove your registration on this website, so we stopped before deleting anything. Your account is untouched. Please try again, or write to us at the address below.",
     },
 
     done: {

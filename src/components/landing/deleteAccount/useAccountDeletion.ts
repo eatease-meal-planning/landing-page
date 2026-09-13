@@ -138,19 +138,19 @@ export function useAccountDeletion({ t, locale }: { t: T; locale: string }): Acc
     setBusy(true);
     setError("");
     try {
-      // ORDER IS THE RULE. The landing-page row goes first: it is reversible in
-      // practice (the person can sign up again) and idempotent. The app account
-      // goes last because it is irreversible — and because destroying it first
-      // invalidates the very token needed to reach the row, leaving it
-      // unreachable for good.
-      const waitlist = await fetch("/api/account-deletion/waitlist", {
+      // ORDER IS THE RULE. The landing-page registration goes first: it is
+      // reversible in practice (the person can sign up again) and idempotent.
+      // The app account goes last because it is irreversible — and because
+      // destroying it first invalidates the very token needed to reach that
+      // row, leaving it unreachable for good.
+      const registration = await fetch("/api/account-deletion/registration", {
         method:  "POST",
         headers: authorization,
       });
-      if (!waitlist.ok) {
+      if (!registration.ok) {
         // Deliberately stops here: nothing has been destroyed yet, and that is
         // the state to preserve.
-        setError(withCode(t.selfService.step3.errorWaitlist, await codeOf(waitlist)));
+        setError(withCode(t.selfService.step3.errorRegistration, await codeOf(registration)));
         return;
       }
 
