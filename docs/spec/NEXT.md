@@ -20,8 +20,8 @@
 ## Ordem a seguir
 
 ```
-1. Fase 2 do /delete-account   <- A SEGUIR, e é tudo nesta árvore menos a 09
-   TASK-09  template Magic Link      (Dashboard - precisa do utilizador)
+1. Fase 2 do /delete-account   <- so falta a verificacao ponta-a-ponta
+   TASK-09  template Magic Link                  [x] FEITA a 2026-09-14
    TASK-03  clientes Supabase da app          [x] FEITA a 2026-09-12
    TASK-04  POST /api/account-deletion/request   [x] FEITA a 2026-09-12
             (a §4.2 ficou feita aqui: src/lib/apiGuards.ts)

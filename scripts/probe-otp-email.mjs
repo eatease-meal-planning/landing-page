@@ -80,6 +80,11 @@ if (error) {
 }
 
 console.log("Pedido aceite. No email recebido, confirma:");
-console.log("  1. que o RT=[...] traz o URL acima — é o que escolhe a língua");
-console.log("  2. que o código de 6 dígitos aparece");
-console.log("  3. o remetente, que deve ser o SMTP configurado e não o do Supabase");
+console.log(`  1. a LINGUA: se chegar em ${locale}, o .RedirectTo casou e a localizacao funciona.`);
+console.log("     Se chegar em ingles, nenhum ramo do template casou e cai no default.");
+console.log("  2. que o codigo de 6 digitos aparece");
+console.log("  3. o remetente, que deve ser o SMTP configurado e nao o do Supabase");
+console.log("");
+console.log("Se algo disto falhar, confirma primeiro o PROJETO: o template, o Site URL,");
+console.log("as Redirect URLs e o SMTP sao todos no projeto da app, e o ref esta no URL");
+console.log("do Dashboard. Os dois projetos tem ecras iguais.");
