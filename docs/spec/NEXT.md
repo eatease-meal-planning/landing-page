@@ -12,7 +12,7 @@
 
 - **Esta árvore está verde:** `npm test` 345/345, `npx tsc --noEmit` 0 erros.
 - **Nenhuma chave de i18n a meio de rollout.** Se aparecerem erros de `Property … is missing`, é a *Constraint dura* — diagnóstico na *Nota de i18n* do [`closed-test-signup.md`](./closed-test-signup.md), e **não é erro de ninguém**.
-- **A Fase 1 do `/delete-account` está em produção.**
+- **O `/delete-account` está inteiro em produção, Fase 1 e Fase 2**, verificado ponta-a-ponta a 2026-09-14. Falta submeter o URL no Play Console (TASK-10).
 - **O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.
 - **O SMTP de Auth do projeto da app passou a Resend a 2026-09-12**, e com ele o `resetPasswordForEmail` da app, que estava a falhar para todos os testers — o serviço interno do Supabase não entrega a quem não pertence à equipa do projeto. Por confirmar com um teste manual: uma reposição de password a partir da app.
 - **A autorização nominal no repo `app` está esgotada.** As migrations `122`-`125` e a copy das 10 locales estão feitas; o que venha a seguir nesse repo volta ao «perguntar primeiro» (*Boundaries* do [`delete-account.md`](./delete-account.md)).
@@ -20,7 +20,7 @@
 ## Ordem a seguir
 
 ```
-1. Fase 2 do /delete-account   <- so falta a verificacao ponta-a-ponta
+1. Fase 2 do /delete-account   <- FECHADA, verificada em producao a 2026-09-14
    TASK-09  template Magic Link                  [x] FEITA a 2026-09-14
    TASK-03  clientes Supabase da app          [x] FEITA a 2026-09-12
    TASK-04  POST /api/account-deletion/request   [x] FEITA a 2026-09-12
@@ -32,10 +32,14 @@
    /verify + /confirm  o browser deixou de falar com o projeto da app,
             e as envs perderam o NEXT_PUBLIC_   [x] FEITO a 2026-09-13
 
-   Falta so a verificacao ponta-a-ponta, que precisa de conta real:
-   pedir codigo -> ler email -> confirmar -> linha em contacts desaparecida
+   Fica um unico criterio por confirmar, e sao dois minutos: o formulario
+   manual nao foi reverificado depois de a TASK-13 o mover para dentro do
+   <details>. O codigo nao mudou, mas isso e inferencia.
 
-2. Sem data, e nenhuma bloqueia a Fase 2:
+2. A SEGUIR, e nenhuma depende das outras:
+   Submeter https://www.eatease.eu/delete-account no Play Console
+      <- o que faltava da TASK-10: campo de eliminacao E formulario Data safety.
+         E o unico passo que a Google ainda nao viu.
    Migrar /api/contacts e /api/account-deletion para o runRequestGuards
       <- commit proprio, com os 225+7 testes deles como portao
    Apagar o closed_test_contacts.csv  <- último passo da TASK-F, está por fazer

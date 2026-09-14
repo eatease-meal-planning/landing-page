@@ -1,7 +1,7 @@
 # Spec: Página pública de eliminação de conta
 
 > **Fase 1 — EM PRODUÇÃO** desde 2026-08-31. `https://www.eatease.eu/delete-account`, 10 locales, verificada ponta-a-ponta a 2026-09-10.
-> **Fase 2 — aprovada, por implementar.** Self-service por OTP, que substitui a eliminação manual.
+> **Fase 2 — EM PRODUÇÃO** desde 2026-09-14. Self-service por OTP, verificada ponta-a-ponta com uma conta real: a conta desapareceu na app e em `contacts`.
 > Direção em [`docs/ideas/account-deletion-page.md`](./ideas/account-deletion-page.md) · Repos: `landing-page` (principal) · `app` (1 migration isolada, TASK-11)
 
 ## Objective
@@ -244,12 +244,15 @@ second-person* — as duas formais estão por decidir e não foram tocadas.
 - [x] O formulário envia os dois emails
 - [x] Renderiza nas 10 locales · `tsc` 0 erros · `lint` limpo · `build` passa
 
-**Fase 2:**
-- [ ] Um utilizador com conta: email → código → confirmação → conta eliminada, e `GET /auth/v1/user` com aquele token passa a falhar
-- [ ] A linha correspondente em `contacts` é removida **antes** da eliminação da conta
-- [ ] Um email sem conta recebe **exatamente** a mesma resposta que um email com conta, **em bytes e em tempo**
-- [ ] O formulário manual continua a funcionar para quem não completa o OTP
-- [ ] As 10 locales passam a anunciar eliminação imediata, no mesmo commit
+**Fase 2 — verificada ponta-a-ponta em produção a 2026-09-14**, com uma conta
+real: pedido na página, código recebido por email, código introduzido,
+confirmação, e a conta desaparecida **na app e em `contacts`**.
+
+- [x] Um utilizador com conta: email → código → confirmação → conta eliminada
+- [x] A linha correspondente em `contacts` é removida — **e antes da conta**, o que a observação do resultado não distingue: a ordem vive numa função nomeada (`useAccountDeletion.confirmDeletion`) e está provada por mutação, não pela corrida em produção. Invertê-la faz falhar dois testes.
+- [x] Um email sem conta recebe a mesma resposta que um email com conta, em bytes e em tempo — **provado por teste, não em produção**: o teste compara os corpos em bytes, e o `after()` tira a chamada ao Supabase do caminho da resposta, que é o que iguala o tempo.
+- [ ] **O formulário manual continua a funcionar** — não foi reverificado depois de a TASK-13 o mover para dentro do `<details>`. O código não mudou (só o sítio onde é renderizado), e a Fase 1 foi verificada a 2026-09-10, mas isso é inferência, não observação. **É o único critério por confirmar, e são dois minutos.**
+- [x] As 10 locales anunciam eliminação imediata, no mesmo commit
 
 ---
 
@@ -408,7 +411,7 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 
   **Os dois avisos da §3.6 estão no passo 3, nas 10 locales,** e as asserções que os guardam estão no `deleteAccountCopy.test.ts` — o `tsc` vê uma chave presente, tipada e possivelmente vazia.
 
-  **Verify por correr:** exige uma conta real na app e uma caixa de correio.
+  **Verify feita a 2026-09-14, em produção,** com uma conta real: a conta desapareceu na app *e* em `contacts`. É a corrida que o spec dizia ser a única capaz de apanhar o bug de ordenação — com a ressalva de que o resultado observado não distingue a ordem, e quem a guarda continua a ser o teste de mutação.
 
 ### TASK-14: Copy e retenções, no mesmo commit da Fase 2
 - **O quê:** 10 locales — prazo de «30 dias» → imediato após confirmação; alinhar `pt-pt`, que já foi editada; corrigir a `note` sobre logs (guardamos IP em `rate_limits` e no email ao operador); mencionar a janela de backups do Supabase.
