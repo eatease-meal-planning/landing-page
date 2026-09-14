@@ -1,6 +1,6 @@
 # Spec: Formulário de inscrição no teste fechado
 
-> **Estado:** direção aprovada (2026-09-10), **por implementar**.
+> **Estado:** implementado. Todas as tasks fechadas — resta apagar o `closed_test_contacts.csv`, último passo da TASK-F.
 > Substitui a waitlist. Relacionado: [`docs/delete-account.md`](./delete-account.md).
 
 ## Objective

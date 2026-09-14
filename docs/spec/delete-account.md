@@ -312,7 +312,7 @@ confirmação, e a conta desaparecida **na app e em `contacts`**.
 
 ---
 
-## Fase 2 — por implementar
+## Fase 2 — em produção desde 2026-09-14
 
 **Ordem:** `TASK-09 · 03 · 04 · 05 · 13 · 14`. É tudo na landing-page, exceto a
 TASK-09, que é no Dashboard.
@@ -349,7 +349,7 @@ Três coisas que é fácil perder de vista ao entrar aqui:
 
   **Respondido pelo Dashboard a 2026-09-12:** *Email OTP Expiration* = **3600 s**, que confirma a copy «1 hora» nas 10 línguas. Redirect URLs: falta o host — foi acrescentado `https://eatease.eu/**` e o template compara com `https://www.eatease.eu/...`; o Supabase compara a string que recebe, e o redireccionamento apex→www não o ajuda.
 
-  🔴 **O SMTP está desativado, e isso é maior do que esta task.** O serviço interno do Supabase **«refuses to deliver messages to addresses that are not part of the project's team»** (documentação de `auth-smtp`), com 2 mensagens por hora fixas — o Dashboard nem deixa alterar o limite sem SMTP ou hook. Consequências: (a) o OTP só chega ao próprio Ricardo, portanto a Verify desta task e a da TASK-13 não são executáveis; (b) **o `resetPasswordForEmail` da app está a falhar hoje, em produção, para todos os testers** — é um defeito vivo num fluxo publicado, não um pré-requisito desta task. Solução: SMTP personalizado via Resend (`smtp.resend.com`, porta 465, utilizador `resend`, password = uma API key **nova**, para rodar independentemente da landing-page), remetente `noreply@eatease.eu`. Testar uma reposição de password da app logo a seguir — é o fluxo que a mudança toca e que não é nosso.
+  ✅ **O SMTP estava desativado, e era maior do que esta task — resolvido a 2026-09-12.** O serviço interno do Supabase **«refuses to deliver messages to addresses that are not part of the project's team»** (documentação de `auth-smtp`), com 2 mensagens por hora fixas — o Dashboard nem deixa alterar o limite sem SMTP ou hook. Consequências, enquanto durou: (a) o OTP só chegava ao próprio Ricardo, o que tornava a Verify desta task e a da TASK-13 inexecutáveis; (b) **o `resetPasswordForEmail` da app esteve a falhar em produção para todos os testers** — um defeito vivo num fluxo publicado, encontrado por acidente ao preparar esta task. **Por confirmar:** uma reposição de password a partir da app, que é o fluxo que a mudança tocou e não é nosso. Solução: SMTP personalizado via Resend (`smtp.resend.com`, porta 465, utilizador `resend`, password = uma API key **nova**, para rodar independentemente da landing-page), remetente `noreply@eatease.eu`. Testar uma reposição de password da app logo a seguir — é o fluxo que a mudança toca e que não é nosso.
 
 ### TASK-03: Clientes Supabase do projeto da app
 - **Ficheiros:** `src/lib/appSupabase.ts` (novo)

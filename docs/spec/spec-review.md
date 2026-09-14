@@ -272,11 +272,11 @@ Hoje o fluxo manual dá essa janela ao operador — e o email ao operador até o
 
 Apagá-la preventivamente exigiria `service_role` do projeto da app dentro da landing-page — credencial que o spec rejeita, com razão, em §*Decisões*. Logo a única saída realista é **divulgação no passo 3**.
 
-**Critérios de aceitação acrescentados à TASK-13:**
-- [ ] O passo 3 avisa, antes do botão irreversível, que a oposição ao registo de trial (art. 21.º) tem de ser pedida **antes** da eliminação, com o endereço de contacto.
-- [ ] **O passo 3 diz também que a remoção da lista de testers do teste fechado é manual** e não acontece no instante em que o botão é carregado — a eliminação self-service é imediata na app e na BD, mas o Play Console não tem API que a alcance (TASK-E, impossível). Sem isto, a Fase 2 promete «imediato e completo» sendo imediato e parcial.
+**Critérios de aceitação acrescentados à TASK-13** — os três cumpridos a 2026-09-13, no commit da TASK-13/14, e guardados por `deleteAccountCopy.test.ts` nas 10 locales:
+- [x] O passo 3 avisa, antes do botão irreversível, que a oposição ao registo de trial (art. 21.º) tem de ser pedida **antes** da eliminação, com o endereço de contacto. (`selfService.step3.warningTrial`)
+- [x] **O passo 3 diz também que a remoção da lista de testers do teste fechado é manual** e não acontece no instante em que o botão é carregado — a eliminação self-service é imediata na app e na BD, mas o Play Console não tem API que a alcance (TASK-E, impossível). Sem isto, a Fase 2 promete «imediato e completo» sendo imediato e parcial.
 **Critério acrescentado à TASK-14:**
-- [ ] A copy divulga **as duas** chaves do ledger (email e provider), alinhando `deleteAccount.whatRemains` com `privacyPolicy.ts:378`.
+- [x] A copy divulga **as duas** chaves do ledger (email e provider), alinhando `deleteAccount.whatRemains` com `privacyPolicy.ts:378`.
 
 **Verificação:** ler o passo 3 nas 10 locales; confirmar que o texto do ledger em `deleteAccount` e em `privacyPolicy` descrevem a mesma coisa.
 **Dependências:** nenhuma nova.
