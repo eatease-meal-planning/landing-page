@@ -43,7 +43,7 @@ export function ConfirmedClient({ title, body, backHome, locale }: Props) {
             alt="EatEase"
             width={2046}
             height={605}
-            className="h-16 w-auto"
+            className="h-auto w-full"
             priority
           />
         </div>

@@ -2,15 +2,15 @@ export const emails = {
   teamName:      "A equipa Eatease",
   privacyPolicy: "Política de Privacidade",
   welcome: {
-    subject:  "Bem-vindo á Eatease!",
+    subject:  "Bem-vindo(a) à Eatease!",
     greeting: "Olá {name},",
-    body:     "Obrigado pela tua inscrição! O convite para o teste fechado está a caminho: chega no prazo de 48 horas, com o link de adesão de que precisas antes de instalares a app a partir do Google Play. Até lá não tens de fazer nada.",
+    body:     "Obrigado pela tua inscrição! O convite para o teste fechado está a caminho: chega no prazo de 48 horas, com todas as instruções necessárias para poderes transferir a nossa app. Até lá não tens de fazer nada.",
     signOff:  "Até breve,",
   },
   confirmation: {
     subject:     "Confirma o teu registo",
     greeting:    "Olá {name},",
-    intro:       "Cliqua no botão em baixo para concluir o teu registo. Estás a um passo de começar a poupar o teu precioso tempo!",
+    intro:       "Clica no botão em baixo para concluir o teu registo. Estás a um passo de começar a poupar o teu precioso tempo!",
     cta:         "Confirmar o meu registo",
     expiresNote: "Este link expira em 48 horas.",
     signOff:     "Até breve,",
