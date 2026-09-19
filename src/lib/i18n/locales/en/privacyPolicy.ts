@@ -17,6 +17,49 @@ import type { PrivacyPolicyContent } from "../../privacyPolicy.types";
 //     location permission, so the boilerplate claimed MORE than we collect.
 //   • Third parties — named by category, plus where the data is stored.
 //
+// ⚠️ EDITED BY HAND again on 18 SEP 2026. The 9 SEP pass rewrote the sections it
+// added but left the Termly boilerplate around them, which claimed MORE than we
+// do. Google cross-checks the Data Safety form against this notice, so a claim we
+// cannot support is a rejection risk in itself. What changed, and why:
+//   • LOCATION — the notice claimed "we may use GPS and other technologies to
+//     collect geolocation data" while, three paragraphs earlier, it said the
+//     application does not request location. There is no location code in the app
+//     at all (no permission, no library, no call), so the claim was false. It now
+//     states plainly that we do not collect location, and says what an IP address
+//     does reveal. The same word was removed from the Device Data enumeration and
+//     from the paragraph above it.
+//   • ANALYTICS — "Data Analytics Services" was listed as a category of third
+//     party and Google Analytics had a subsection of its own, while no analytics
+//     existed anywhere. ⚠️ On 19 SEP this was settled the other way, by decision
+//     of the owner: Google Analytics IS being added to the website, so the text
+//     now describes it in the present tense — consent-gated, website only, with
+//     Google's advertising features off. It ships in the SAME deploy as the tag;
+//     deploying this file without `GA_MEASUREMENT_ID` set would put the notice
+//     back to claiming something that does not happen.
+//   • RETENTION — "HOW LONG DO WE KEEP YOUR INFORMATION?" said nothing is kept
+//     beyond the life of the account, while SUBSCRIPTIONS AND PAYMENTS said the
+//     trial-ledger hash survives deletion. The second one matches the database;
+//     the first now carries the exception, with the legal basis.
+//   • SUMMARY — "Do we process any sensitive personal information?" answered with
+//     Termly's examples (racial origin, sexual orientation, religious beliefs),
+//     none of which we touch, instead of the health and body data we do process.
+//
+// Both were decided on 19 SEP and are now fixed here too:
+//   • ADVERTISING — the cookie section promised third-party advertising and
+//     abandoned-cart reminders. Neither exists, and the owner's plan is to buy
+//     advertising on other platforms rather than to track anyone here, so the
+//     paragraph now says exactly that.
+//   • CONSENT MANAGER — the consent manager loads on every page and receives
+//     visitor data, yet appeared nowhere. It is now a named category of third
+//     party, alongside the analytics provider.
+//
+// ⚠️ STILL OUTSTANDING, in the OTHER file: the Cookie Policy
+// (`locales/en/cookiePolicy.ts`) is a clean Termly export and its cookie table
+// does not list `_ga` / `_ga_*`. Re-import it with `scripts/import-cookie-policy.mjs`
+// once Google Analytics is live and Termly has re-scanned the site. ⚠️ Never run
+// `scripts/import-privacy-policy.mjs`: one letter apart, opposite verdicts — that
+// one would revert every hand edit above.
+//
 // ⚠️ All ten locales import THIS file (see locales/<lang>/index.ts), so every
 // language served at /<lang>/privacy-policy is this English text. There is one
 // file to edit, not ten.
@@ -54,7 +97,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
     },
     {
       "type": "p",
-      "text": "Do we process any sensitive personal information? Some of the information may be considered 'special' or 'sensitive' in certain jurisdictions, for example your racial or ethnic origins, sexual orientation, and religious beliefs. We may process sensitive personal information when necessary with your consent or as otherwise permitted by applicable law. Learn more about sensitive information we process."
+      "text": "Do we process any sensitive personal information? Yes. Eatease is a meal planning and nutrition service, so the information you give us in order to receive it includes health-related data: age, sex, height, weight, body fat percentage, activity level, weight history and weight goals, dietary restrictions, and any health conditions you choose to record — for you and for any household member you choose to add. It also includes the photographs you take within the application of food or of the contents of your fridge. We process this information when necessary with your consent or as otherwise permitted by applicable law. Learn more about sensitive information we process."
     },
     {
       "type": "p",
@@ -166,7 +209,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
         },
         {
           "type": "p",
-          "text": "We automatically collect certain information when you visit, use, or navigate the Services. This information does not reveal your specific identity (like your name or contact information) but may include device and usage information, such as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device name, country, location, information about how and when you use our Services, and other technical information. This information is primarily needed to maintain the security and operation of our Services, and for our internal analytics and reporting purposes."
+          "text": "We automatically collect certain information when you visit, use, or navigate the Services. This information does not reveal your specific identity (like your name or contact information) but may include device and usage information, such as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device name, the country your IP address indicates, information about how and when you use our Services, and other technical information. This information is primarily needed to maintain the security and operation of our Services, and for our internal analytics and reporting purposes."
         },
         {
           "type": "p",
@@ -180,8 +223,8 @@ export const privacyPolicy: PrivacyPolicyContent = {
           "type": "list",
           "items": [
             "Log and Usage Data. Log and usage data is service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services and which we record in log files. Depending on how you interact with us, this log data may include your IP address, device information, browser type, and settings and information about your activity in the Services (such as the date/time stamps associated with your usage, pages and files viewed, searches, and other actions you take such as which features you use), device event information (such as system activity, error reports (sometimes called 'crash dumps'), and hardware settings).",
-            "Device Data. We collect device data such as information about your computer, phone, tablet, or other device you use to access the Services. Depending on the device used, this device data may include information such as your IP address (or proxy server), device and application identification numbers, location, browser type, hardware model, Internet service provider and/or mobile carrier, operating system, and system configuration information.",
-            "Location Data. We collect location data such as information about your device's location, which can be either precise or imprecise. How much information we collect depends on the type and settings of the device you use to access the Services. For example, we may use GPS and other technologies to collect geolocation data that tells us your current location (based on your IP address). You can opt out of allowing us to collect this information either by refusing access to the information or by disabling your Location setting on your device. However, if you choose to opt out, you may not be able to use certain aspects of the Services."
+            "Device Data. We collect device data such as information about your computer, phone, tablet, or other device you use to access the Services. Depending on the device used, this device data may include information such as your IP address (or proxy server), device and application identification numbers, browser type, hardware model, Internet service provider and/or mobile carrier, operating system, and system configuration information.",
+            "Location Data. We do not collect location data. The application does not use GPS or any other location technology, and it does not ask your device for permission to access your location. Like any internet service, our servers receive the IP address your device connects from, which indicates an approximate country; we do not use it to determine your location beyond that."
           ]
         },
         {
@@ -264,7 +307,8 @@ export const privacyPolicy: PrivacyPolicyContent = {
             "Artificial-intelligence model providers, which receive the photographs you take within the application in order to recognise the food in them, and the text of recipes in order to translate it. These providers process the data on our instructions",
             "Push notification providers, which receive the notification token of your device and the content of the notification",
             "App store and payment providers, as described in 'SUBSCRIPTIONS AND PAYMENTS' below",
-            "Data Analytics Services"
+            "A consent management provider, whose banner records the cookie choices you make on our website and, until you have made them, holds back the scripts that would otherwise set non-essential cookies",
+            "An analytics provider, which measures how our website is used — see 'DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?' below. The mobile application contains no analytics"
           ]
         },
         {
@@ -304,7 +348,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
         },
         {
           "type": "p",
-          "text": "We also permit third parties and service providers to use online tracking technologies on our Services for analytics and advertising, including to help manage and display advertisements, to tailor advertisements to your interests, or to send abandoned shopping cart reminders (depending on your communication preferences). The third parties and service providers use their technology to provide advertising about products and services tailored to your interests which may appear either on our Services or on other websites."
+          "text": "We do not serve advertising on our Services, we do not allow third parties to serve advertising on them, and we do not use tracking technologies to build advertising profiles or to retarget you elsewhere. We may advertise Eatease on other platforms, but that does not involve tracking you on our own Services. The only non-essential technology we use is the website analytics described below, and it does not run until you consent to it."
         },
         {
           "type": "p",
@@ -320,7 +364,15 @@ export const privacyPolicy: PrivacyPolicyContent = {
         },
         {
           "type": "p",
-          "text": "We may share your information with Google Analytics to track and analyse the use of the Services. To opt out of being tracked by Google Analytics across the Services, visit https://tools.google.com/dlpage/gaoptout. For more information on the privacy practices of Google, please visit the Google Privacy & Terms page."
+          "text": "We use Google Analytics on our website to understand how it is used — how many people visit, which pages they read, and which sources bring them to us — so that we can improve the site and know whether our own advertising elsewhere is reaching anyone. Google acts as our processor for this, and the information collected is about the use of the website, not about the contents of your Eatease account."
+        },
+        {
+          "type": "p",
+          "text": "Google Analytics does not run, and sets no cookies, until you accept analytics cookies in our consent banner. Our consent manager holds the tag back until then, and you can change your choice at any time through the cookie preferences link on our website. You can also opt out across all websites using Google's own browser add-on at https://tools.google.com/dlpage/gaoptout. For more information on Google's privacy practices, please visit the Google Privacy & Terms page."
+        },
+        {
+          "type": "p",
+          "text": "We do not enable Google's advertising features in Google Analytics, so the data is not used for advertising audiences or remarketing. The mobile application contains no analytics at all — this applies to the website only."
         }
       ]
     },
@@ -392,7 +444,11 @@ export const privacyPolicy: PrivacyPolicyContent = {
         },
         {
           "type": "p",
-          "text": "We will only keep your personal information for as long as it is necessary for the purposes set out in this Privacy Notice, unless a longer retention period is required or permitted by law (such as tax, accounting, or other legal requirements). No purpose in this notice will require us keeping your personal information for longer than the period of time in which users have an account with us."
+          "text": "We will only keep your personal information for as long as it is necessary for the purposes set out in this Privacy Notice, unless a longer retention period is required or permitted by law (such as tax, accounting, or other legal requirements). With one exception, described next, no purpose in this notice will require us keeping your personal information for longer than the period of time in which users have an account with us."
+        },
+        {
+          "type": "p",
+          "text": "The exception is the record of free trial periods already granted, described in 'SUBSCRIPTIONS AND PAYMENTS'. That record holds no email address and no account details — only a one-way cryptographic hash of your email address and of your sign-in provider identifier, together with the dates of the trial. It is kept after an account is deleted, because keeping it is the only way it can do its job: ensuring the one-time free trial is offered once. We retain it under our legitimate interest in preventing repeated use of a one-time offer."
         },
         {
           "type": "p",

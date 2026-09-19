@@ -1,15 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-
-const SCRIPT_SRC_BASE = 'https://app.termly.io'
-
-interface Props {
-  autoBlock?: boolean;
-  masterConsentsOrigin?: string;
-  websiteUUID: string;
-}
 
 declare global {
   interface Window {
@@ -21,29 +13,19 @@ declare global {
   }
 }
 
-export default function TermlyCMP({ autoBlock, masterConsentsOrigin, websiteUUID }: Props) {
-  const scriptSrc = useMemo(() => {
-    const src = new URL(SCRIPT_SRC_BASE)
-    src.pathname = `/resource-blocker/${websiteUUID}`
-    if (autoBlock) {
-      src.searchParams.set('autoBlock', 'on')
-    }
-    if (masterConsentsOrigin) {
-      src.searchParams.set('masterConsentsOrigin', masterConsentsOrigin)
-    }
-    return src.toString()
-  }, [autoBlock, masterConsentsOrigin, websiteUUID])
-
-  const isScriptAdded = useRef(false)
-
-  useEffect(() => {
-    if (isScriptAdded.current) return
-    const script = document.createElement('script')
-    script.src = scriptSrc
-    document.head.appendChild(script)
-    isScriptAdded.current = true
-  }, [scriptSrc])
-
+/**
+ * Re-initialises Termly after a client-side navigation.
+ *
+ * The script itself is loaded in `layout.tsx` with `beforeInteractive`, which is
+ * what puts it ahead of every tag Auto Blocker has to hold back — it can only
+ * rewrite a tag it has already seen. Loading it from here, in an effect, put it
+ * after hydration, and therefore after the analytics tag it exists to block.
+ *
+ * What stays here is the part the App Router does need: it never reloads the
+ * document, so without this the banner and the blocking state would remain on
+ * whichever page the visitor first landed on.
+ */
+export default function TermlyCMP() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
