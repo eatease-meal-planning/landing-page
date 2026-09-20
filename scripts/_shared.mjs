@@ -21,7 +21,18 @@ export function loadEnv() {
 
       const key = trimmed.slice(0, eq).trim();
       let val = trimmed.slice(eq + 1).trim();
-      if (/^(".*"|'.*')$/s.test(val)) val = val.slice(1, -1);
+
+      // Um comentário depois do valor. A versão anterior só reconhecia a linha
+      // inteira entre aspas, então `URL="http://x"  # nota` entrava no ambiente
+      // com as aspas e o comentário colados — e saía num email, num link que
+      // ninguém conseguia abrir.
+      const quoted = val.match(/^(["'])(.*?)\1/s);
+      if (quoted) {
+        val = quoted[2];
+      } else {
+        const comment = val.search(/\s#/);
+        if (comment !== -1) val = val.slice(0, comment).trim();
+      }
 
       if (process.env[key] === undefined) process.env[key] = val;
     }
