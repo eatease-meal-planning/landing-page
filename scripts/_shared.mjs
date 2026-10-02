@@ -63,6 +63,35 @@ export function requireEnv(name, hint) {
   return value;
 }
 
+/**
+ * Resolve o site URL para os links do rodapé de um email, e recusa um envio
+ * real com ele a apontar para localhost.
+ *
+ * `.env.local` aponta para localhost por defeito, e estes scripts correm na
+ * máquina do developer contra a BD de produção — ao contrário da rota
+ * POST /api/contacts, que corre no Vercel, onde a env está certa. O Resend
+ * já apanhou isto uma vez nos "insights" (link mismatch): um convite real
+ * saiu com `http://localhost:3000` no rodapé porque faltava esta validação.
+ * Um dry-run só avisa; um envio real para.
+ */
+export function resolveSiteUrl({ args, dryRun, envVar = "NEXT_PUBLIC_SITE_URL" }) {
+  const siteUrl = (
+    (args.site ? String(args.site).trim() : "") || requireEnv(envVar)
+  ).replace(/\/+$/, "");
+
+  const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/i.test(siteUrl);
+  if (isLocalhost) {
+    console.warn(`\nAviso: o site URL é local (${siteUrl}) — o link não abre na máquina de ninguém.`);
+    console.warn("Passe --site https://www.eatease.eu para gerar um link utilizável.");
+    if (!dryRun) {
+      console.error("\nRecusado: não enviamos um email cujo link aponta para localhost.");
+      process.exit(1);
+    }
+  }
+
+  return siteUrl;
+}
+
 const cache = new Map();
 
 /**

@@ -15,6 +15,8 @@
  *   --email <addr> Só este contacto (tem de estar no teste).
  *   --force        Reenvia a quem já recebeu (segundo o ficheiro local).
  *   --from <addr>  Sobrepõe-se a CLOSED_TEST_FROM_EMAIL.
+ *   --site <url>   Sobrepõe-se a NEXT_PUBLIC_SITE_URL (rodapé: site + política).
+ *                  Necessário em local — .env.local aponta para localhost.
  *   --delay <ms>   Pausa entre envios (por defeito 400).
  *
  * Destinatários: contactos confirmados que já foram convidados para o teste
@@ -31,7 +33,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import postgres from "postgres";
 import { Resend } from "resend";
-import { loadEnv, parseArgs, requireEnv } from "./_shared.mjs";
+import { loadEnv, parseArgs, requireEnv, resolveSiteUrl } from "./_shared.mjs";
 import { getFirstName, buildGreeting } from "../src/lib/closedTestInvite.ts";
 import { renderEmail } from "../src/lib/email.ts";
 
@@ -66,7 +68,8 @@ if (!/^https:\/\/\S+$/.test(updateUrl)) {
 }
 
 const databaseUrl = requireEnv("DATABASE_URL");
-const siteUrl = requireEnv("NEXT_PUBLIC_SITE_URL");
+// Mesmo risco do convite: localhost no rodapé de um envio real.
+const siteUrl = resolveSiteUrl({ args, dryRun });
 // Exigidas só no envio real — um dry-run tem de correr numa máquina sem chaves.
 const fromEmail =
   (args.from ? String(args.from).trim() : "") ||

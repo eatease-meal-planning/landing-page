@@ -34,7 +34,7 @@
  */
 import postgres from "postgres";
 import { Resend } from "resend";
-import { loadEnv, parseArgs, requireEnv, loadLocaleEmails } from "./_shared.mjs";
+import { loadEnv, parseArgs, requireEnv, resolveSiteUrl, loadLocaleEmails } from "./_shared.mjs";
 import { renderEmail } from "../src/lib/email.ts";
 
 loadEnv();
@@ -54,23 +54,11 @@ const rotate = !!args.rotate;
 const targetEmail = String(args.email).trim().toLowerCase();
 
 const databaseUrl = requireEnv("DATABASE_URL");
-const siteUrl = (
-  (args.site ? String(args.site).trim() : "") || requireEnv("NEXT_PUBLIC_SITE_URL")
-).replace(/\/+$/, "");
-
 // O link é o produto deste script. Apontado para localhost, é lixo na caixa de
 // entrada de outra pessoa — e um envio é irreversível. Pára antes de sair.
-const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/i.test(siteUrl);
 // Antes de tocar na BD: uma recusa tardia já teria rodado o token e matado o
 // link que ainda estava vivo.
-if (isLocalhost) {
-  console.warn(`\nAviso: o site URL é local (${siteUrl}) — o link não abre na máquina de ninguém.`);
-  console.warn("Passe --site https://www.eatease.eu para gerar um link utilizável.");
-  if (!dryRun) {
-    console.error("\nRecusado: não enviamos um email cujo único botão aponta para localhost.");
-    process.exit(1);
-  }
-}
+const siteUrl = resolveSiteUrl({ args, dryRun });
 
 // Exigidas só no envio real — um dry-run tem de correr sem chaves da Resend.
 const fromEmail =

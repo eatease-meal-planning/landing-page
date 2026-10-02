@@ -16,6 +16,9 @@
  *   --link <url>     Sobrepõe-se a CLOSED_TEST_OPT_IN_URL (passo 1, adesão).
  *   --download <url> Sobrepõe-se a CLOSED_TEST_DOWNLOAD_URL (passo 2, instalação).
  *   --from <addr>    Sobrepõe-se a CLOSED_TEST_FROM_EMAIL.
+ *   --site <url>     Sobrepõe-se a NEXT_PUBLIC_SITE_URL (rodapé: site + política).
+ *                     Necessário em local — .env.local aponta para localhost, e
+ *                     um envio real com esse link no rodapé já aconteceu uma vez.
  *   --limit <n>      Envia no máximo n convites nesta passagem.
  *   --delay <ms>     Pausa entre envios (por defeito 400).
  *
@@ -28,7 +31,7 @@
  */
 import postgres from "postgres";
 import { Resend } from "resend";
-import { loadEnv, parseArgs, requireEnv, loadLocaleEmails } from "./_shared.mjs";
+import { loadEnv, parseArgs, requireEnv, resolveSiteUrl, loadLocaleEmails } from "./_shared.mjs";
 import { sendInvites } from "../src/lib/closedTestInvite.ts";
 import { renderEmail } from "../src/lib/email.ts";
 
@@ -58,7 +61,10 @@ const optInUrl =
 const downloadUrl =
   (args.download ? String(args.download).trim() : "") ||
   requireEnv("CLOSED_TEST_DOWNLOAD_URL", "Play Console > Como os testadores participam > Adesao Android");
-const siteUrl = requireEnv("NEXT_PUBLIC_SITE_URL");
+// Apontado para localhost, os dois links do rodapé (site + política de
+// privacidade) abrem lixo na caixa de quem recebe — foi exatamente isto que o
+// painel "insights" da Resend apanhou num envio real anterior.
+const siteUrl = resolveSiteUrl({ args, dryRun });
 
 // Exigidas só no envio real — um dry-run tem de correr numa máquina sem chaves.
 const fromEmail =
