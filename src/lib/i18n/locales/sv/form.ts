@@ -2,7 +2,7 @@ export const form = {
   nameLabel:       "Namn",
   namePlaceholder: "Ditt namn",
   emailLabel:      "E-post",
-  submit:          "Gå med i den slutna testningen",
+  submit:          "Gå med i den öppna testningen",
   submitting:      "Skickar…",
   successTitle:    "Nästan klart!",
   successBody:     "Kolla din inkorg och klicka på bekräftelselänken. Länken är giltig i 48 timmar.",

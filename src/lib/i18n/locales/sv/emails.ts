@@ -1,12 +1,6 @@
 export const emails = {
   teamName:      "Eatease-teamet",
   privacyPolicy: "Integritetspolicy",
-  welcome: {
-    subject:  "Välkommen till Eatease!",
-    greeting: "Hej {name},",
-    body:     "Tack för din registrering! Din inbjudan till den slutna testningen är på väg: du får den inom 48 timmar, med anmälningslänken du behöver innan du installerar appen från Google Play. Fram till dess behöver du inte göra något.",
-    signOff:  "Vi ses snart,",
-  },
   confirmation: {
     subject:     "Bekräfta din registrering",
     greeting:    "Hej {name},",
@@ -24,11 +18,11 @@ export const emails = {
     signOff:  "Vänliga hälsningar,",
   },
   closedTestInvite: {
-    subject:           "Din inbjudan till Eatease slutna test är klar!",
+    subject:           "Din inbjudan till Eatease öppna test är klar!",
     greeting:          "Hej {name},",
-    intro:             "Goda nyheter! Din e-postadress har lagts till i vårt slutna testprogram på Google Play. Du kan nu ladda ner och installera Eatease-appen på din Android-enhet.",
+    intro:             "Goda nyheter! Du kan nu gå med i vårt öppna test på Google Play och installera Eatease-appen på din Android-enhet. Det går i två steg.",
     instructionsTitle: "Så här kommer du igång:",
-    step1:             "Klicka på knappen nedan för att gå med i det slutna testet med ditt Google-konto.",
+    step1:             "Klicka på knappen nedan för att gå med i det öppna testet med ditt Google-konto.",
     step2:             "Ladda ner och installera Eatease från Google Play på din Android-enhet.",
     cta:               "Gå med i testet på Google Play",
     ctaDownload:       "Ladda ner Eatease på Google Play",

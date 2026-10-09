@@ -2,7 +2,7 @@ export const form = {
   nameLabel:       "Nome",
   namePlaceholder: "Il tuo nome",
   emailLabel:      "Email",
-  submit:          "Unisciti al test chiuso",
+  submit:          "Unisciti al test aperto",
   submitting:      "Invio in corso…",
   successTitle:    "Ci siamo quasi!",
   successBody:     "Controlla la tua casella di posta e clicca sul link di conferma. Il link è valido per 48 ore.",

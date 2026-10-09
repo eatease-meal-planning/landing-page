@@ -2,7 +2,7 @@ export const form = {
   nameLabel:       "Naam",
   namePlaceholder: "Jouw naam",
   emailLabel:      "E-mailadres",
-  submit:          "Meedoen aan de closed test",
+  submit:          "Meedoen aan de open test",
   submitting:      "Verzenden...",
   successTitle:    "Bijna klaar!",
   successBody:     "Controleer je inbox en klik op de bevestigingslink. De link is 48 uur geldig.",

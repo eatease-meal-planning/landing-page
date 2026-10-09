@@ -1,12 +1,6 @@
 export const emails = {
   teamName:      "Het Eatease team",
   privacyPolicy: "Privacybeleid",
-  welcome: {
-    subject:  "Welkom bij Eatease!",
-    greeting: "Hallo {name},",
-    body:     "Bedankt voor je aanmelding! Je uitnodiging voor de closed test is onderweg: je krijgt hem binnen 48 uur, met de deelnamelink die je nodig hebt voordat je de app installeert via Google Play. Tot die tijd hoef je niets te doen.",
-    signOff:  "Tot snel,",
-  },
   confirmation: {
     subject:     "Bevestig je aanmelding",
     greeting:    "Hallo {name},",
@@ -24,11 +18,11 @@ export const emails = {
     signOff:  "Met vriendelijke groet,",
   },
   closedTestInvite: {
-    subject:           "Je toegang tot de gesloten test van Eatease staat klaar!",
+    subject:           "Je toegang tot de open test van Eatease staat klaar!",
     greeting:          "Hallo {name},",
-    intro:             "Goed nieuws! Je e-mailadres is toegevoegd aan ons gesloten testprogramma op Google Play. Je kunt de Eatease-app nu installeren op je Android-apparaat.",
+    intro:             "Goed nieuws! Je kunt nu meedoen aan onze open test op Google Play en de Eatease-app installeren op je Android-apparaat. Dat gaat in twee stappen.",
     instructionsTitle: "Aan de slag:",
-    step1:             "Klik op de onderstaande knop om deel te nemen aan de gesloten test met je Google-account.",
+    step1:             "Klik op de onderstaande knop om met je Google-account deel te nemen aan de open test.",
     step2:             "Download en installeer Eatease vanuit Google Play op je Android-apparaat.",
     cta:               "Deelnemen aan test op Google Play",
     ctaDownload:       "Eatease downloaden in Google Play",

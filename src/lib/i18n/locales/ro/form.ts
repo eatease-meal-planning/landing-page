@@ -2,7 +2,7 @@ export const form = {
   nameLabel:       "Nume",
   namePlaceholder: "Numele tău",
   emailLabel:      "Email",
-  submit:          "Înscrie-mă în testarea închisă",
+  submit:          "Înscrie-mă în testarea deschisă",
   submitting:      "Se trimite…",
   successTitle:    "Aproape gata!",
   successBody:     "Verifică-ți căsuța de e-mail și dă clic pe linkul de confirmare. Linkul este valabil timp de 48 de ore.",

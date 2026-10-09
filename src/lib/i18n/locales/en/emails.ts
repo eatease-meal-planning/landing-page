@@ -1,12 +1,6 @@
 export const emails = {
   teamName:      "The Eatease Team",
   privacyPolicy: "Privacy Policy",
-  welcome: {
-    subject:  "Welcome to Eatease!",
-    greeting: "Hello {name},",
-    body:     "Thank you for registering! Your closed-test invite is on its way: it arrives within 48 hours, with the opt-in link you need before installing the app from Google Play. Nothing to do until then.",
-    signOff:  "See you soon,",
-  },
   confirmation: {
     subject:     "Confirm your registration",
     greeting:    "Hello {name},",
@@ -24,13 +18,13 @@ export const emails = {
     signOff:  "Kind regards,",
   },
   closedTestInvite: {
-    subject:           "Your Eatease closed test invite is ready!",
+    subject:           "Your Eatease open test invite is ready!",
     greeting:          "Hello {name},",
-    intro:             "Great news! Your email address has been added to our closed testing program on Google Play. You can now access and install the Eatease Android app.",
+    intro:             "Great news! You can now join our open test on Google Play and install the Eatease Android app. It takes two steps.",
     instructionsTitle: "How to get started:",
-    step1:             "Click the button below to join the closed test using your Google account.",
+    step1:             "Click the button below to join the open test using your Google account.",
     step2:             "Download and install Eatease from Google Play onto your Android device.",
-    cta:               "Join closed test on Google Play",
+    cta:               "Join open test on Google Play",
     ctaDownload:       "Download Eatease on Google Play",
     downloadNote:      "This second link only works once you have accepted the invite in step 1 — before that, Google Play will not find the app.",
     fallbackNote:      "If the button doesn't work, copy and paste this link into your browser:",
