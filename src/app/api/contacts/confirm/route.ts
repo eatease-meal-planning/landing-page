@@ -4,23 +4,21 @@ import { contacts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { escapeHtml, renderEmail } from "@/lib/email";
+import { renderEmail } from "@/lib/email";
+import { renderInvite } from "@/lib/closedTestInvite";
 import { getResend } from "@/lib/resend";
 
 /**
- * Double opt-in confirmation — and, since the closed test, the moment a signup
- * becomes a tester.
+ * Double opt-in confirmation — and the moment a signup receives its invite.
  *
- * Confirming does not grant access: the address still has to be added by hand
- * to the closed-test list in the Play Console. The email to the operator is
- * what carries that instruction, so it is the send that must succeed, and the
- * row is only marked once Resend has accepted it. Before this, both emails went
- * out through a `Promise.all` whose result was never inspected, after the row
- * had already been written — and `resend.emails.send()` resolves
- * `{ data, error }` rather than rejecting. A failed send therefore left a
- * confirmed row, an empty operator inbox and a visitor on the success page,
- * with the second click short-circuiting on `contact.confirmed` and never
- * resending.
+ * The test is open, so confirming needs no manual step in the Play Console:
+ * the one email sent here carries both links, opt-in first and download
+ * second, and the row is only marked once Resend has accepted it.
+ * `resend.emails.send()` resolves `{ data, error }` rather than rejecting, so
+ * a failed send used to leave a confirmed row and a visitor on the success
+ * page with nothing in their inbox — and the second click short-circuits on
+ * `contact.confirmed`, so it never resent. Sending first and marking after
+ * keeps the token (valid 48h) usable as the retry.
  */
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
@@ -33,22 +31,19 @@ export async function GET(req: NextRequest) {
   // building the client at module scope took the whole route down on import
   // and every confirmation link answered 500 with nothing to quote.
   const resend = getResend();
-  const fromEmail = process.env.RESEND_FROM_EMAIL;
-  const welcomeFrom = process.env.RESEND_WELCOME_EMAIL;
-  // The operator inbox has its own variable, mirroring
-  // DELETION_REQUEST_TO_EMAIL. It used to be RESEND_WELCOME_EMAIL, which was
-  // simultaneously the *sender* of the visitor's welcome email — one address
-  // doing two unrelated jobs. The fallback keeps existing deployments working
-  // until the variable is set; the warning says it is happening.
-  const operator = process.env.SIGNUP_NOTIFICATION_TO_EMAIL ?? welcomeFrom;
-  if (!operator) {
-    console.warn("[confirm] SIGNUP_NOTIFICATION_TO_EMAIL is not set");
-  } else if (!process.env.SIGNUP_NOTIFICATION_TO_EMAIL) {
-    console.warn("[confirm] SIGNUP_NOTIFICATION_TO_EMAIL is not set — falling back to RESEND_WELCOME_EMAIL");
-  }
-  if (!resend || !fromEmail || !welcomeFrom || !operator) {
-    console.error("[confirm] RESEND_API_KEY / RESEND_FROM_EMAIL / RESEND_WELCOME_EMAIL is not set — refusing to confirm");
+  // Not RESEND_FROM_EMAIL: that is a no-reply, and the invite asks for replies.
+  const fromEmail = process.env.CLOSED_TEST_FROM_EMAIL;
+  if (!resend || !fromEmail) {
+    console.error("[confirm] RESEND_API_KEY / CLOSED_TEST_FROM_EMAIL is not set — refusing to confirm");
     return errorRedirect(req, "en", "CONFIG_MISSING_RESEND");
+  }
+
+  // Without both links the email would promise a step it cannot deliver.
+  const optInUrl = process.env.CLOSED_TEST_OPT_IN_URL;
+  const downloadUrl = process.env.CLOSED_TEST_DOWNLOAD_URL;
+  if (!optInUrl || !downloadUrl) {
+    console.error("[confirm] CLOSED_TEST_OPT_IN_URL / CLOSED_TEST_DOWNLOAD_URL is not set — refusing to confirm");
+    return errorRedirect(req, "en", "CONFIG_MISSING_TEST_LINKS");
   }
 
   const contact = await db.query.contacts.findFirst({
@@ -73,68 +68,45 @@ export async function GET(req: NextRequest) {
   const confirmedAt = new Date();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-  // 1. The operator notification. This is the one that grants access, so it
-  //    runs first and its failure stops everything: an unconfirmed row with a
+  // 1. The invite. Its failure stops everything: an unconfirmed row with a
   //    token still valid for 48h is a link the visitor can simply click again.
-  const notificationHtml = renderEmail("new-user-confirmation.html", {
-    user_name:    contact.name,
-    user_email:   contact.email,
-    confirmed_at: confirmedAt.toUTCString(),
-    site_url:     siteUrl,
-  }, ["user_name", "user_email"]);
+  const { emails } = await getDictionary(locale);
+  const { subject, html } = renderInvite({
+    emails,
+    recipient: { email: contact.email, name: contact.name, locale },
+    optInUrl,
+    downloadUrl,
+    siteUrl,
+    renderTemplate: renderEmail,
+  });
 
   try {
     const { error } = await resend.emails.send({
-      from:    `Eatease <${fromEmail}>`,
-      to:      operator,
-      replyTo: contact.email,
-      subject: `[Closed test] Add ${contact.email} to the tester list`,
-      html:    notificationHtml,
+      from: `Ricardo Rato · Eatease <${fromEmail}>`,
+      to:   contact.email,
+      subject,
+      html,
     });
     if (error) {
-      console.error("[confirm] Resend rejected the operator notification:", error);
-      return errorRedirect(req, locale, `SIGNUP_NOTIFICATION_FAILED:${error.name}`);
+      console.error("[confirm] Resend rejected the invite:", error);
+      return errorRedirect(req, locale, `INVITE_FAILED:${error.name}`);
     }
   } catch (err) {
-    console.error("[confirm] operator notification threw:", err);
-    return errorRedirect(req, locale, "SIGNUP_NOTIFICATION_FAILED:threw");
+    console.error("[confirm] invite threw:", err);
+    return errorRedirect(req, locale, "INVITE_FAILED:threw");
   }
 
   // 2. Only now is the signup safe to record. A failure here has already cost
-  //    the operator a notification; clicking again sends a second one, which is
+  //    the visitor an email; clicking again sends a second one, which is
   //    visible and recoverable, unlike the silent loss this ordering replaces.
   try {
     await db
       .update(contacts)
-      .set({ confirmed: true, confirmedAt })
+      .set({ confirmed: true, confirmedAt, closedTestInvitedAt: confirmedAt })
       .where(eq(contacts.token, token));
   } catch (err) {
     console.error("[confirm] marking the contact confirmed failed:", err);
     return errorRedirect(req, locale, "DB_UNAVAILABLE");
-  }
-
-  // 3. The welcome email is best-effort. The signup IS recorded, so an error
-  //    page here would tell the visitor something untrue.
-  const dict = await getDictionary(locale);
-  const emailT = dict.emails.welcome;
-  try {
-    const welcomeHtml = renderEmail("welcome-email.html", {
-      subject:  emailT.subject,
-      greeting: emailT.greeting.replace("{name}", escapeHtml(contact.name)),
-      body:     emailT.body,
-      sign_off: emailT.signOff,
-      team:     dict.emails.teamName,
-      site_url: siteUrl,
-    });
-    const { error } = await resend.emails.send({
-      from:    `Ricardo Rato · Eatease <${welcomeFrom}>`,
-      to:      contact.email,
-      subject: emailT.subject,
-      html:    welcomeHtml,
-    });
-    if (error) console.error("[confirm] Resend rejected the welcome email:", error);
-  } catch (err) {
-    console.error("[confirm] welcome email threw:", err);
   }
 
   return NextResponse.redirect(new URL(`/${locale}/confirmed`, req.url));

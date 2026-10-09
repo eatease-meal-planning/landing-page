@@ -2,21 +2,17 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
 /**
- * Confirming is the moment a signup becomes a tester, and the email to the
- * operator is what makes that happen — the address has to be added to the
- * closed-test list in the Play Console by hand.
+ * Confirming is the moment a signup receives its invite: the test is open, so
+ * no one has to add the address to the Play Console, and the single email sent
+ * here carries both links (opt-in, then download).
  *
- * The route used to write `confirmed = true` first and then fire both emails
- * through `Promise.all` without looking at the result. `resend.emails.send()`
- * resolves `{ data, error }` instead of rejecting, so a Resend outage left the
- * row confirmed, the operator's inbox empty, and the visitor on the success
- * page. A second click short-circuits on `contact.confirmed` and never
- * resends: that person is a tester who will never be added, and nothing in the
- * database says so.
- *
- * So the order is the fix, not just the error check: notify the operator, and
- * only mark the row once that message is accepted. The token stays valid for
- * 48h, which makes a failed attempt retryable by clicking the same link again.
+ * `resend.emails.send()` resolves `{ data, error }` instead of rejecting, so a
+ * Resend outage used to leave the row confirmed and the visitor on the success
+ * page with an empty inbox; a second click short-circuits on
+ * `contact.confirmed` and never resends. So the order is the fix, not just the
+ * error check: send the invite, and only mark the row once it is accepted. The
+ * token stays valid for 48h, which makes a failed attempt retryable by
+ * clicking the same link again.
  */
 const { sendMock, findFirstMock, setMock, whereMock } = vi.hoisted(() => ({
   sendMock: vi.fn(),
@@ -90,20 +86,24 @@ function code(res: Response) {
 
 beforeEach(() => {
   vi.unstubAllEnvs();
+  vi.stubEnv("RESEND_API_KEY", "re_test");
+  vi.stubEnv("CLOSED_TEST_FROM_EMAIL", "ricardo@test.invalid");
+  vi.stubEnv("CLOSED_TEST_OPT_IN_URL", "https://play.google.com/apps/testing/com.test.app");
+  vi.stubEnv("CLOSED_TEST_DOWNLOAD_URL", "https://play.google.com/store/apps/details?id=com.test.app");
   sendMock.mockReset();
   setMock.mockReset();
   whereMock.mockReset().mockResolvedValue(undefined);
   findFirstMock.mockReset().mockResolvedValue({ ...PENDING_CONTACT });
 });
 
-describe("GET /api/contacts/confirm — a signup is only confirmed once the operator knows", () => {
-  it("does not mark the contact confirmed when the operator notification is rejected", async () => {
+describe("GET /api/contacts/confirm — a signup is only confirmed once the invite is accepted", () => {
+  it("does not mark the contact confirmed when the invite is rejected", async () => {
     sendMock.mockResolvedValue(API_REJECTION);
     const GET = await loadRoute();
 
     const res = await GET(confirmRequest());
 
-    expect(setMock, "the row was marked confirmed with nothing in the operator's inbox").not.toHaveBeenCalled();
+    expect(setMock, "the row was marked confirmed with nothing in the visitor's inbox").not.toHaveBeenCalled();
     expect(destination(res)).toBe("/pt-pt/error");
   });
 
@@ -113,62 +113,53 @@ describe("GET /api/contacts/confirm — a signup is only confirmed once the oper
 
     const res = await GET(confirmRequest());
 
-    expect(code(res)).toBe("SIGNUP_NOTIFICATION_FAILED:validation_error");
+    expect(code(res)).toBe("INVITE_FAILED:validation_error");
   });
 
-  it("marks the contact confirmed once the operator notification is accepted", async () => {
+  it("marks the contact confirmed and invited once the invite is accepted", async () => {
     sendMock.mockResolvedValue(ACCEPTED);
     const GET = await loadRoute();
 
     const res = await GET(confirmRequest());
 
-    expect(setMock).toHaveBeenCalledWith(expect.objectContaining({ confirmed: true }));
+    expect(setMock).toHaveBeenCalledWith(
+      expect.objectContaining({ confirmed: true, closedTestInvitedAt: expect.any(Date) }),
+    );
     expect(destination(res)).toBe("/pt-pt/confirmed");
   });
 
-  it("still confirms when only the welcome email to the visitor fails", async () => {
-    // The welcome email is best-effort: the signup IS recorded with the
-    // operator, so sending the visitor to an error page would be a lie.
-    sendMock.mockResolvedValueOnce(ACCEPTED).mockResolvedValueOnce(API_REJECTION);
-    const GET = await loadRoute();
-
-    const res = await GET(confirmRequest());
-
-    expect(setMock).toHaveBeenCalledWith(expect.objectContaining({ confirmed: true }));
-    expect(destination(res)).toBe("/pt-pt/confirmed");
-  });
-
-  it("sends exactly two emails — the operator notification and the welcome", async () => {
-    // The task that rewrites the operator email reads as "add an email to the
-    // confirm route". It already sends one; a third send means the operator
-    // gets two notifications per signup.
+  it("sends exactly one email, to the visitor", async () => {
+    // The operator no longer has anything to do, and the welcome email is the
+    // invite now: a second send would mail the visitor twice.
     sendMock.mockResolvedValue(ACCEPTED);
     const GET = await loadRoute();
 
     await GET(confirmRequest());
 
-    expect(sendMock).toHaveBeenCalledTimes(2);
+    expect(sendMock).toHaveBeenCalledTimes(1);
+    expect(sendMock.mock.calls[0][0]).toMatchObject({ to: "ana@example.com" });
   });
-});
 
-describe("GET /api/contacts/confirm — the operator inbox has its own variable", () => {
-  it("notifies the address in SIGNUP_NOTIFICATION_TO_EMAIL, not the welcome sender", async () => {
-    vi.stubEnv("SIGNUP_NOTIFICATION_TO_EMAIL", "testers@test.invalid");
+  it("sends from the reply-able closed-test address, not the no-reply", async () => {
     sendMock.mockResolvedValue(ACCEPTED);
     const GET = await loadRoute();
 
     await GET(confirmRequest());
 
-    expect(sendMock.mock.calls[0][0]).toMatchObject({ to: "testers@test.invalid" });
+    expect(sendMock.mock.calls[0][0].from).toContain("ricardo@test.invalid");
   });
 
-  it("carries the address to add in the subject, so the inbox is scannable", async () => {
+  it("carries both links, opt-in before download", async () => {
     sendMock.mockResolvedValue(ACCEPTED);
     const GET = await loadRoute();
 
     await GET(confirmRequest());
 
-    expect(sendMock.mock.calls[0][0].subject).toContain("ana@example.com");
+    const html: string = sendMock.mock.calls[0][0].html;
+    const optIn = html.indexOf("apps/testing/com.test.app");
+    const download = html.indexOf("store/apps/details?id=com.test.app");
+    expect(optIn).toBeGreaterThan(-1);
+    expect(download).toBeGreaterThan(optIn);
   });
 });
 
@@ -185,6 +176,20 @@ describe("GET /api/contacts/confirm — misconfiguration is reported, not fatal 
     expect(code(res)).toBe("CONFIG_MISSING_RESEND");
     expect(setMock).not.toHaveBeenCalled();
   });
+
+  it.each(["CLOSED_TEST_OPT_IN_URL", "CLOSED_TEST_DOWNLOAD_URL"])(
+    "refuses to confirm when %s is absent — the email would promise a step it cannot deliver",
+    async (name) => {
+      vi.stubEnv(name, "");
+      const GET = await loadRoute();
+
+      const res = await GET(confirmRequest());
+
+      expect(code(res)).toBe("CONFIG_MISSING_TEST_LINKS");
+      expect(sendMock).not.toHaveBeenCalled();
+      expect(setMock).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe("GET /api/contacts/confirm — the paths that were already right stay right", () => {
