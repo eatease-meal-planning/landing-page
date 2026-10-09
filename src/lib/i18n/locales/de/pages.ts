@@ -1,7 +1,7 @@
 export const pages = {
   confirmed: {
     title:    "Anmeldung bestätigt!",
-    body:     "Willkommen bei Eatease. Schauen Sie in Ihr Postfach: Wir haben Ihnen gerade die zwei Schritte geschickt — dem offenen Test beitreten und die App bei Google Play installieren.",
+    body:     "Willkommen bei Eatease. Schauen Sie in Ihr Postfach: Wir haben Ihnen gerade die zwei Schritte geschickt — dem offenen Test beitreten und die App bei Google Play installieren. Öffnen Sie die E-Mail am besten auf Ihrem Android-Smartphone, denn nur dort lässt sich die App installieren.",
     backHome: "Zurück zur Startseite",
   },
   linkExpired: {

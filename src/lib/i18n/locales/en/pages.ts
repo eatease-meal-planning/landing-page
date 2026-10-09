@@ -1,7 +1,7 @@
 export const pages = {
   confirmed: {
     title:    "Registration confirmed!",
-    body:     "Welcome to Eatease. Check your inbox: we just sent you two steps — join the open test, then install the app from Google Play.",
+    body:     "Welcome to Eatease. Check your inbox: we just sent you two steps — join the open test, then install the app from Google Play. Open that email on your Android phone, as that is where the app has to be installed.",
     backHome: "Back to home",
   },
   linkExpired: {
