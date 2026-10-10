@@ -1,7 +1,8 @@
 import type { CookiePolicyContent } from "../../cookiePolicy.types";
 
-// AUTO-IMPORTED from cookie-policy.txt (termly export) — now the source of truth.
-// Edit directly; see scripts/import-cookie-policy.mjs to re-import.
+// Originally imported from a Termly export, now maintained by hand: THIS FILE is the
+// source of truth. Edit it directly. scripts/import-cookie-policy.mjs refuses to run
+// without --force because it would overwrite every edit made here.
 export const cookiePolicy: CookiePolicyContent = {
   "title": "Cookie Policy",
   "lastUpdated": "June 23, 2026",

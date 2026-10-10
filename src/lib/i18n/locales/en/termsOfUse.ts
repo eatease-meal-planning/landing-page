@@ -1,10 +1,11 @@
 import type { TermsOfUseContent } from "../../termsOfUse.types";
 
-// AUTO-IMPORTED from terms.txt (termly export) — now the source of truth.
-// Edit directly; see scripts/import-terms.mjs to re-import.
+// Originally imported from a Termly export, now maintained by hand: THIS FILE is the
+// source of truth. Edit it directly. scripts/import-terms.mjs refuses to run without
+// --force because it would overwrite every edit made here.
 export const termsOfUse: TermsOfUseContent = {
   "title": "Terms of Use",
-  "lastUpdated": "June 23, 2026",
+  "lastUpdated": "October 10, 2026",
   "intro": [
     {
       "type": "subheading",
@@ -20,7 +21,7 @@ export const termsOfUse: TermsOfUseContent = {
     },
     {
       "type": "p",
-      "text": "Eatease is a meal planning and nutritional tracking platform designed to help users organize their daily meals and monitor their macronutrients (such as calories, protein, carbohydrates, and fats). Currently, our website provides information about the service and allows visitors to sign up for the closed test of our Android application. If you sign up, we add the email address you give us to the closed-test tester list in the Google Play Console, which means the address is shared with Google for that purpose, and we email you the opt-in link you need in order to install the app. We also use the address to send you updates and communications about the service."
+      "text": "Eatease is a meal planning and nutritional tracking platform designed to help users organize their daily meals and monitor their macronutrients (such as calories, protein, carbohydrates, and fats). Currently, our website provides information about the service and allows visitors to sign up for the open test of our Android application. If you sign up, we email you a link to confirm your address and, once you confirm it, a second email with two links: one to join the open test on Google Play and one to install the app. Joining the test and installing the app happen on Google Play, under your Google account and Google's own terms; for the open test we do not add your email address to any Google Play tester list. People who joined the earlier closed test were added by us to that test's tester list in the Google Play Console, which means their addresses were shared with Google for that purpose, and they remain on that list while that test is active. We also use the address to send you updates and communications about the service."
     },
     {
       "type": "p",

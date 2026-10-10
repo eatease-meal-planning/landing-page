@@ -18,6 +18,15 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { parse } from "node-html-parser";
 
+// Guard: the generated module is now edited by hand, and this script overwrites it.
+if (!process.argv.includes("--force")) {
+  console.error(
+    "Recusado: o conteudo legal e agora mantido a mao no repositorio (ver o cabecalho do ficheiro de saida).\n" +
+    "Correr este importador apaga todas as edicoes feitas desde o import. Use --force se for mesmo isso que quer.",
+  );
+  process.exit(1);
+}
+
 const ROOT = "D:/dev/eatease/landing-page";
 const OUT = `${ROOT}/src/lib/i18n/locales/en/termsOfUse.ts`;
 
