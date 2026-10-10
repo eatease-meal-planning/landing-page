@@ -1,5 +1,7 @@
 # Spec: Formulário de inscrição no teste fechado
 
+> **Atualização 2026-10-10 — o teste passou a aberto.** A Play Console deixou de exigir que o email do tester seja adicionado à mão, por isso o passo do operador (`new-user-confirmation.html`, `SIGNUP_NOTIFICATION_TO_EMAIL`) e o email de boas-vindas **foram removidos**. `GET /api/contacts/confirm` envia agora o email de convite (adesão → download) e só marca o contacto depois de a Resend o aceitar. O resto deste documento descreve o desenho do teste fechado e fica como histórico; o fluxo vivo está no `CLAUDE.md`.
+
 > **Estado:** implementado. Todas as tasks fechadas — resta apagar o `closed_test_contacts.csv`, último passo da TASK-F.
 > Substitui a waitlist. Relacionado: [`docs/delete-account.md`](./delete-account.md).
 

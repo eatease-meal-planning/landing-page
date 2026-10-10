@@ -10,10 +10,11 @@
 
 ## Estado
 
-- **Esta árvore está verde:** `npm test` 345/345, `npx tsc --noEmit` 0 erros.
+- **Esta árvore está verde:** `npm test` 346/346, `npx tsc --noEmit` 0 erros.
 - **Nenhuma chave de i18n a meio de rollout.** Se aparecerem erros de `Property … is missing`, é a *Constraint dura* — diagnóstico na *Nota de i18n* do [`closed-test-signup.md`](./closed-test-signup.md), e **não é erro de ninguém**.
 - **O `/delete-account` está inteiro em produção, Fase 1 e Fase 2**, verificado ponta-a-ponta a 2026-09-14. Falta submeter o URL no Play Console (TASK-10).
-- **O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.
+- **Desde 2026-10-10 o teste é aberto:** quem se regista e confirma recebe automaticamente o email com adesão e download; já ninguém é adicionado à mão na Play Console. A linha seguinte é histórica.
+- ~~**O teste fechado está a recrutar, e é aqui que está o gargalo:** 17 convidados, **7 aderiram**, faltam **5** para as 12 que o Google exige. Detalhe em [`closed-test-signup.md`](./closed-test-signup.md), *Estado do recrutamento*.~~
 - **O SMTP de Auth do projeto da app passou a Resend a 2026-09-12**, e com ele o `resetPasswordForEmail` da app, que estava a falhar para todos os testers — o serviço interno do Supabase não entrega a quem não pertence à equipa do projeto. Por confirmar com um teste manual: uma reposição de password a partir da app.
 - **A autorização nominal no repo `app` está esgotada.** As migrations `122`-`125` e a copy das 10 locales estão feitas; o que venha a seguir nesse repo volta ao «perguntar primeiro» (*Boundaries* do [`delete-account.md`](./delete-account.md)).
 

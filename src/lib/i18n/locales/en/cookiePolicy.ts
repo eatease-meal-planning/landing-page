@@ -5,7 +5,7 @@ import type { CookiePolicyContent } from "../../cookiePolicy.types";
 // without --force because it would overwrite every edit made here.
 export const cookiePolicy: CookiePolicyContent = {
   "title": "Cookie Policy",
-  "lastUpdated": "June 23, 2026",
+  "lastUpdated": "October 10, 2026",
   "intro": [
     {
       "type": "p",
@@ -84,6 +84,72 @@ export const cookiePolicy: CookiePolicyContent = {
             [
               "Expires in:",
               "Persistent"
+            ]
+          ]
+        },
+        {
+          "type": "subheading",
+          "text": "Analytics cookies:"
+        },
+        {
+          "type": "p",
+          "text": "These cookies tell us, in aggregate, how many people visit our Website, which pages they read, and which sources bring them to us. They are set only if you accept analytics cookies in the Cookie Preference Center; until then, Google Analytics does not run and sets no cookies. You can change your choice at any time."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Name:",
+            "_ga"
+          ],
+          "rows": [
+            [
+              "Provider:",
+              "eatease.eu (first-party cookie, set by the Google Analytics tag)"
+            ],
+            [
+              "Service:",
+              "Google Analytics — https://policies.google.com/privacy"
+            ],
+            [
+              "Purpose:",
+              "Distinguishes one browser from another, so that visits can be counted."
+            ],
+            [
+              "Type:",
+              "http_cookie"
+            ],
+            [
+              "Expires in:",
+              "2 years"
+            ]
+          ]
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Name:",
+            "_ga_<container-id>"
+          ],
+          "rows": [
+            [
+              "Provider:",
+              "eatease.eu (first-party cookie, set by the Google Analytics tag)"
+            ],
+            [
+              "Service:",
+              "Google Analytics — https://policies.google.com/privacy"
+            ],
+            [
+              "Purpose:",
+              "Keeps the state of the current session. The suffix is the identifier of our Google Analytics property."
+            ],
+            [
+              "Type:",
+              "http_cookie"
+            ],
+            [
+              "Expires in:",
+              "2 years"
             ]
           ]
         }

@@ -53,12 +53,9 @@ import type { PrivacyPolicyContent } from "../../privacyPolicy.types";
 //     visitor data, yet appeared nowhere. It is now a named category of third
 //     party, alongside the analytics provider.
 //
-// ⚠️ STILL OUTSTANDING, in the OTHER file: the Cookie Policy
-// (`locales/en/cookiePolicy.ts`) is a clean Termly export and its cookie table
-// does not list `_ga` / `_ga_*`. Re-import it with `scripts/import-cookie-policy.mjs`
-// once Google Analytics is live and Termly has re-scanned the site. ⚠️ Never run
-// `scripts/import-privacy-policy.mjs`: one letter apart, opposite verdicts — that
-// one would revert every hand edit above.
+// ✅ The Cookie Policy (`locales/en/cookiePolicy.ts`) now lists `_ga` and `_ga_<container-id>`,
+// and all three legal documents are maintained by hand: the Termly importers refuse to run
+// without --force, because they would revert every hand edit in these files.
 //
 // ⚠️ All ten locales import THIS file (see locales/<lang>/index.ts), so every
 // language served at /<lang>/privacy-policy is this English text. There is one
