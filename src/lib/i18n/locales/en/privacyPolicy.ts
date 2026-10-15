@@ -62,7 +62,7 @@ import type { PrivacyPolicyContent } from "../../privacyPolicy.types";
 // file to edit, not ten.
 export const privacyPolicy: PrivacyPolicyContent = {
   "title": "Privacy Policy",
-  "lastUpdated": "October 10, 2026",
+  "lastUpdated": "October 15, 2026",
   "intro": [
     {
       "type": "p",
@@ -106,7 +106,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
     },
     {
       "type": "p",
-      "text": "In what situations and with which types of parties do we share personal information? We may share information in specific situations and with specific categories of third parties. Learn more about when and with whom we share your personal information."
+      "text": "In what situations and with which types of parties do we share personal information? We may share information in specific situations and with specific categories of third parties. If you scan a product's barcode and choose to share the product information you enter with Open Food Facts, that information becomes public. Learn more about when and with whom we share your personal information, and about barcode scanning and Open Food Facts."
     },
     {
       "type": "p",
@@ -301,7 +301,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
           "items": [
             "Cloud hosting, database, file storage and authentication providers, which host the Services and everything you store in them",
             "Recipe data providers, which receive your recipe searches together with the dietary and cuisine preferences attached to them",
-            "Artificial-intelligence model providers, which receive the photographs you take within the application in order to recognise the food in them, and the text of recipes in order to translate it. These providers process the data on our instructions",
+            "Artificial-intelligence model providers, which receive the photographs you take within the application in order to recognise the food in them, the text of recipes in order to translate it, and the names of packaged products you scan when they are in another language, in order to show them in yours. These providers process the data on our instructions",
             "Push notification providers, which receive the notification token of your device and the content of the notification",
             "App store and payment providers, as described in 'SUBSCRIPTIONS AND PAYMENTS' below",
             "A consent management provider, whose banner records the cookie choices you make on our website and, until you have made them, holds back the scripts that would otherwise set non-essential cookies",
@@ -327,7 +327,8 @@ export const privacyPolicy: PrivacyPolicyContent = {
         {
           "type": "list",
           "items": [
-            "Business Transfers. We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company."
+            "Business Transfers. We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.",
+            "Open Food Facts. When you scan a product's barcode, the barcode is sent to Open Food Facts, an independent non-profit association, and, if you choose to share them, so is the product information you enter. Open Food Facts is not one of our service providers: what you share becomes public. See 'BARCODE SCANNING AND OPEN FOOD FACTS' below."
           ]
         }
       ]
@@ -387,6 +388,39 @@ export const privacyPolicy: PrivacyPolicyContent = {
         {
           "type": "p",
           "text": "We will use the information we receive only for the purposes that are described in this Privacy Notice or that are otherwise made clear to you on the relevant Services. Please note that we do not control, and are not responsible for, other uses of your personal information by your third-party social media provider. We recommend that you review their privacy notice to understand how they collect, use, and share your personal information, and how you can set your privacy preferences on their sites and apps."
+        }
+      ]
+    },
+    {
+      "title": "BARCODE SCANNING AND OPEN FOOD FACTS",
+      "blocks": [
+        {
+          "type": "inShort",
+          "text": "In Short: Scanning a barcode looks the product up in Open Food Facts, a public food database. If you choose to share the product information you enter, it becomes public there and we cannot delete it afterwards."
+        },
+        {
+          "type": "p",
+          "text": "When you scan a product's barcode in the application, the application looks the product up in Open Food Facts, an open, collaborative database of food products run by the non-profit association Open Food Facts (France). To do this, your device sends the scanned barcode directly to Open Food Facts; as with any request over the internet, Open Food Facts also receives your device's IP address. We do not send Open Food Facts your name, email address or any other information from your account."
+        },
+        {
+          "type": "p",
+          "text": "If a product's name is in another language, we send only that product name to our artificial-intelligence translation provider, so that we can show it in your language."
+        },
+        {
+          "type": "subheading",
+          "text": "Sharing product information with Open Food Facts"
+        },
+        {
+          "type": "p",
+          "text": "If a product is missing from Open Food Facts, or some of its values are, you can fill them in from the product's label. When the 'Share with Open Food Facts' option is on — it is on by default, and you can turn it off before saving — our servers send Open Food Facts the barcode and what you entered: the product name, whether it is a drink, and its energy, protein, carbohydrate and fat values. They are sent through the Eatease account, together with a pseudonymous identifier derived from your account, which does not reveal who you are and only allows Open Food Facts to moderate contributions. We do not keep a copy of what we send."
+        },
+        {
+          "type": "p",
+          "text": "What you share becomes public in the Open Food Facts database under the Open Database License (ODbL), and anyone may use it. Once it has been sent, we cannot delete it; you can ask Open Food Facts to correct or remove it. With the option off, nothing is sent, and the values you enter stay only in your meal log."
+        },
+        {
+          "type": "p",
+          "text": "We rely on your consent, given through the sharing option, to share this information. You can withdraw it at any time by turning the option off; doing so applies to future contributions."
         }
       ]
     },
