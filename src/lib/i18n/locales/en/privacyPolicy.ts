@@ -62,7 +62,7 @@ import type { PrivacyPolicyContent } from "../../privacyPolicy.types";
 // file to edit, not ten.
 export const privacyPolicy: PrivacyPolicyContent = {
   "title": "Privacy Policy",
-  "lastUpdated": "October 15, 2026",
+  "lastUpdated": "October 16, 2026",
   "intro": [
     {
       "type": "p",
@@ -106,7 +106,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
     },
     {
       "type": "p",
-      "text": "In what situations and with which types of parties do we share personal information? We may share information in specific situations and with specific categories of third parties. If you scan a product's barcode and choose to share the product information you enter with Open Food Facts, that information becomes public. Learn more about when and with whom we share your personal information, and about barcode scanning and Open Food Facts."
+      "text": "In what situations and with which types of parties do we share personal information? We may share information in specific situations and with specific categories of third parties. If you scan a product's barcode and save product information you enter, that information is shared with Open Food Facts and becomes public. Learn more about when and with whom we share your personal information, and about barcode scanning and Open Food Facts."
     },
     {
       "type": "p",
@@ -328,7 +328,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
           "type": "list",
           "items": [
             "Business Transfers. We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.",
-            "Open Food Facts. When you scan a product's barcode, the barcode is sent to Open Food Facts, an independent non-profit association, and, if you choose to share them, so is the product information you enter. Open Food Facts is not one of our service providers: what you share becomes public. See 'BARCODE SCANNING AND OPEN FOOD FACTS' below."
+            "Open Food Facts. When you scan a product's barcode, the barcode is sent to Open Food Facts, an independent non-profit association, and so is any product information you enter and save. Open Food Facts is not one of our service providers: what you share becomes public. See 'BARCODE SCANNING AND OPEN FOOD FACTS' below."
           ]
         }
       ]
@@ -396,7 +396,7 @@ export const privacyPolicy: PrivacyPolicyContent = {
       "blocks": [
         {
           "type": "inShort",
-          "text": "In Short: Scanning a barcode looks the product up in Open Food Facts, a public food database. If you choose to share the product information you enter, it becomes public there and we cannot delete it afterwards."
+          "text": "In Short: Scanning a barcode looks the product up in Open Food Facts, a public food database. Product information you enter and save is shared with it, becomes public there, and we cannot delete it afterwards."
         },
         {
           "type": "p",
@@ -412,15 +412,15 @@ export const privacyPolicy: PrivacyPolicyContent = {
         },
         {
           "type": "p",
-          "text": "If a product is missing from Open Food Facts, or some of its values are, you can fill them in from the product's label. When the 'Share with Open Food Facts' option is on — it is on by default, and you can turn it off before saving — our servers send Open Food Facts the barcode and what you entered: the product name, whether it is a drink, and its energy, protein, carbohydrate and fat values. They are sent through the Eatease account, together with a pseudonymous identifier derived from your account, which does not reveal who you are and only allows Open Food Facts to moderate contributions. We do not keep a copy of what we send."
+          "text": "If a product is missing from Open Food Facts, or some of its values are, you can fill them in from the product's label. When you save it — the form tells you, before you do, that it will be shared and become public — our servers send Open Food Facts the barcode and what you entered: the product name, whether it is a drink, and its energy, protein, carbohydrate and fat values. They are sent through the Eatease account, together with a pseudonymous identifier derived from your account, which does not reveal who you are and only allows Open Food Facts to moderate contributions. We do not keep a copy of what we send. In the same way, when a product does not say whether it is a drink and you answer that it is, that answer is sent to Open Food Facts."
         },
         {
           "type": "p",
-          "text": "What you share becomes public in the Open Food Facts database under the Open Database License (ODbL), and anyone may use it. Once it has been sent, we cannot delete it; you can ask Open Food Facts to correct or remove it. With the option off, nothing is sent, and the values you enter stay only in your meal log."
+          "text": "What you share becomes public in the Open Food Facts database under the Open Database License (ODbL), and anyone may use it. Once it has been sent, we cannot delete it; you can ask Open Food Facts to correct or remove it. If you do not want to share a product, do not save the form: you can log the food by searching for it or by entering it manually, and nothing is sent."
         },
         {
           "type": "p",
-          "text": "We rely on your consent, given through the sharing option, to share this information. You can withdraw it at any time by turning the option off; doing so applies to future contributions."
+          "text": "We share this information on the basis of our legitimate interest in keeping the product database the application relies on complete and accurate, which benefits everyone who uses it. What is shared is product information taken from the label, sent with a pseudonymous identifier rather than your account details, and you are told before saving that it becomes public."
         }
       ]
     },
